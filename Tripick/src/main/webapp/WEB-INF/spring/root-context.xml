@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
+	
+	<!-- Root Context: defines shared resources visible to all other web components -->
+	
+	<!-- DB 연결 설정 3단계 -->
+	 <!-- 1단계. DB연결을 위한 도구 설정 -->											
+	 <bean class="org.apache.commons.dbcp.BasicDataSource" id="dataSource" destroy-method="close"> 
+	    <!-- 어느 DB에 접속할건지 지정 -->
+	    <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
+	    <property name="url" value="jdbc:oracle:thin:@localhost:1521:xe" />
+	    <property name="username" value="SPRING" />
+	    <property name="password" value="SPRING" />
+	 </bean>
+	 <!-- 
+	    객체가 필요할 때마다 내부적으로 실행되는 코드
+	    BasicDataSource datasource = new BasicDataSource();
+	    dataSource.setDriverClassName("oracle.jdbc.driver.OracleDriver");
+	    dataSource.setUrl("jdbc:oracle:thin:@localhost:1521:xe");
+	    dataSource.setUsername("SPRING");
+	    dataSource.setPasswore("SPRING");
+	  -->
+	
+	  <!--  2단계. Mybatis Spring에서 제공하는 SQL명령 실행을 위한 도구 -->
+	  <bean class="org.mybatis.spring.SqlSessionFactoryBean" id="sqlSessionFactory">
+	        <!-- Mybatis설정 파일의 위치 설정(src/main/resources)하여 설정값들을 가져오겠다. -->
+	                                            <!-- classpath == /resources -->
+	        <property name="configLocation" value="classpath:mybatis-config.xml" />
+	        <!-- 어떤 디비에 연결할건지 연결을 위한 도구를 참조설정 , 절차에 맞게 순서대로 작성하는게 중요!! -->
+	        <property name="dataSource" ref="dataSource" />
+	  </bean>
+	  <!-- 
+	        객체가 필요할 때마다 내부적으로 이 코드가 실행됨
+	        SqlSessionFactoryBean sqlSessionFactory = new SqlSessionFactroyBean();
+	        sqlSessionFactory.setConfigLocation("classpath:mybatis-config.xml");
+	        sqlSessionFactory.setDataSource(datasource);
+	   -->
+	
+	
+	  <!-- 3단계. SQL구문 실행을 위한 템플릿을 제공하는 도구 등록 -->
+	  <bean class="org.mybatis.spring.SqlSessionTemplate" id="sqlSession">
+	        <!-- SQL명령어 실행을 위한 도구에 대한 참조 설정 -->
+	        <constructor-arg ref="sqlSessionFactory" />
+	  </bean>
+	
+	
+</beans>
