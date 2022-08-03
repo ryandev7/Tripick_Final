@@ -9,12 +9,25 @@
 	
 	<!-- 클래스 등록 -->
 	<typeAliases>
-
+		<typeAlias type="com.kh.tripick.common.model.vo.Reply" alias="reply" />
+		<typeAlias type="com.kh.tripick.course.model.vo.Planner" alias="planner" />
+		<typeAlias type="com.kh.tripick.course.model.vo.Plan" alias="plan" />
 	</typeAliases>
 	
 	<!-- mapper파일등록 -->
 	 <mappers>
-
+		<mapper resource="/mappers/admin-mapper.xml" />
+		<mapper resource="/mappers/chatting-mapper.xml" />
+		<mapper resource="/mappers/course-mapper.xml" />
+		<mapper resource="/mappers/freeboard-mapper.xml" />
+		<mapper resource="/mappers/localqnaboard-mapper.xml" />
+		<mapper resource="/mappers/main-mapper.xml" />
+		<mapper resource="/mappers/mateboard-mapper.xml" />
+		<mapper resource="/mappers/member-mapper.xml" />
+		<mapper resource="/mappers/mypage-mapper.xml" />
+		<mapper resource="/mappers/notice-mapper.xml" />
+		<mapper resource="/mappers/qna-mapper.xml" />
+		<mapper resource="/mappers/tripboard-mapper.xml" />
 	 </mappers>
 
 </configuration>
