@@ -2,4 +2,101 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="noticeMapper">
 
+	<resultMap type="notice" id="noticeResultSet">
+		<result column="NOTICE_NO" property="noticeNo"/>
+		<result column="NOTICE_TITLE" property="noticeTitle"/>
+		<result column="NOTICE_WRITER" property="noticeWriter"/>
+		<result column="NOTICE_CONTENT" property="noticeContent"/>
+		<result column="NOTICE_DATE" property="noticeDate"/> 
+		<result column="COUNT" property="count"/>
+	</resultMap>
+
+	<select id="selectListCount" resultType="_int">
+	
+		select count(*)
+		  from notice
+		 where status='Y'
+	
+	</select>
+	
+	<select id="selectList" resultMap="noticeResultSet">
+	
+		select notice_no, 
+			   notice_title, 
+			   notice_writer, 
+			   to_char(notice_date, 'YYYY-MM-DD') as "NOTICE_DATE", 
+			   count
+		from notice
+		where status = 'Y'
+		order by notice_no desc
+	</select>
+	
+	<insert id="insertNotice" parameterType="notice">
+	
+		insert 
+		  into
+				notice
+				(
+				notice_no,
+                notice_writer,
+                notice_title,
+                notice_content
+				)
+		 values
+				(
+				seq_nno.nextval,
+                #{noticeWriter},
+				#{noticeTitle},
+                #{noticeContent}
+				) 
+	</insert>
+	
+	<update id="increaseCount">
+		update
+				notice
+		set
+				count = count + 1
+		where
+				notice_no = #{noticeNo}
+		and
+				status = 'Y'
+	</update>
+	
+	<select id="selectNotice" resultMap="noticeResultSet">
+		select
+				notice_no,
+				notice_title,
+				user_nickname as notice_writer,
+				notice_content,
+				count,
+				to_char(notice_date, 'YYYY-MM-DD') as "NOTICE_DATE"
+		from
+				notice n 
+        join 
+        		member on(notice_writer = user_id)
+		where
+				notice_no = #{noticeNo}
+		and
+				n.status = 'Y'
+	</select>
+	
+	<update id="deleteNotice" parameterType="_int">
+		update
+				notice
+		set
+				status = 'N'
+		where
+				notice_no = #{noticeNo}
+	</update>
+	
+	<update id="updateNotice" parameterType="notice">
+		update
+				notice
+		set
+				notice_title = #{noticeTitle},
+				notice_content = #{noticeContent}
+		where
+				notice_no = #{noticeNo}
+	</update>
+
 </mapper>
