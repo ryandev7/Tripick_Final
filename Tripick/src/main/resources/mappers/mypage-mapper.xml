@@ -2,4 +2,112 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="myPageMapper">
 
+	<resultMap type="member" id="memberResultSet">
+		<result column="user_id" property="userId"/>
+		<result column="user_pwd" property="userPwd"/>
+		<result column="USER_NICKNAME" property="userNickName"/>
+		<result column="user_name" property="userName"/>
+		<result column="email" property="email"/>
+		<result column="enroll_date" property="enrollDate"/>
+		<result column="status" property="status"/>
+	</resultMap>
+	
+	<resultMap type="qna" id="qnaResultSet">
+		<result column="qna_no" property="qnaNo"/>
+		<result column="qna_writer" property="qnaWriter"/>
+		<result column="qna_title" property="qnaTitle"/>
+		<result column="qna_content" property="qnaContent"/>
+		<result column="qna_date" property="qnaDate"/>
+		<result column="answer" property="answer"/>
+		<result column="answer_writer" property="answerWriter"/>
+		<result column="answer_date" property="answerDate"/>
+	</resultMap>
+
+	<select id="login" parameterType="string" resultMap="memberResultSet">
+		select 
+			USER_ID ,
+			USER_NICKNAME ,
+			USER_PWD ,
+			USER_NAME ,
+			EMAIL ,
+			ENROLL_DATE ,
+			STATUS status
+		from member
+		where user_Id = #{string}
+	</select>
+	
+	<update id="memberInfoChange" parameterType="member">
+		update 
+		    member
+		set 
+		    user_nickname = #{userNickName},
+		    user_pwd = #{userPwd},
+		    user_name = #{userName},
+		    email = #{email}
+		where
+		    user_id = #{userId}
+	</update>
+	
+	<update id="deleteMember" parameterType="member">
+		update 
+		    member
+		set 
+		    status = 'N'
+		where
+		    user_id = #{userId}
+	</update>
+	
+	<select id="inquiryHistory" parameterType="string" resultMap="qnaResultSet">
+		select
+		    qna_no ,
+		    qna_writer ,
+		    qna_title ,
+		    qna_content ,
+		    qna_date ,
+		    answer ,
+		    answer_writer ,
+		    answer_date 
+		from
+		    qna
+		where
+		    qna_writer = #{userId}
+		and 
+		    status = 'Y'
+	</select>
+	
+	<select id="getInquiryCount" resultType="_int" parameterType="string">
+		select  
+			count(*)
+		from	
+			qna
+		where 	
+			status='Y'
+		and
+			qna_writer = #{userId}
+	</select>
+	
+	<select id="getMyCommentCount" resultType="_int" parameterType="string">
+		select  
+			count(*)
+		from	
+			reply
+		where 	
+			status='Y'
+		and
+			REPLY_WRITER = #{userId}
+	</select>
+	
+	<select id="getMyComments" parameterType="string" resultMap="qnaResultSet">
+		select
+		    reply_no,
+		    reply_level,
+		    reply_content,
+		    create_date
+		from
+		    reply
+		where
+		    status = 'Y'
+		and
+		    reply_writer = #{userId}
+	</select>
 </mapper>
