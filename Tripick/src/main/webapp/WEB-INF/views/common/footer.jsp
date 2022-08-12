@@ -12,9 +12,7 @@
 	    height: 150px;
 	    text-align: center;
     } 
-    #footer > a{
-        color: #7AC5CD;
-    }
+
 </style>
 </head>
 <body>
@@ -22,13 +20,13 @@
 	<div id="outer">
         
         <div id="footer">
-            <hr><br>  
-            <span>이용약관 | </span> <a href="list.no">고객센터</a> 
+            <hr>   
+            <span>이용약관 | </span> <a href="">고객센터</a> 
             <p>트립픽</p>
             <p>서울특별시 중구 남대문로 120 대일빌딩 2F, 3F</p>
             <p>© 2022. Tripick Co. all rights reserved.</p>
-            <br>
         </div>
+
     </div>
 
 </body>
