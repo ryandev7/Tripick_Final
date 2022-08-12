@@ -130,7 +130,16 @@
                 <a href="">여행코스</a>
                 <a href="">여행지</a>
                 <a href="">커뮤니티</a>
-                <a href="" style="margin-right: 40px;">로그인</a>
+                 <c:choose>
+	            	  <c:when test="${empty loginUser }">
+		                 <!-- 로그인 전 -->     
+	              		 <a href="loginForm.me">로그인</a>
+	               	  </c:when>
+	               	  <c:otherwise>
+	               		 <!-- 로그인 후 -->              
+	                    <a href="logout.me">로그아웃</a>
+	                  </c:otherwise>
+        	    </c:choose>
             </div>
         </div>
 

@@ -2,4 +2,79 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="memberMapper">
 
+	
+		<resultMap id ="memberResultSet" type="member">
+  		<result column="USER_ID" property="userId"/>
+  		<result column="USER_NICKNAME" property="userNickName"/>
+  		<result column="USER_PWD" property="userPwd"/>
+  		<result column="USER_NAME" property="userName"/>
+  		<result column="EMAIL" property="email"/>
+  		<result column="ENROLL_DATE" property="enrollDate"/>
+  		<result column="MEMBER_LOGIN_CHECK" property="memberLoginCheck"/>
+  		<result column="STATUS" property="status"/>
+  	</resultMap>
+
+
+
+	<!--  로그인용 쿼리문  -->
+  	<select id ="loginMember" parameterType="member" resultMap ="memberResultSet">
+  	
+  		SELECT
+  				USER_ID,
+				USER_NICKNAME,
+  				USER_PWD,
+  				USER_NAME,
+  				EMAIL,
+  				ENROLL_DATE,
+  				MEMBER_LOGIN_CHECK,
+  				STATUS
+  		 FROM
+  				MEMBER	
+  		WHERE	
+  				USER_ID = #{userId}
+  		AND	
+  				STATUS = 'Y'	
+
+  	</select>
+  	
+  	
+  		<!--  회원가입용 쿼리문  -->
+  	
+  	<insert id ="insertMember">
+  		INSERT INTO	
+  					MEMBER
+  				    (
+  				    USER_ID,
+  				    USER_NICKNAME,
+  				    USER_PWD,
+  				    USER_NAME,
+  				    EMAIL,
+  				    ENROLL_DATE,
+  				    MEMBER_LOGIN_CHECK,
+  				    STATUS
+  				    )
+  			VALUES 
+  					(
+  					#{userId},
+  					#{userNickName},
+  					#{userPwd},
+  					#{userName},
+  					#{email},
+  					SYSDATE,
+  					1,
+  					'Y'
+  					)
+  	</insert>
+  	
+  	
+  	
+  	
+  	
+  	
+  	
+  	
+  	
+  	
+  	
+  	
 </mapper>

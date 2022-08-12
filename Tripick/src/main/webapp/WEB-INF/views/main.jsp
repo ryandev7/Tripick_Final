@@ -177,7 +177,17 @@
 </style>
 </head>
 <body>
-
+		
+		<script>
+			var test = "${alertMsg}";
+			if(test != "") {
+			alert("${alertMsg}");
+			<% session.removeAttribute("alertMsg"); %>	
+			
+			}
+		
+		</script>
+		
 	<div id="outer">
         <div id="wrap">
         	<jsp:include page="common/header.jsp"/>
