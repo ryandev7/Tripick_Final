@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 
 public class Member {
-
+ 
 	
 	private String userId;			 // USER_ID VARCHAR2(50) PRIMARY KEY,
 	private String userNickName; 	// USER_NICKNAME VARCHAR2(50) NOT NULL UNIQUE,
@@ -22,3 +22,4 @@ public class Member {
 	private int memberLoginCheck; 	// MEMBER_LOGIN_CHECK NUMBER NOT NULL,
 	private String status; 			// STATUS VARCHAR2(1) DEFAULT 'Y' CHECK (STATUS IN('Y', 'N'))
 }
+ 

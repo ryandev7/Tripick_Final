@@ -14,7 +14,7 @@
   		<result column="STATUS" property="status"/>
   	</resultMap>
 
-
+ 
 
 	<!--  로그인용 쿼리문  -->
   	<select id ="loginMember" parameterType="member" resultMap ="memberResultSet">

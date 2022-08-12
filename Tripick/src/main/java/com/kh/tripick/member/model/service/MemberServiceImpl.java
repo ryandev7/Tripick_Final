@@ -27,7 +27,7 @@ public Member loginMember(Member m) {
 @Override
 public int insertMember(Member m) {
 	return memberDao.insertMember(sqlSession, m);
-	}
+	} 
 
 
 

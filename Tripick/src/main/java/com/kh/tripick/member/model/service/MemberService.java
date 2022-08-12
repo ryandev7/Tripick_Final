@@ -11,3 +11,4 @@ public interface MemberService {
 	// 회원가입 서비스(insert)
 	int insertMember(Member m);
 }
+ 
