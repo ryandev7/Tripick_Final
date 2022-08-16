@@ -20,7 +20,6 @@ public class Member {
 	private String email; 			// EMAIL VARCHAR2(50) NOT NULL,
 	private Date enrollDate; 		// ENROLL_DATE DATE DEFAULT SYSDATE,
 	private int memberLoginCheck; 	// MEMBER_LOGIN_CHECK NUMBER NOT NULL,
-	private String authority;		// AUTHORITY VARCHAR2(50) DEFAULT 'M' CHECK (AUTHORITY IN('M', 'A'))
 	private String status; 			// STATUS VARCHAR2(1) DEFAULT 'Y' CHECK (STATUS IN('Y', 'N'))
 }
  
