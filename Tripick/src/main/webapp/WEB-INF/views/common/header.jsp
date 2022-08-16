@@ -129,7 +129,7 @@
             <div id="menubar">
                 <a href="">여행코스</a>
                 <a href="">여행지</a>
-                <a href="">커뮤니티</a>
+                <a href="list.lb">커뮤니티</a>
                  <c:choose>
 	            	  <c:when test="${empty loginUser }">
 		                 <!-- 로그인 전 -->     

@@ -10,88 +10,92 @@ import org.springframework.stereotype.Service;
 
 import com.kh.tripick.common.model.vo.PageInfo;
 import com.kh.tripick.common.model.vo.Reply;
-import com.kh.tripick.community.model.dao.MateBoardDao;
+import com.kh.tripick.community.model.dao.LocalBoardDao;
 import com.kh.tripick.community.model.vo.ComAttachment;
 import com.kh.tripick.community.model.vo.LocalBoard;
-import com.kh.tripick.community.model.vo.Mate;
 
 @Service
-public class MateBoardServiceImpl implements MateBoardService{
+public class LocalBoardServiceImpl implements LocalBoardService {
 
 	@Autowired
-	private MateBoardDao mateBoardDao;
+	private LocalBoardDao LocalBoardDao;
 	
 	@Autowired
 	private SqlSessionTemplate sqlSession;
 	
 	@Override
 	public int selectListCount() {
-		return mateBoardDao.selectListCount(sqlSession);
+		return LocalBoardDao.selectListCount(sqlSession);
 	}
-
 	@Override
-	public ArrayList<Mate> selectList(PageInfo pi) {
-		return mateBoardDao.selectList(sqlSession, pi);
+	public int selectLocalListCount(int lcno) {
+		return LocalBoardDao.selectLocalListCount(sqlSession, lcno);
 	}
-
+	@Override
+	public ArrayList<LocalBoard> selectList(PageInfo pi) {
+		return LocalBoardDao.selectList(sqlSession, pi);
+	}
+	@Override
+	public ArrayList<LocalBoard> selectList(PageInfo pi, int lcno) {
+		return LocalBoardDao.selectList(sqlSession, pi, lcno);
+	}
 	@Override
 	public ArrayList<Local> selectLocalcatList() {
-		return mateBoardDao.selectLocalcatList(sqlSession);
+		return LocalBoardDao.selectLocalcatList(sqlSession);
 	}
-
 	@Override
-	public int insertBoard(Mate m) {
-		return mateBoardDao.insertBoard(sqlSession, m);
+	public int insertBoard(LocalBoard b) {
+		return LocalBoardDao.insertBoard(sqlSession, b);
 	}
-
 	@Override
 	public int insertAttachment(ComAttachment at) {
-		return mateBoardDao.insertAttachment(sqlSession, at);
+		return LocalBoardDao.insertAttachment(sqlSession, at);
 	}
-
 	@Override
 	public int increaseCount(int boardNo) {
-		return mateBoardDao.increaseCount(sqlSession, boardNo);
+		return LocalBoardDao.increaseCount(sqlSession, boardNo);
 	}
 
 	@Override
-	public Mate selectBoard(int boardNo) {
-		return mateBoardDao.selectBoard(sqlSession, boardNo);
+	public LocalBoard selectBoard(int boardNo) {
+		return LocalBoardDao.selectBoard(sqlSession, boardNo);
 	}
-
 	@Override
 	public ComAttachment selectAttachment(int boardNo) {
-		return mateBoardDao.selectAttachment(sqlSession, boardNo);
+		return LocalBoardDao.selectAttachment(sqlSession, boardNo);
 	}
 
 	@Override
 	public int deleteBoard(int boardNo) {
-		return mateBoardDao.deleteBoard(sqlSession, boardNo);
+		return LocalBoardDao.deleteBoard(sqlSession, boardNo);
 	}
 
 	@Override
-	public int updateBoard(Mate b) {
-		return mateBoardDao.updateBoard(sqlSession, b);
+	public int updateBoard(LocalBoard b) {
+		return LocalBoardDao.updateBoard(sqlSession, b);
 	}
 
 	@Override
 	public ArrayList<Reply> selectReplyList(int bno) {
-		return mateBoardDao.selectReplyList(sqlSession, bno) ;
+		return LocalBoardDao.selectReplyList(sqlSession, bno) ;
 	}
 
 	@Override
 	public int insertReply(Reply r) {
-		return mateBoardDao.insertReply(sqlSession, r);
+		return LocalBoardDao.insertReply(sqlSession, r);
 	}
+
 
 	@Override
 	public int selectSearchCount(HashMap<String, String> map) {
 		return 0;
 	}
-
 	@Override
 	public ArrayList<LocalBoard> selectSearchList(HashMap<String, String> map, PageInfo pi) {
 		return null;
 	}
 
+
+
+	
 }

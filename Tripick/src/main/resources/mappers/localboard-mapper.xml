@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="localBoardMapper">
+
+	<resultMap id="boardResultSet" type="localBoard">
+		<result column="LOCAL_BOARD_NO" property="localBoardNo"/> 
+		<result column="LOCAL_CODE" property="localCode"/> 
+		<result column="LB_WRITER" property="lbWriter"/> 
+		<result column="LOCAL_BOARD_TITLE" property="lbTitle"/> 
+		<result column="LOCAL_BOARD_CONTENT" property="lbContent"/> 
+		<result column="CREATE_DATE" property="createDate"/> 
+		<result column="STATUS" property="status"/>
+		<result column="COUNT" property="count"/>
+		
+		<result column="LOCAL_NAME" property="localName"/>
+	</resultMap>
+	
+	<resultMap id="localCatResultSet" type="localCate">
+		<result column="LOCAL_CODE" property="localCode"/>
+		<result column="LOCAL_NAME" property="localName"/>
+	</resultMap>
+	
+	<resultMap id="attachmentResultSet" type="comAttachment">
+		<result column="FILE_NO" property="fileNo"/> 
+		<result column="ORIGIN_NAME" property="originName"/> 
+		<result column="CHANGE_NAME" property="changeName"/> 
+		<result column="FILE_PATH" property="filePath"/> 
+		<result column="UPLOAD_DATE" property="uploadDate"/> 
+		<result column="FILE_LEVEL" property="fileLevel"/> 
+		<result column="STATUS" property="status"/> 
+		<result column="MATE_NO" property="mateNo"/> 
+		<result column="LOCAL_BOARD_NO" property="localBoardNo"/> 
+	</resultMap>
+	
+	<!-- 카테고리 리스트 (enroll시 data조회/작성시 사용 -->
+	<select id="selectLocalcatList" resultMap="localCatResultSet">
+		select * from local
+	</select>
+	
+	<!-- 게시물 총 갯수 -->
+	<select id="selectListCount" resultType="_int">
+		select count(*)
+		  from local_board
+		 where status = 'Y' or status = 'R'
+	</select>
+	<!-- 지역별 게시글 총 갯수 -->
+	<select id="selectLocalListCount" resultType="_int">
+		select count(*)
+		  from local_board
+		 where status = 'Y' or status = 'R'
+		 	and
+		 		local_code = #{localCode}
+	</select>
+	<!-- 키워드 검색 게시글 총 갯 수 -->
+	
+	<!-- 전체 게시판 리스트 -->
+	<select id="selectList" resultMap="boardResultSet">
+        select
+				local_board_no,
+				local_board_title,
+				lb_writer,
+				count,
+				to_char(create_date, 'YYYY-MM-DD') as "CREATE_DATE",
+                local_name,
+                local_code
+		 	from
+		 		local_board
+                join local using(local_code)
+		 	where
+                NOT status = 'N'
+		 	order by
+		 		local_board_no desc
+	</select>
+	
+	<!-- 지역별 게시판 리스트 -->
+	<select id="localSelectList" resultMap="boardResultSet" parameterType="_int">
+		select
+				local_board_no,
+				local_board_title,
+				lb_writer,
+				count,
+				to_char(create_date, 'YYYY-MM-DD')as "create_date",
+				local_code,
+				local_name
+		 	from
+		 		local_board
+		 		join local using(local_code)
+		 	where
+                NOT status = 'N'
+             and
+             	local_code = #{lcode}
+		 	order by
+		 		local_board_no desc
+	</select>
+	<!-- 게시글 상세보기 -->
+	<select id="selectBoard" resultMap="boardResultSet">
+      select
+			local_board_no,
+			local_board_title,
+			local_board_content,
+			lb_writer,
+			to_char(create_date, 'YYYY-MM-DD')as "create_date",
+			count,
+			local_name
+		from
+			local_board 
+            join local using(local_code)
+		where
+			NOT status = 'N'
+		and 
+			local_board_no = #{localBoardNo}
+	</select>
+	<!-- 게시글 상세보기 첨부파일 -->
+	<select id="selectAttachment" resultMap="attachmentResultSet">
+		select
+			file_no,
+			origin_name,
+			change_name,
+			local_board_no
+		from
+			com_attachment
+		where
+			local_board_no = #{localBoardNo}
+	</select>
+	
+	<!-- 게시글 작성 -->
+	<insert id="insertBoard" parameterType="localBoard">
+		insert
+		  into
+		  	  local_board
+		  	  (
+		  	  local_board_no,
+		  	  local_code,
+		  	  lb_writer,
+		  	  local_board_title,
+		  	  local_board_content
+		  	  )
+		 values
+		 	  (
+		 	  seq_lbno.nextval,
+		 	  #{localCode},
+		 	  #{lbWriter},
+		 	  #{lbTitle},
+		 	  #{lbContent}
+		 	  )
+	</insert>
+	<!-- 게시글 첨부파일 작성 -->
+	<insert id="insertAttachment" parameterType="comAttachment">
+		insert
+		   into
+                com_attachment
+                (
+                file_no,
+                origin_name,
+                change_name,
+                local_board_no
+                )
+                values(
+                seq_fno.nextval,
+                #{originName},
+                #{changeName},
+                seq_lbno.currval
+                )
+	</insert>
+
+	<!-- 조회수 증가 -->
+	<update id="increaseCount">
+		update
+			  local_board
+		  set
+		  	  count = count + 1
+		  where
+		   		local_board_no = #{localBoardNo}
+		   	and
+		   		NOT status = 'N'
+	</update>
+	<!-- 게시글 삭제 -->
+	<update id="deleteBoard" parameterType="_int">
+		update
+			  local_board
+			set
+			   status = 'N'
+		 where
+		 		local_board_no = #{localBoardNo}
+	</update>
+	<!-- 게시글 수정 -->
+		<update id="updateBoard" parameterType="localBoard">
+		update
+			  local_board
+			set
+			   local_board_title = #{lbTitle}
+			   local_board_content = #{lbContent}
+		 where
+		 		NOT status = 'N'
+		 	and
+		 		local_board_no = #{localBoardNo}
+	</update>
+	<!-- 첨부파일 수정 -->
+	<update id="updateAttachment">
+	</update>
+	<!-- 댓글 리스트조회 -->
+	<select id="selectReplyList" parameterType="_int" resultType="reply">
+		select
+			reply_no replyNo,
+			reply_writer replyWriter,
+			reply_content replyContent,
+			to_char(create_date, 'YYYY-MM-DD') as "create_date"
+		from
+			reply
+		where
+                ref_board_no = #{refBoardNo}
+            and
+                status = 'Y' or status = 'R'
+            and
+                reply_level = '1'
+        order
+        	by reply_no desc
+			
+	</select>
+	<!-- 댓글 추가 -->
+	<insert id="insertReply" parameterType="reply">
+		insert
+		  into
+		  		reply
+		  		(
+		  		reply_no,
+		  		reply_content,
+		  		ref_board_no,
+		  		reply_writer,
+		  		reply_level
+		  		)
+		   values
+		   		(
+		   		 seq_rno.nextval,
+		   		 #{replyContent},
+		   		 #{refBoardNo},
+		   		 #{replyWriter},
+		   		 '1'
+		   		)
+	</insert>
+
+</mapper>

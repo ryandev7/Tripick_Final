@@ -1,5 +1,219 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="mateBoardMapper">
+<mapper namespace="mateMapper">
+	<resultMap id="mateResultSet" type="mate">
+		<result column="MATE_NO" property="mateNo"/>
+		<result column="MATE_WRITER" property="mateWriter"/>
+		<result column="LOCAL_CODE" property="localCode"/>
+		<result column="MATE_TITLE" property="mateTitle"/>
+		<result column="MATE_CONTENT" property="mateContent"/>
+		<result column="MEMBER_COUNT" property="memberCount"/>
+		<result column="MEMBER_CURCOUNT" property="memberCurCount"/>
+		<result column="RECRUIT_STATUS" property="recruitStatus"/>
+		<result column="STATUS" property="status"/>
+		<result column="F_DATE" property="firstDate"/>
+		<result column="L_DATE" property="lastDate"/>
+		<result column="COUNT" property="count"/>
+		<result column="CREATE_DATE" property="createDate"/>
+		
+		<result column="LOCAL_NAME" property="localName"/>
+	</resultMap>
+	
+	<resultMap id="attachmentResultSet" type="comAttachment">
+		<result column="FILE_NO" property="fileNo"/> 
+		<result column="ORIGIN_NAME" property="originName"/> 
+		<result column="CHANGE_NAME" property="changeName"/> 
+		<result column="FILE_PATH" property="filePath"/> 
+		<result column="UPLOAD_DATE" property="uploadDate"/> 
+		<result column="FILE_LEVEL" property="fileLevel"/> 
+		<result column="STATUS" property="status"/> 
+		<result column="MATE_NO" property="mateNo"/> 
+		<result column="LOCAL_BOARD_NO" property="localBoardNo"/> 
+	</resultMap>
+	
+	<select id="selectListCount" resultType="_int">
+		select count(*)
+		  from mate
+		 where status = 'Y' or status = 'R'
+	</select>
+	
+	<select id="selectList" resultMap="mateResultSet">
+        select
+				mate_no,
+				mate_writer,
+				mate_title,
+                count,
+                recruit_status,
+                to_char(create_date, 'YYYY-MM-DD') as "create_date", 
+                local_name
+		 	from
+		 		mate
+		 		join local using(local_code)
+		 	where
+                status = 'Y' or status = 'R'
+		 	order by
+		 		mate_no desc
+	</select>
+	<!-- 게시글 상세보기 첨부파일 -->
+	<select id="selectAttachment" resultMap="attachmentResultSet">
+		select
+			file_no,
+			origin_name,
+			change_name,
+			local_board_no
+		from
+			com_attachment
+		where
+			mate_no = #{mateNo}
+	</select>
+	<!-- 게시글 상세보기 -->
+	<select id="selectBoard" resultMap="mateResultSet">
+      select
+			mate_no,
+			mate_title,
+			mate_content,
+			mate_writer,
+			to_char(create_date, 'YYYY-MM-DD')as "create_date",
+			count,
+			local_name,
+			recruit_status,
+			member_count,
+			member_curcount,
+			status,
+			to_char(f_date, 'YYYY-MM-DD') as "f_date",
+			to_char(l_date, 'YYYY-MM-DD') as "l_date"
+		from
+			mate
+            join local using(local_code)
+		where
+			NOT status = 'N'
+		and 
+			mate_no = #{mateNo}
+	</select>
+	<!-- 게시글 작성 -->
+	<insert id="insertBoard" parameterType="mate">
+		insert
+		  into
+		  	  mate
+		  	  (
+		  	  mate_no,
+		  	  local_code,
+		  	  mate_writer,
+		  	  mate_title,
+		  	  mate_content
+		  	  )
+		 values
+		 	  (
+		 	  seq_mno.nextval,
+		 	  #{localCode},
+		 	  #{mateWriter},
+		 	  #{mateTitle},
+		 	  #{mateContent}
+		 	  )
+	</insert>
+	<!-- 게시글 첨부파일 작성 -->
+	<insert id="insertAttachment" parameterType="comAttachment">
+		insert
+		   into
+                com_attachment
+                (
+                file_no,
+                origin_name,
+                change_name,
+                local_board_no
+                )
+                values(
+                seq_fno.nextval,
+                #{originName},
+                #{changeName},
+                seq_mno.currval
+                )
+	</insert>
+	<!-- 게시글 삭제 -->
+	<update id="deleteMate" parameterType="_int">
+		update
+			  mate
+			set
+			   status = 'N'
+		 where
+		 		mate_no = #{boardNo}
+	</update>
+	<!-- 게시글 수정 -->
+		<update id="updateMate" parameterType="mate">
+		update
+			  mate
+			set
+			   mate_title = #{mateTitle}
+			   mate_content = #{mateContent}
+		 where
+		 		NOT status = 'N'
+		 	and
+		 		mate_no = #{mateNo}
+	</update>
+	<!-- 첨부파일 수정 -->
+	<update id="updateAttachment">
+	</update>
+	<!-- 댓글 리스트조회 -->
+	<select id="selectReplyList" parameterType="_int" resultType="reply">
+		select
+			reply_no replyNo,
+			reply_writer replyWriter,
+			reply_content replyContent,
+			to_char(create_date, 'YYYY-MM-DD') as "create_date"
+		from
+			reply
+		where
+                ref_board_no = #{boardNo}
+            and
+                status = 'Y' or status = 'R'
+            and
+                reply_level = '2'
+        order
+        	by reply_no desc
+	</select>
+	<!-- 댓글 추가 -->
+	<insert id="insertReply" parameterType="reply">
+		insert
+		  into
+		  		reply
+		  		(
+		  		reply_no,
+		  		reply_content,
+		  		ref_board_no,
+		  		reply_writer,
+		  		reply_level
+		  		)
+		   values
+		   		(
+		   		 seq_rno.nextval,
+		   		 #{replyContent},
+		   		 #{refBoardNo},
+		   		 #{replyWriter},
+		   		 '2'
+		   		)
+	</insert>
+	<!-- 조회수 증가 -->
+	<update id="increaseCount">
+		update
+			  mate
+		  set
+		  	  count = count + 1
+		  where
+		   		mate_no = #{mateNo}
+		   	and
+		   		NOT status = 'N'
+	</update>
+	<!-- 동행 신청 인원 증가 -->
+	<update id="increaseMate">
+		update
+			  mate
+		  set
+		  	 member_curcount = member_curCount + 1
+	    where
+		  	 mate_no = #{boardNo}
+		  and  
+		  	 NOT status = 'N'
+	</update>
+	
 
 </mapper>
