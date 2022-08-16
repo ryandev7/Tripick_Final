@@ -11,6 +11,7 @@
   		<result column="EMAIL" property="email"/>
   		<result column="ENROLL_DATE" property="enrollDate"/>
   		<result column="MEMBER_LOGIN_CHECK" property="memberLoginCheck"/>
+  		<result column="AUTHORITY" property="authority"/>
   		<result column="STATUS" property="status"/>
   	</resultMap>
 
@@ -27,6 +28,7 @@
   				EMAIL,
   				ENROLL_DATE,
   				MEMBER_LOGIN_CHECK,
+  				AUTHORITY,
   				STATUS
   		 FROM
   				MEMBER	
@@ -51,6 +53,7 @@
   				    EMAIL,
   				    ENROLL_DATE,
   				    MEMBER_LOGIN_CHECK,
+  				    AUTHORITY,
   				    STATUS
   				    )
   			VALUES 
@@ -62,6 +65,7 @@
   					#{email},
   					SYSDATE,
   					1,
+  					'M',
   					'Y'
   					)
   	</insert>
