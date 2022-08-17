@@ -36,6 +36,12 @@ public interface MateBoardService {
 	
 	// 게시글 첨부파일 조회
 	ComAttachment selectAttachment(int boardNo);
+	
+	// 게시글 첨부파일 수정
+	int updateAttachment(ComAttachment a);
+	
+	// 게시글 첨부파일 수정 (기존x 새로운첨부파일 추가)
+	int updateNewAttachment(ComAttachment a);
 
 	// 게시글 삭제 서비스(update)(완료)
 	int deleteBoard(int boardNo);

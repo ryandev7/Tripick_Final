@@ -1,6 +1,7 @@
 package com.kh.tripick.community.model.dao;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.apache.ibatis.session.RowBounds;
 import org.mybatis.spring.SqlSessionTemplate;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import com.kh.tripick.common.model.vo.PageInfo;
 import com.kh.tripick.common.model.vo.Reply;
 import com.kh.tripick.community.model.vo.ComAttachment;
+import com.kh.tripick.community.model.vo.LocalBoard;
 import com.kh.tripick.community.model.vo.Mate;
 
 @Repository
@@ -50,11 +52,11 @@ public class MateBoardDao {
 	}
 
 	public int deleteBoard(SqlSessionTemplate sqlSession, int boardNo) {
-		return sqlSession.update("mateMapper.deleteBoard", boardNo);
+		return sqlSession.update("mateMapper.deleteMate", boardNo);
 	}
 
 	public int updateBoard(SqlSessionTemplate sqlSession, Mate m) {
-		return sqlSession.update("mateMapper.updateBoard", m);
+		return sqlSession.update("mateMapper.updateMate", m);
 	}
 
 	public Mate selectBoard(SqlSessionTemplate sqlSession, int boardNo) {
@@ -67,6 +69,27 @@ public class MateBoardDao {
 
 	public int insertReply(SqlSessionTemplate sqlSession, Reply r) {
 		return sqlSession.insert("mateMapper.insertReply", r);
+	}
+	
+	public int selectSearchCount(SqlSessionTemplate sqlSession, HashMap<String, String> map) {
+		return sqlSession.selectOne("mateMapper.selectSearchCount", map);
+	}
+	public ArrayList<LocalBoard> selectSearchList(SqlSessionTemplate sqlSession, HashMap<String, String> map, PageInfo pi) {
+		
+		int offset = (pi.getCurrentPage()-1) * pi.getBoardLimit();
+		int limit = pi.getBoardLimit();
+		
+		RowBounds rowBounds = new RowBounds(offset, limit);
+		
+		return (ArrayList)sqlSession.selectList("mateMapper.selectSearchList", map, rowBounds);
+	}
+
+	public int updateAttachment(SqlSessionTemplate sqlSession, ComAttachment a) {
+		return sqlSession.update("mateMapper.updateAttachment", a);
+	}
+
+	public int updateNewAttachment(SqlSessionTemplate sqlSession, ComAttachment a) {
+		return sqlSession.insert("mateMapper.updateNewAttachment", a);
 	}
 	
 

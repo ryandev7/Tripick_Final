@@ -52,7 +52,54 @@
 		 		local_code = #{localCode}
 	</select>
 	<!-- 키워드 검색 게시글 총 갯 수 -->
-	
+	<select id="selectSearchCount" resultType="_int" parameterType="hashmap">
+		select
+			  count(*)
+		  from
+		  	  local_board
+		  where
+		  	  NOT status = 'N'
+		 <if test="condition == 'writer'">
+		   	   and lb_writer
+		 </if>
+		 <if test="condition == 'title'">
+		       and local_board_title
+		 </if>
+		 <if test="condition == 'content'">
+		       and local_board_content
+		 </if>
+		       like '%' || #{keyword} || '%'
+	</select>
+	<!-- 검색 게시판 리스트 -->
+	<select id="selectSearchList" resultMap="boardResultSet" parameterType="hashmap">
+        select
+				local_board_no,
+				local_board_title,
+				lb_writer,
+				count,
+				to_char(create_date, 'YYYY-MM-DD') as "CREATE_DATE",
+                local_name,
+                local_code
+		 	from
+		 		local_board
+                join local using(local_code)
+		 	where
+                NOT status = 'N'
+            <choose>
+				<when test="condition == 'writer'">
+					and lb_writer
+				</when>
+				<when test="condition == 'title'">
+					and local_board_title
+				</when>
+				<otherwise>
+					and local_board_content
+				</otherwise>
+			</choose>
+			   like '%' || #{keyword} || '%'
+		 	order by
+		 		local_board_no desc
+	</select>
 	<!-- 전체 게시판 리스트 -->
 	<select id="selectList" resultMap="boardResultSet">
         select
@@ -101,7 +148,8 @@
 			lb_writer,
 			to_char(create_date, 'YYYY-MM-DD')as "create_date",
 			count,
-			local_name
+			local_name,
+			local_code
 		from
 			local_board 
             join local using(local_code)
@@ -181,7 +229,7 @@
 			set
 			   status = 'N'
 		 where
-		 		local_board_no = #{localBoardNo}
+		 		local_board_no = #{boardNo}
 	</update>
 	<!-- 게시글 수정 -->
 		<update id="updateBoard" parameterType="localBoard">

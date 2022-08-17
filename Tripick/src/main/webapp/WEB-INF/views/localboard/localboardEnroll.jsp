@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>게시글 작성</title>
 <style>
         #enrollForm>table {width:100%;}
         #enrollForm>table * {margin:5px;}

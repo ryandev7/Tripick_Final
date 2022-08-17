@@ -23,7 +23,7 @@
             box-sizing: border-box;
         }
         .wrap{
-            width : 1300px;
+            width : 1900px;
             height :1400px;
             margin: auto;
         }
@@ -46,17 +46,17 @@
         /* 각 세부영역의 가로 비율 정해주기*/
 
         #content1{
-            width : 25%;
+            width : 15%;
         }
         #content2{
-            width : 75%;
+            width : 85%;
         }
         #content2_1{
         border: 1px solid black;
             height : 15%;
         }
         #content2_2{
-            height : 70%;
+            height : 75%;
         }
 
         #wrapper-filter {
@@ -85,7 +85,7 @@
 	    }
 	    
 	    #board_table{
-	        text-align: center;
+	        text-align: left;
 	        width: 1000px;
 	        border-top: 1px solid black;
 	        border-bottom: 1px solid black;
@@ -132,7 +132,7 @@
         <div id="content">
             <div id="content1">
                 <%-- 네비게이션 --%>
-				<nav class="review-container__navi" style="height: 900px">
+				<nav class="review-container__navi" style="height: 1000px">
 					<jsp:include page="../community/communityNaviBar.jsp" />
 				</nav>
             </div>
@@ -156,7 +156,7 @@
                                 <span> > </span> <a href="list.lb">지역별게시판</a>
                             </span>
                             <%-- 글쓰기 버튼 --%>
-		                      <div align="right"><a class="btn btn-light btn-sm"href="enrollForm.lb">글쓰기</a></div>
+		                      <div align="left"><a class="btn btn-light btn-sm"href="enrollForm.lb">글쓰기</a></div>
                         </div>
                     <table id="board_table" align="center">
                         <thead>
@@ -221,7 +221,7 @@
                         </ul>
                     </div>
                     <div id="reviewL-bottom_search">
-                        <form id="searchForm" action="" method="get" align="center">
+                        <form id="searchForm" action="search.lb" method="get" align="center">
                             <div class="select">
                                 <select class="custom-select" name="condition">
                                     <option value="writer">작성자</option>

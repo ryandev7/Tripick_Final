@@ -86,12 +86,24 @@ public class MateBoardServiceImpl implements MateBoardService{
 
 	@Override
 	public int selectSearchCount(HashMap<String, String> map) {
-		return 0;
+		return mateBoardDao.selectSearchCount(sqlSession, map);
 	}
 
 	@Override
 	public ArrayList<LocalBoard> selectSearchList(HashMap<String, String> map, PageInfo pi) {
-		return null;
+		return mateBoardDao.selectSearchList(sqlSession, map, pi);
 	}
+
+	@Override
+	public int updateAttachment(ComAttachment a) {
+		return mateBoardDao.updateAttachment(sqlSession, a);
+	}
+
+	@Override
+	public int updateNewAttachment(ComAttachment a) {
+		return mateBoardDao.updateNewAttachment(sqlSession, a);
+	}
+
+
 
 }

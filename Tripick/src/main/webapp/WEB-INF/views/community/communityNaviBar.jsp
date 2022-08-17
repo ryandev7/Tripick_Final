@@ -7,7 +7,7 @@
 <title>커뮤니티메뉴바</title>
 <style>
 .nav-container {
-    width: 220px;
+    width: 200px;
     background-color: #F4B7B4;
     border-top: 1pt solid white;
     height: 100%;

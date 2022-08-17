@@ -70,12 +70,35 @@
             <div align="center">
                 <!-- 수정하기, 삭제하기 버튼은 이 글이 본인이 작성한 글일 경우에만 보여져야 함 -->
                 <a class="btn btn-primary" onclick="postFormSubmit(1)">수정하기</a>
-                <a class="btn btn-danger" onclick="postFormSubmit(2)">삭제하기</a>
+                <a class="btn btn-danger" data-toggle="modal" data-target="#myModal">삭제하기</a>
                 <a class="btn btn-secondary" href="list.lb">목록으로</a>
             </div>
-            
 			 </c:if> 
-			<form action="delete.bo" id="postForm" method="post">
+			 <!-- 삭제모달 -->
+		   <div class="modal fade" id="myModal">
+		    <div class="modal-dialog">
+		      <div class="modal-content">
+		      
+		        <!-- Modal Header -->
+		        <div class="modal-header">
+		          <h4 class="modal-title">정말 게시글을 삭제하시겠습니까?</h4>
+		        </div>
+		        
+		        <!-- Modal body -->
+		        <div class="modal-body">
+		          	삭제를 누르면 삭제됩니다.
+		        </div>
+		        
+		        <!-- Modal footer -->
+		        <div class="modal-footer">
+		          <button type="button" class="btn btn-danger" onclick="postFormSubmit(2)" >삭제하기</button>
+	          	  <button type="button" class="btn btn-secondary" data-dismiss="modal">취소하기</button>
+		        </div>
+		        
+		      </div>
+		    </div>
+		  </div>
+			<form action="delete.lb" id="postForm" method="post">
 				<input type="hidden" value="${ b.localBoardNo }" name="bno">
 				<input type="hidden" value="${ at.changeName }" name="filePath">
 			</form>
@@ -90,7 +113,6 @@
 			</script>
             <br><br>
 
-            <!-- 댓글 기능은 나중에 ajax 배우고 나서 구현할 예정! 우선은 화면구현만 해놓음 -->
             <table id="replyArea" class="table" align="center">
                 <thead>
                 	<c:choose>

@@ -88,11 +88,11 @@ public class LocalBoardServiceImpl implements LocalBoardService {
 
 	@Override
 	public int selectSearchCount(HashMap<String, String> map) {
-		return 0;
+		return LocalBoardDao.selectSearchCount(sqlSession, map);
 	}
 	@Override
 	public ArrayList<LocalBoard> selectSearchList(HashMap<String, String> map, PageInfo pi) {
-		return null;
+		return LocalBoardDao.selectSearchList(sqlSession, map, pi);
 	}
 
 

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 import javax.servlet.http.HttpSession;
 
@@ -37,7 +38,7 @@ public class LocalBoardController {
 		
 		// 전체 게시글 조회
 		if(lcode == 0) {
-		PageInfo pi = Pagination.getPageInfo(localBoardService.selectListCount(), currentPage, 10, 5);
+		PageInfo pi = Pagination.getPageInfo(localBoardService.selectListCount(), currentPage, 10, 10);
 		//ArrayList<Board> list = boardService.selectList(pi);
 		
 		mv.addObject("pi",pi)
@@ -49,7 +50,7 @@ public class LocalBoardController {
 		return mv;	
 		
 		} else { // 입력받은 지역코드의 게시글 리스트
-			PageInfo pi = Pagination.getPageInfo(localBoardService.selectLocalListCount(lcode), currentPage, 10, 5);
+			PageInfo pi = Pagination.getPageInfo(localBoardService.selectLocalListCount(lcode), currentPage, 10, 10);
 			
 			mv.addObject("pi",pi)
 			  .addObject("lclist", localBoardService.selectLocalcatList())
@@ -60,6 +61,7 @@ public class LocalBoardController {
 		}
 		
 	}
+
 	
 	@RequestMapping("enrollForm.lb")
 	public String enrollForm(HttpSession session) {
@@ -71,22 +73,32 @@ public class LocalBoardController {
 	public String insertBoard(LocalBoard b, MultipartFile upfile, HttpSession session, Model model) {
 		System.out.println(b);
 		System.out.println(upfile);
-		ComAttachment at = new ComAttachment();
 		
+		int result = localBoardService.insertBoard(b);
+		//System.out.println(result);
+		
+		// 첨부파일이 있을 때
 		if(!upfile.getOriginalFilename().equals("")) {
+			ComAttachment at = new ComAttachment();
 			String changeName = saveFile(upfile, session);
 			
 			at.setOriginName(upfile.getOriginalFilename());
 			at.setChangeName("resources/community-upfiles/" + changeName);
+			at.setLocalBoardNo(b.getLocalBoardNo());
 			
+			int result1 = localBoardService.insertAttachment(at);
+			//System.out.println(result1);
+			if(result * result1 > 0) {
+				session.setAttribute("alertMsg", "작성성공~");
+				return "redirect:list.lb";
+			} else{
+				model.addAttribute("errorMsg", "첨부파일을 등록하는데 문제가 발생");
+				return "common/errorPage";
+			}
 		}
-		int result = localBoardService.insertBoard(b);
-		System.out.println(result);
-		at.setLocalboardNo(b.getLocalBoardNo());
-		int result1 = localBoardService.insertAttachment(at);
-		System.out.println(result1);
 		
-		if(result * result1 > 0) {
+		
+		if(result > 0) {
 			session.setAttribute("alertMsg", "작성성공~");
 			return "redirect:list.lb";
 		} else{
@@ -161,13 +173,16 @@ public class LocalBoardController {
 	@RequestMapping("updateForm.lb")
 	public String updateForm(int bno, Model model) {
 		model.addAttribute("b", localBoardService.selectBoard(bno));
+		model.addAttribute("at", localBoardService.selectAttachment(bno));
+		model.addAttribute("lclist", localBoardService.selectLocalcatList());
 		return "localboard/localboardUpdate";
 	}
 	@RequestMapping("update.lb")
-	public String updateBoard(LocalBoard b,ComAttachment a, MultipartFile reupfile, HttpSession session, Model model) {
+	public String updateBoard(LocalBoard b, MultipartFile reupfile, HttpSession session, Model model) {
 		// 새로 첨부파일이 넘어온 경우
 		if(!reupfile.getOriginalFilename().equals("")) {
 			// 기존에 첨부파일이 있었다면?? -> 기존의 첨부파일을 지우기
+			ComAttachment a = new ComAttachment();
 			if(a.getOriginName() != null) {
 				new File(session.getServletContext().getRealPath(a.getChangeName())).delete();
 			}
@@ -183,16 +198,14 @@ public class LocalBoardController {
 			int result = localBoardService.updateBoard(b);
 			
 			if(result > 0) {
-				model.addAttribute("alertMsg", "게시글 작성 성공~");
-				return "redirect:detail.bo?bno=" + b.getLocalBoardNo();
+				model.addAttribute("alertMsg", "게시글 수정 성공~");
+				return "redirect:detail.lb?bno=" + b.getLocalBoardNo();
 			} else {
 				model.addAttribute("errorMsg", "이번엔 무슨 잘못을 했느냐~");
 				return "common/errorPage";
 			}
 			
 		}
-	
-	
 	
 	
 	@ResponseBody
@@ -209,6 +222,30 @@ public class LocalBoardController {
 	public String ajaxInsertReply(Reply r) { // 성공했을 때는 success 실패했을때는 fail
 		System.out.println(r);
 		return localBoardService.insertReply(r) > 0 ? "success" : "fail";
+	}
+	
+	@RequestMapping("search.lb")
+	public ModelAndView selectSearch(@RequestParam(value="cpage", defaultValue="1")int currentPage,
+										String keyword, String condition, ModelAndView mv ) {
+		
+		HashMap<String, String> map = new HashMap<>();
+		map.put("condition", condition);
+		map.put("keyword", keyword);
+		
+		int listCount = localBoardService.selectSearchCount(map);
+		System.out.println(listCount);
+		PageInfo pi = Pagination.getPageInfo(listCount, currentPage, 10, 5);
+		
+		ArrayList<LocalBoard> list = localBoardService.selectSearchList(map, pi);
+		
+		System.out.println(list);
+		mv.addObject("list", list)
+		  .addObject("pi", pi)
+		  .addObject("condition", condition)
+		  .addObject("keyword", keyword)
+		  .setViewName("localboard/localboardList");
+		
+		return mv;
 	}
 	
 	}

@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>동행 글 작성</title>
 <style>
     #mateEnroll{
         text-align: center;
@@ -62,22 +62,43 @@
             
             <br><br><br><br><br><br><br>
 
-            <form action="insert.no" method="post">
+            <form action="insert.mb" method="post" enctype="multipart/form-data">
 
                 <input type="hidden" name="mateWriter" value="${loginUser.userId}">
                 <div id="noticeEnroll">
-                    <p style="font-size: 40px;">동행 작성</p>
+                    <p style="font-size: 40px;">동행</p>
                 </div>
 
                 <div id="mateForm">
 
                     <input type="text" name="mateTitle" id="mateTitle" placeholder="동행 제목" required>
-                    <br><br><br><br><br>
-                    <div id="noticeContent">
+                    <br><br>
+                    <div id="mateSelect" align="left">
+                        <label for="local">지역</label>
+                        <select name="localCode">
+                            <c:forEach var="list" items="${lclist}">
+                        		<option value="${list.localCode}">${list.localName}</option>
+                        	</c:forEach>
+                        </select>
+                        <br>
+                        <span>
+                            동행인원 <input type="text" name="memberCount" id="memberCount" placeholder="(숫자)입력" required>
+                        </span>
+                        <br>
+                        <span>
+                            시작날짜<input type="date" name="firstDate" required> 마지막날짜<input type="date" name="lastDate" required>
+                        </span>
+                        
+                    </div>
+                    <div id="mateContent">
                         <textarea id="summernote" name="mateContent" required></textarea>
                     </div>
+                    <div>
+                        <label for="upfile">첨부파일</label>
+                        <input type="file" id="upfile" class="form-control-file border" name="upfile">
+                    </div>
                     <br><br>
-                    <button type="button" id="cancelBtn" onclick = "location.href = 'list.no' ">작성취소</button>
+                    <button type="button" id="cancelBtn" onclick = "location.href = 'list.mb' ">작성취소</button>
                     <button type="submit" id="mateBtn">동행등록</button>
                 </div>
 
@@ -122,4 +143,5 @@
     </div>
     <br><br><br><br><br><br><br><br><br><br>
     <jsp:include page="../common/footer.jsp"/>
+</body>
 </html>

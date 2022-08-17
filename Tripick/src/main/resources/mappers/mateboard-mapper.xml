@@ -34,7 +34,7 @@
 	<select id="selectListCount" resultType="_int">
 		select count(*)
 		  from mate
-		 where status = 'Y' or status = 'R'
+		 where NOT status = 'N'
 	</select>
 	
 	<select id="selectList" resultMap="mateResultSet">
@@ -50,21 +50,21 @@
 		 		mate
 		 		join local using(local_code)
 		 	where
-                status = 'Y' or status = 'R'
+                NOT status = 'N'
 		 	order by
 		 		mate_no desc
 	</select>
 	<!-- 게시글 상세보기 첨부파일 -->
-	<select id="selectAttachment" resultMap="attachmentResultSet">
+	<select id="selectAttachment" parameterType="_int" resultMap="attachmentResultSet">
 		select
 			file_no,
 			origin_name,
 			change_name,
-			local_board_no
+			mate_no
 		from
 			com_attachment
 		where
-			mate_no = #{mateNo}
+			mate_no = #{boardNo}
 	</select>
 	<!-- 게시글 상세보기 -->
 	<select id="selectBoard" resultMap="mateResultSet">
@@ -80,6 +80,7 @@
 			member_count,
 			member_curcount,
 			status,
+			local_code,
 			to_char(f_date, 'YYYY-MM-DD') as "f_date",
 			to_char(l_date, 'YYYY-MM-DD') as "l_date"
 		from
@@ -100,7 +101,10 @@
 		  	  local_code,
 		  	  mate_writer,
 		  	  mate_title,
-		  	  mate_content
+		  	  mate_content,
+		  	  member_count,
+			  f_date,
+			  l_date
 		  	  )
 		 values
 		 	  (
@@ -108,7 +112,10 @@
 		 	  #{localCode},
 		 	  #{mateWriter},
 		 	  #{mateTitle},
-		 	  #{mateContent}
+		 	  #{mateContent},
+		 	  #{memberCount},
+		 	  #{firstDate},
+		 	  #{lastDate}
 		 	  )
 	</insert>
 	<!-- 게시글 첨부파일 작성 -->
@@ -120,13 +127,30 @@
                 file_no,
                 origin_name,
                 change_name,
-                local_board_no
+                mate_no
                 )
                 values(
                 seq_fno.nextval,
                 #{originName},
                 #{changeName},
                 seq_mno.currval
+                )
+	</insert>
+		<insert id="updateNewAttachment" parameterType="comAttachment">
+		insert
+		   into
+                com_attachment
+                (
+                file_no,
+                origin_name,
+                change_name,
+                mate_no
+                )
+                values(
+                seq_fno.nextval,
+                #{originName},
+                #{changeName},
+                #{mateNo}
                 )
 	</insert>
 	<!-- 게시글 삭제 -->
@@ -143,15 +167,24 @@
 		update
 			  mate
 			set
-			   mate_title = #{mateTitle}
-			   mate_content = #{mateContent}
+			   mate_title = #{mateTitle},
+			   mate_content = #{mateContent},
+			   member_count = #{memberCount},
+			   f_date = #{firstDate},
+			   l_date = #{lastDate},
+			   local_code = #{localCode}
 		 where
-		 		NOT status = 'N'
-		 	and
 		 		mate_no = #{mateNo}
 	</update>
-	<!-- 첨부파일 수정 -->
-	<update id="updateAttachment">
+	<!-- 첨부파일 수정 --><!-- 있는거 바꿔주는거-->
+	<update id="updateAttachment" parameterType="comAttachment">
+	update
+		 com_attachment
+	  set
+	     origin_name = #{originName},
+	     change_name = #{changeName}
+	where
+		 mate_no = #{mateNo}
 	</update>
 	<!-- 댓글 리스트조회 -->
 	<select id="selectReplyList" parameterType="_int" resultType="reply">
@@ -163,9 +196,9 @@
 		from
 			reply
 		where
-                ref_board_no = #{boardNo}
+                ref_board_no = #{bno}
             and
-                status = 'Y' or status = 'R'
+                NOT status = 'N'
             and
                 reply_level = '2'
         order
@@ -214,6 +247,55 @@
 		  and  
 		  	 NOT status = 'N'
 	</update>
+		<!-- 키워드 검색 게시글 총 갯 수 -->
+	<select id="selectSearchCount" resultType="_int" parameterType="hashmap">
+		select
+			  count(*)
+		  from
+		  	  mate
+		  where
+		  	  NOT status = 'N'
+		 <if test="condition == 'writer'">
+		   	   and mate_writer
+		 </if>
+		 <if test="condition == 'title'">
+		       and mate_title
+		 </if>
+		 <if test="condition == 'content'">
+		       and mate_content
+		 </if>
+		       like '%' || #{keyword} || '%'
+	</select>
+	<!-- 검색 게시판 리스트 -->
+	<select id="selectSearchList" resultMap="mateResultSet" parameterType="hashmap">
+        select
+				mate_no,
+				mate_writer,
+				mate_title,
+                count,
+                recruit_status,
+                to_char(create_date, 'YYYY-MM-DD') as "create_date", 
+                local_name
+		 	from
+		 		mate
+		 		join local using(local_code)
+		 	where
+		 		NOT status = 'N'
+            <choose>
+				<when test="condition == 'writer'">
+					and mate_writer
+				</when>
+				<when test="condition == 'title'">
+					and mate_title
+				</when>
+				<otherwise>
+					and mate_content
+				</otherwise>
+			</choose>
+			   like '%' || #{keyword} || '%'
+		 	order by
+		 		mate_no desc
+	</select>
 	
 
 </mapper>
