@@ -27,7 +27,12 @@ public Member loginMember(Member m) {
 @Override
 public int insertMember(Member m) {
 	return memberDao.insertMember(sqlSession, m);
-	} 
+	}
+
+@Override
+public int idCheck(String checkId) {
+	return memberDao.idCheck(sqlSession, checkId);
+} 
 
 
 

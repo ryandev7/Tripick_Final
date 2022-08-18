@@ -35,7 +35,7 @@
   		WHERE	
   				USER_ID = #{userId}
   		AND	
-  				STATUS = 'Y'	
+  				STATUS = 'Y'	 
 
   	</select>
   	
@@ -71,7 +71,13 @@
   	</insert>
   	
   	
+  	<select id="idCheck" resultType="_int">
   	
+  		SELECT COUNT(*)
+  		FROM   MEMBER
+  		WHERE  USER_ID = #{checkId}
+  		
+  	</select>
   	
   	
   	

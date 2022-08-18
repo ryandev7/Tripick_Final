@@ -10,5 +10,8 @@ public interface MemberService {
 		
 	// 회원가입 서비스(insert)
 	int insertMember(Member m);
+	
+	// 아이디 중복체크용 서비스(select)
+	int idCheck(String checkId);
 }
  

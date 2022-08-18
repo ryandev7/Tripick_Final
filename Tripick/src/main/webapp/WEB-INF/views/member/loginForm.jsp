@@ -71,20 +71,28 @@
     letter-spacing: 1px;
     cursor: pointer;
     border-radius: 4px;
-    background-color: #98dde3;
+    background-color: #21cfe3;
 	 }
 
 	.userId {
 	
-	 height: 30px;
-     width: 300px;
+	height: 40px;
+    width: 300px;
+    BORDER-BOTTOM: #21cfe3 1px solid;
+    BORDER-LEFT: medium none;
+    BORDER-RIGHT: medium none;
+    BORDER-TOP: medium none;
 		
 	}
 	
 	.userPwd {
 	
-	 height: 30px;
+	 height: 40px;
      width: 300px;
+     BORDER-BOTTOM: #21cfe3 1px solid;
+     BORDER-LEFT: medium none;
+     BORDER-RIGHT: medium none;
+     BORDER-TOP: medium none;
 		
 	}
 	
@@ -98,10 +106,24 @@
 
 	.idpwd {
 	
-	 margin-left : 130px;
-	 font-size : 15px;
+	 margin-left : 155px;
+	 font-size : 14px;
 	 font-weight: 700;
+     text-decoration: none;
 	}
+
+    .forgotLogin {
+
+        padding-top: 10px;
+    }
+
+    .enroll {
+
+        text-decoration: none;
+        font-size:17px;
+        font-weight: 500;
+
+    }
 </style>
 </head>
 <body>
@@ -110,32 +132,34 @@
 	<div class="container" align="center">
 	 		<form action ="login.me" method="post">
                 <div class="text">LOG IN</div>
-                <div class="small-text">Enjoy your Trip - Tripick</div>
+                <div class="small-text" style="color: grey;">Enjoy your Trip - Tripick</div><br>
                 <div class="form-container">
+                	
                     <div class="data">
-                        <label align="left" class="id">아이디</label><br>
-                        <input type="text" id="userId" name="userId" class="userId" required="">
+                        <label align="left" class="id" style="color:#000000; font-weight:bold; margin-left : 5px;">아이디</label><br>
+                        <input type="text" id="userId" name="userId" class="userId" required style="padding-left: 3px;">
                     </div>
-                    <div class="data">
-                        <label class="pwd">비밀번호</label><br>
-                        <input type="password" id="userPwd" name="userPwd"  class="userPwd" required="">
+                    <div class="data" style="padding-top : 10px;">
+                        <label class="pwd" style="color:#000000; font-weight:bold; margin-left : 5px;">비밀번호</label><br>
+                        <input type="password" id="userPwd" name="userPwd"  class="userPwd" required style="padding-left:3px;">
                     </div>
+                    <br>
 	        <div class="btn">
                     <div class="inner"></div>
                  <!--    <button type="submit" id="LoginBtn" >로그인</button>  -->
                     <button type="submit" class="logbtn">로그인</button>
                     </div>
                     <div class="forgotLogin">
-						<a href="find.id-pwd" class="idpwd" style="color:blue;">아이디 / 비밀번호 찾기</a>
+						<a href="find.id-pwd" class="idpwd" style="color:#000000; font-weight: bold;">아이디 / 비밀번호 찾기</a>
                     </div>
                     <br>
-                    <div class="signup-link">Tripick 회원이 아니신가요? &nbsp;<a href="enrollForm.me" style="color : red;">회원가입하기!</a></div>
+                    <div class="signup-link">Tripick 회원이 아니신가요? &nbsp;<a class="enroll" href="enrollForm.me" style="color : #275ff9; font-weight: bold;
+                        " >회원가입하기!</a></div>
                 </div>
                 <br>
                 <div class="divider-container">
                     <div class="divider"></div>
-                    <span>or</span><br>
-                   <p>간편로그인</p>
+                   
                    <br>
                 </div>
                 

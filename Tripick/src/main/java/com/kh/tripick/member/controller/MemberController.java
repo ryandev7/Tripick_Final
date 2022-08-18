@@ -8,6 +8,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.kh.tripick.member.model.service.MemberService;
@@ -19,8 +20,8 @@ public class MemberController {
 	@Autowired
 	private MemberService memberService;
 	
-//	@Autowired
-//	private BCryptPasswordEncoder bcryptPasswordEncoder;
+	@Autowired
+	private BCryptPasswordEncoder bcryptPasswordEncoder;
 	
 	
 	@RequestMapping("loginForm.me")
@@ -45,13 +46,13 @@ public class MemberController {
 		
 		Member loginUser = memberService.loginMember(m);
 		
-			if(loginUser == null) {
-				
-				mv.addObject("errorMsg", "로그인 실패! ");
-				mv.setViewName("common/errorPage");
-			} else {
+			if(loginUser != null && bcryptPasswordEncoder.matches(m.getUserPwd(), loginUser.getUserPwd())) {
 				session.setAttribute("loginUser", loginUser);
 				mv.setViewName("redirect:/");			
+				
+			} else {
+				mv.addObject("errorMsg", "로그인 실패! ");
+				mv.setViewName("common/errorPage");
 			}
 			
 			return mv;		
@@ -68,6 +69,10 @@ public class MemberController {
 	
 	@RequestMapping("insert.me")
 	public String insertMember(Member m, Model model, HttpSession session) {
+		
+		String encPwd = bcryptPasswordEncoder.encode(m.getUserPwd());
+		
+		m.setUserPwd(encPwd);
 		
 		int result = memberService.insertMember(m);
 		
@@ -92,7 +97,24 @@ public class MemberController {
 	}
 	
 	
-	
+	@ResponseBody
+	@RequestMapping("idCheck.me") 
+	public String idCheck(String checkId) {
+		/*
+		int result = memberService.idCheck(checkId);
+		
+			if(result > 0) { // 존재하는 아이디 => 사용불가! (NNNNN)
+				
+				return "NNNNN";
+				
+			}else { // 존재하지 않는 아이디 => 사용가능! (NNNNY)
+				
+				return "NNNNY";
+				
+			}
+			*/
+		return memberService.idCheck(checkId) > 0 ? "NNNNN" : "NNNNY";
+	   }
 	
 	
 	
