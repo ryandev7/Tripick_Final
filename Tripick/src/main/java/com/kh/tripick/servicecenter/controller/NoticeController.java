@@ -65,7 +65,7 @@ public class NoticeController {
 	}
 	
 	@RequestMapping("detail.no")
-	public ModelAndView selectBoard(ModelAndView mv, int nno) {
+	public ModelAndView selectNotice(ModelAndView mv, int nno) {
 		
 		int listCount = noticeService.selectListCount();
 		//System.out.println(listCount);
@@ -122,6 +122,24 @@ public class NoticeController {
 			model.addAttribute("errorMsg", "게시글 수정 실패");
 			return "common/errorPage";
 		}
+		
+	}
+	
+	@RequestMapping("search.no")
+	public ModelAndView searchNotice(@RequestParam(value="cpage", defaultValue="1") int currentPage, String keyword, ModelAndView mv) {
+		
+		PageInfo pi = Pagination.getPageInfo(noticeService.searchListCount(keyword), currentPage, 10, 10);
+		
+		ArrayList<Notice> list = noticeService.searchNoticeList(keyword, pi);
+		
+		System.out.println(list);
+		
+		mv.addObject("list", list)
+		  .addObject("pi", pi)
+		  .addObject("keyword", keyword)
+		  .setViewName("notice/noticeListView");
+		
+		return mv;
 		
 	}
 	

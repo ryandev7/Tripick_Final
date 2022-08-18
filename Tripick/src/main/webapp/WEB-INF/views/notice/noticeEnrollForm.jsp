@@ -64,8 +64,7 @@
             <br><br><br><br><br><br><br>
 
             <form action="insert.no" method="post">
-
-                <input type="hidden" name="noticeWriter" value="admin">
+                <input type="hidden" name="noticeWriter" value="${loginUser.userId}">
                 <div id="noticeEnroll">
                     <p style="font-size: 40px;">공지사항 작성</p>
                 </div>
@@ -78,6 +77,7 @@
                         <textarea id="summernote" name="noticeContent" required></textarea>
                     </div>
                     <br><br>
+                    
                     <button type="button" id="cancelBtn" onclick = "location.href = 'list.no' ">작성취소</button>
                     <button type="submit" id="noticeBtn">공지등록</button>
                 </div>

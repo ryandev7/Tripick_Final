@@ -23,11 +23,12 @@
 	
 		select notice_no, 
 			   notice_title, 
-			   notice_writer, 
+			   user_nickname as "notice_writer", 
 			   to_char(notice_date, 'YYYY-MM-DD') as "NOTICE_DATE", 
 			   count
-		from notice
-		where status = 'Y'
+		from notice n
+		join member on(notice_writer = user_id)
+		where n.status = 'Y'
 		order by notice_no desc
 	</select>
 	
@@ -98,5 +99,29 @@
 		where
 				notice_no = #{noticeNo}
 	</update>
+	
+	<select id="searchListCount" resultType="_int">
+	
+		select count(*)
+		from notice
+		where status='Y'
+		and notice_title like '%' || #{keyword} || '%'
+	
+	</select>
+	
+	<select id="searchNoticeList" resultMap="noticeResultSet">
+		
+		select notice_no, 
+			   notice_title, 
+			   user_nickname as "notice_writer", 
+			   to_char(notice_date, 'YYYY-MM-DD') as "NOTICE_DATE", 
+			   count
+		from notice n
+		join member on(notice_writer = user_id)
+		where n.status = 'Y'
+        and notice_title like '%' || #{keyword} || '%'
+		order by notice_no desc
+	
+	</select>
 
 </mapper>

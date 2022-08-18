@@ -7,7 +7,9 @@
 <meta charset="UTF-8">
 <title>공지사항 목록 페이지</title>
 <style>
-    table { border-collapse: collapse; }
+    table { 
+        border-collapse: collapse; 
+    }
     #wrap{
         height: 1200px;
     }
@@ -20,7 +22,7 @@
     }
     #notice{
         text-align: center;
-        width: 530px;
+        width: 600px;
         height: 100px;
         margin: auto;
         padding-top: 5px;
@@ -47,20 +49,33 @@
         
     }
 
-
     #notice_btn{
         text-align: right;
         width: 1300px;
         margin: auto;
         margin-bottom: 30px;
     }
-    #notice_btn > a{
+    #inputNoticeBtn{
         font-size: 18px;
         padding: 10px;
         color: white;
         background-color: #7AC5CD;
+        border: 1px solid #7AC5CD;
+        cursor: pointer;
     }
-
+    #notice_btn > form > button{
+        font-size: 18px;
+        padding: 10px;
+        color: white;
+        background-color: #7AC5CD;
+        border: 1px solid #7AC5CD;
+        margin-left: 10px;
+        cursor: pointer;
+    }
+    #searchInput{
+        font-size: 18px;
+        padding: 10px;
+    }
 
     /*공지사항 리스트*/
     #notice_list{
@@ -98,14 +113,12 @@
     }
     #pagingArea>ul>li{
         float: left;
-        margin-left: 5px;
+        margin-left: 3px;
         cursor: pointer;
     }
     #pagingArea>ul>li>a{
         font-size: 20px;
     }
-
-    
 </style>
 </head>
 <body>
@@ -123,14 +136,28 @@
             
             <div id="notice">
                 <a href="list.no">공지사항</a><!--
-                --><a href="">&nbsp;&nbsp;&nbsp;Q&A&nbsp;&nbsp;&nbsp;</a>
+                --><a href="list.qna">&nbsp;&nbsp;&nbsp;Q&A&nbsp;&nbsp;&nbsp;</a>
             </div>
+
             
-            <div id="notice_btn">
-                <a href="enrollForm.no">공지사항 작성</a>
-            </div>
+                
+                <div id="notice_btn">
+                    <form action="search.no">
+                        <input id="searchInput" type="text" name="keyword" value="${keyword}" style="float: left;">
+                        <button style="float: left;">검색</button>
+                    </form>
+                    <c:choose>
+                        <c:when test="${loginUser.authority eq 'A'}">
+                            <button id="inputNoticeBtn" onclick="location.href='enrollForm.no' ">공지사항 작성</button>
+                        </c:when>
+                        <c:otherwise>
+                            <br>
+                        </c:otherwise> 
+                    </c:choose> 
+                </div>
             
-            
+                
+                      
             <div id="notice_list">
                 <table id="notice_table" align="center">
                     <thead>
@@ -191,8 +218,6 @@
                             </c:otherwise>
                         </c:choose>
                     </ul>
-
-
                 </div>
 
             </div>

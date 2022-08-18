@@ -54,4 +54,14 @@ public class NoticeServiceImpl implements NoticeService{
 		return noticeDao.updateNotice(sqlSession, n);
 	}
 
+	@Override
+	public int searchListCount(String keyword) {
+		return noticeDao.searchListCount(sqlSession, keyword);
+	}
+
+	@Override
+	public ArrayList<Notice> searchNoticeList(String keyword, PageInfo pi) {
+		return noticeDao.searchNoticeList(sqlSession, keyword, pi);
+	}
+
 }

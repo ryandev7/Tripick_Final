@@ -9,6 +9,12 @@
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.5/dist/web/variable/pretendardvariable.css" />
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js%22%3E"></script>
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js%22%3E"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js%22%3E"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />	
+
 <style>
 	@font-face {
 	    font-family: 'RixYeoljeongdo_Regular';
@@ -43,7 +49,7 @@
 	}
 	div{
 	    box-sizing : border-box;
-	    /*border : 1px solid red;*/
+	    border : 1px solid red;
 	}
 	li{
 		list-style: none;
@@ -105,6 +111,9 @@
 	    margin-right: 15px;
 		font-size: 18px;
 	}
+	#mypage{
+		width: 30px;
+	}
 	
 </style>
 </head>
@@ -127,19 +136,24 @@
             	</a>
 			</div>
             <div id="menubar">
-                <a href="">여행코스</a>
+                <a href="main.co">여행코스</a>
                 <a href="">여행지</a>
                 <a href="list.lb">커뮤니티</a>
-                 <c:choose>
-	            	  <c:when test="${empty loginUser }">
-		                 <!-- 로그인 전 -->     
-	              		 <a href="loginForm.me">로그인</a>
-	               	  </c:when>
-	               	  <c:otherwise>
-	               		 <!-- 로그인 후 -->              
-	                    <a href="logout.me">로그아웃</a>
-	                  </c:otherwise>
-        	    </c:choose>
+				<c:choose>
+					<c:when test="${empty loginUser}">
+						<!-- 로그인 전 -->     
+						<a href="loginForm.me">로그인</a>
+					</c:when>
+					<c:when test="${loginUser.authority eq 'A'}">
+						<a href="">관리자페이지</a>           
+						<a href="logout.me">로그아웃</a>
+					</c:when>
+					<c:otherwise>
+						<!-- 로그인 후 -->   
+						<a href=""><!--<img id="mypage" src="./resources/common-upfiles/mypage.png">-->마이페이지</a>           
+						<a href="logout.me">로그아웃</a>
+					</c:otherwise>
+				</c:choose>
             </div>
         </div>
 

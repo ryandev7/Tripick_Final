@@ -2,4 +2,146 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="qnaMapper">
 
+	<resultMap type="qna" id="qnaResultSet">
+		<result column="QNA_NO" property="qnaNo"/>
+		<result column="QNA_WRITER" property="qnaWriter"/>
+		<result column="QNA_TITLE" property="qnaTitle"/>
+		<result column="QNA_CONTENT" property="qnaContent"/>
+		<result column="QNA_DATE" property="qnaDate"/>
+		<result column="STATUS" property="status"/>
+		<result column="ANSWER" property="answer"/>
+		<result column="ANSWER_WRITER" property="answerWriter"/>
+		<result column="ANSWER_DATE" property="answerDate"/>
+	</resultMap>
+	
+	
+	<select id="selectQnaListCount" resultType="_int">
+		SELECT COUNT(*)
+		  FROM QNA
+		 WHERE STATUS='Y'	
+	</select>
+	
+	<select id="selectQnaList" resultMap="qnaResultSet">
+		SELECT QNA_NO, USER_NICKNAME AS QNA_WRITER, QNA_TITLE, TO_CHAR(QNA_DATE, 'YYYY-MM-DD') AS "QNA_DATE", ANSWER
+		FROM QNA Q
+		JOIN MEMBER ON(QNA_WRITER = USER_ID)
+		WHERE Q.STATUS = 'Y'
+		ORDER BY QNA_NO DESC
+	</select>
+	
+	<select id="selectQna" resultMap="qnaResultSet">
+		SELECT 
+			   QNA_NO, 
+			   USER_NICKNAME AS "QNA_WRITER", 
+			   QNA_TITLE, 
+			   QNA_CONTENT, 
+			   TO_CHAR(QNA_DATE, 'YYYY-MM-DD') AS "QNA_DATE", 
+			   ANSWER, 
+			   ANSWER_WRITER, 
+			   TO_CHAR(ANSWER_DATE, 'YYYY-MM-DD') AS "ANSWER_DATE"
+		FROM QNA Q
+		JOIN MEMBER ON(QNA_WRITER = USER_ID)
+		WHERE Q.STATUS = 'Y'
+		AND QNA_NO = #{qno}
+
+	</select>
+
+
+
+	<update id="insertQnaAnswer" parameterType="qna">
+	
+		UPDATE QNA
+		SET ANSWER = #{answer},
+		ANSWER_WRITER = #{answerWriter},
+	    ANSWER_DATE = SYSDATE
+		WHERE QNA_NO = #{qnaNo}
+	
+	</update>
+
+	<insert id="insertQna" parameterType="qna">
+	
+		INSERT 
+		  INTO
+				QNA
+				(
+				QNA_NO,
+                QNA_WRITER,
+                QNA_TITLE,
+                QNA_CONTENT,
+                QNA_DATE
+				)
+		 VALUES
+				(
+				SEQ_QNO.NEXTVAL,
+                #{qnaWriter},
+				#{qnaTitle},
+                #{qnaContent},
+                SYSDATE
+				) 
+	</insert>
+	
+	<update id="deleteQna" parameterType="_int">
+		UPDATE QNA
+		SET STATUS = 'N'
+		WHERE QNA_NO = #{qno}
+	</update>
+	
+	<update id="updateQna" parameterType="qna">
+		UPDATE 
+				QNA
+		SET 
+				QNA_TITLE = #{qnaTitle},
+				QNA_CONTENT = #{qnaContent}
+		WHERE 
+				QNA_NO = #{qnaNo}
+	</update>
+	
+	<update id="deleteAnswer" parameterType="_int">
+	
+		UPDATE 
+				QNA
+		SET 
+				ANSWER = NULL,
+				ANSWER_WRITER = NULL,
+				ANSWER_DATE = NULL
+		WHERE 
+				QNA_NO = #{qno}
+	
+	</update>
+	
+	<update id="updateQnaAnswer" parameterType="qna">
+		UPDATE 
+				QNA
+		SET 
+				ANSWER = #{answer},
+				ANSWER_WRITER = #{answerWriter}
+		WHERE 
+				QNA_NO = #{qnaNo}
+	</update>
+	  
+	<select id="selectMyQnaList" resultMap="qnaResultSet">
+		SELECT QNA_NO, USER_NICKNAME AS QNA_WRITER, QNA_TITLE, TO_CHAR(QNA_DATE, 'YYYY-MM-DD') AS "QNA_DATE", ANSWER
+		FROM QNA Q
+		JOIN MEMBER ON(QNA_WRITER = USER_ID)
+		WHERE Q.STATUS = 'Y'
+        AND QNA_WRITER = #{qnaWriter}
+		ORDER BY QNA_NO DESC
+	</select>
+	<!--
+	<select id="selectMyQnaListCount" resultType="_int">
+		SELECT COUNT(*)
+		  FROM QNA
+		 WHERE STATUS='Y'
+		 AND QNA_WRITER = #{userId}	
+	</select>
+	
+	<select id="selectMyQnaList" resultMap="qnaResultSet">
+		SELECT QNA_NO, USER_NICKNAME AS QNA_WRITER, QNA_TITLE, TO_CHAR(QNA_DATE, 'YYYY-MM-DD') AS "QNA_DATE", ANSWER
+		FROM QNA Q
+		JOIN MEMBER ON(QNA_WRITER = USER_ID)
+		WHERE Q.STATUS = 'Y'
+		AND QNA_WRITER = #{userId}
+		ORDER BY QNA_NO DESC
+	</select>
+	-->
 </mapper>

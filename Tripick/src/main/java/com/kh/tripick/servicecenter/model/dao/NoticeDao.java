@@ -44,4 +44,17 @@ public class NoticeDao {
 		return sqlSession.update("noticeMapper.updateNotice", n);
 	}
 
+	public int searchListCount(SqlSessionTemplate sqlSession, String keyword) {
+		return sqlSession.selectOne("noticeMapper.searchListCount", keyword);
+	}
+
+	public ArrayList<Notice> searchNoticeList(SqlSessionTemplate sqlSession, String keyword, PageInfo pi) {
+		
+		int offset = (pi.getCurrentPage()-1) * pi.getBoardLimit();
+		int limit = pi.getBoardLimit();
+		RowBounds rowBounds = new RowBounds(offset, limit);
+		
+		return (ArrayList)sqlSession.selectList("noticeMapper.searchNoticeList", keyword, rowBounds);
+	}
+
 }

@@ -136,15 +136,17 @@
 
             <div id="content">
                 <p id="notice_content">${n.noticeContent}</p>
-                
             </div>
             
             <hr id="hr2">
             <br>
-            <div id="btn">
-                <a onclick="postFormSubmit(1)">수정하기</a>
-                <a onclick="postFormSubmit(2)">삭제하기</a>
-            </div>
+
+            <c:if test="${loginUser.authority eq 'A'}">
+                <div id="btn">
+                    <a onclick="postFormSubmit(1)">수정하기</a>
+                    <a onclick="postFormSubmit(2)">삭제하기</a>
+                </div>
+            </c:if>
 
             <form action="" method="post" id="postForm">
                 <input type="hidden" value="${n.noticeNo}" name="nno">

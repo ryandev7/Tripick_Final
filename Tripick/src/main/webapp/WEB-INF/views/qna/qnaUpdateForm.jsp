@@ -5,17 +5,15 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>공지사항 수정 페이지</title>
-
+<title>Q&A 수정 페이지</title>
 <style>
-    
-    #noticeUpdate{
+    #qnaUpdate{
         text-align: center;
         width: 100%;
         height: 60px;
         margin-bottom: 30px;
     }
-    #noticeForm{
+    #qnaForm{
         width: 1300px;
         height: 1000px;
         margin: auto;
@@ -23,7 +21,7 @@
         text-align: center;
     }
     
-    #noticeTitle{
+    #qnaTitle{
         width: 1300px;
         height: 80px;
         border: none;
@@ -33,7 +31,7 @@
         
     }
     textarea:focus {outline:none;}
-    #updateBtn{
+    #qnaBtn{
         width: 100px;
         height: 40px;
         font-size: 20px;
@@ -42,7 +40,7 @@
         background-color: #7AC5CD;
         color: white;
     }
-    #updateCancelBtn{
+    #cancelBtn{
         width: 100px;
         height: 40px;
         font-size: 20px;
@@ -64,25 +62,23 @@
             
             <br><br><br><br><br><br><br>
 
-            <form action="update.no" method="post">
-                <input type="hidden" name="noticeNo" value="${n.noticeNo}">
-                <input type="hidden" name="noticeWriter" value="${loginUser.userId}">
-                <div id="noticeUpdate">
-                    <p style="font-size: 40px;">공지사항 수정</p>
+            <form action="update.qna" method="post">
+                <input type="hidden" name="qnaNo" value="${q.qnaNo}">
+                <input type="hidden" name="qnaWriter" value="${loginUser.userId}">
+                <div id="qnaUpdate">
+                    <p style="font-size: 40px;">Q&A 수정</p>
                 </div>
 
-                <div id="noticeForm">
+                <div id="qnaForm">
 
-                    <input type="text" name="noticeTitle" id="noticeTitle" placeholder="공지사항 제목" value="${n.noticeTitle}" required>
+                    <input type="text" name="qnaTitle" id="qnaTitle" placeholder="Q&A 제목" value="${q.qnaTitle}" required>
                     <br><br><br><br><br>
-                    <div id="noticeContent">
-                        <textarea id="summernote" name="noticeContent" required>${n.noticeContent}</textarea>
+                    <div id="qnaContent">
+                        <textarea id="summernote" name="qnaContent" required>${q.qnaContent}</textarea>
                     </div>
                     <br><br>
-
-                    <button type="button" id="updateCancelBtn" onclick = "location.href = 'detail.no?nno='+${n.noticeNo} ">수정취소</button>
-                    <button type="submit" id="updateBtn">수정완료</button>
-                    
+                    <button type="button" id="cancelBtn" onclick = "location.href = 'detail.qna?qno='+${q.qnaNo} ">수정취소</button>
+                    <button type="submit" id="qnaBtn">수정하기</button>
                 </div>
 
 
@@ -115,9 +111,8 @@
                         fontSizes: ['8','9','10','11','12','14','16','18','20','22','24','28','30','36','50','72']
                     });
                     
-
                     $('#summernote').summernote('justifyFull');
-                    $('#noticeTitle').focus();
+                    $('#qnaTitle').focus();
 
                     
                 });

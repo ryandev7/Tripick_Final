@@ -16,7 +16,7 @@ public interface NoticeService {
 	// 공지사항 작성
 	int insertNotice(Notice n);
 	
-	// 공지사항 상세 조회 서비
+	// 공지사항 상세 조회 서비스
 	// 공지사항 조회수 증가
 	int increaseCount(int noticeNo);
 	// 공지사항 상세 조회
@@ -27,5 +27,9 @@ public interface NoticeService {
 	
 	// 공지사항 수정
 	int updateNotice(Notice n);
+	
+	// 공지사항 검색
+	int searchListCount(String keyword);
+	ArrayList<Notice> searchNoticeList(String keyword, PageInfo pi);
 	
 }

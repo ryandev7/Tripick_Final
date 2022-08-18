@@ -2,4 +2,51 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="mainMapper">
 
+	<resultMap type="tripboard" id="mainTripdResultSet">
+		<result column="TR_BOARD_NO" property="trboardNo"/>
+		<result column="TR_BOARD_TITLE" property="trboardTitle"/>
+		<result column="TR_BOARD_CONTENT" property="trboardContent"/>
+		<result column="TR_BOARD_WRITER" property="trboardWriter"/>
+		<result column="CREATE_DATE" property="createDate"/> 
+		<result column="STATUS" property="status"/>
+		<result column="LOCAL_NAME" property="localName"/>
+	</resultMap>
+	
+	<resultMap type="planner" id="mainPlannerResultSet">
+		<result column="PLANNER_NO" property="plannerNo"/>
+		<result column="PLANNER_WRITER" property="plannerWriter"/>
+		<result column="PLANNER_TITLE" property="plannerTitle"/>
+		<result column="F_DATE" property="fDate"/>
+		<result column="L_DATE" property="lDate"/> 
+		<result column="W_DATE" property="wDate"/>
+		<result column="AREA" property="area"/>
+		<result column="TYPE" property="type"/>
+		<result column="COUNT" property="count"/>
+		<result column="CREATE_DATE" property="createDate"/>
+		<result column="ORIGIN_NAME" property="originName"/>
+		<result column="CHANGE_NAME" property="changeName"/> 
+		<result column="STATUS" property="status"/>
+	</resultMap>
+
+	<select id="randomList" resultMap="mainTripdResultSet">
+	
+		SELECT TR_BOARD_NO, TR_BOARD_TITLE, TR_BOARD_CONTENT, TR_BOARD_WRITER, CREATE_DATE, STATUS, LOCAL_NAME 
+		  FROM
+    		  (SELECT TR_BOARD_NO, TR_BOARD_TITLE, TR_BOARD_CONTENT, TR_BOARD_WRITER, CREATE_DATE, STATUS, LOCAL_NAME  
+    		     FROM TR_BOARD
+    		    ORDER BY DBMS_RANDOM.RANDOM)
+		 WHERE ROWNUM BETWEEN 1 AND 3
+	
+	</select>
+	
+	<select id="countList" resultMap="mainPlannerResultSet">
+		SELECT PLANNER_NO, USER_NICKNAME, PLANNER_TITLE, F_DATE, L_DATE, W_DATE, AREA, TYPE, COUNT, CREATE_DATE, ORIGIN_NAME, CHANGE_NAME, P.STATUS 
+		  FROM(
+				SELECT PLANNER_NO, PLANNER_WRITER, PLANNER_TITLE, F_DATE, L_DATE, W_DATE, AREA, TYPE, COUNT, CREATE_DATE, ORIGIN_NAME, CHANGE_NAME, STATUS 
+				  FROM PLANNER
+		  		 ORDER BY COUNT DESC) P
+          JOIN MEMBER ON(USER_ID = PLANNER_WRITER)
+		 WHERE ROWNUM BETWEEN 1 AND 4
+	</select>
+
 </mapper>

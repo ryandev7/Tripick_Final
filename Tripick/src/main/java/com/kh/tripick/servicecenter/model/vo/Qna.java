@@ -7,7 +7,7 @@ public class Qna {
 	private String qnaWriter;
 	private String qnaTitle;
 	private String qnaContent;
-	private Date qnaDate;
+	private String qnaDate;
 	private String status;
 	private String answer;
 	private String answerWriter;
@@ -16,7 +16,7 @@ public class Qna {
 	public Qna() {
 		super();
 	}
-	public Qna(int qnaNo, String qnaWriter, String qnaTitle, String qnaContent, Date qnaDate, String status,
+	public Qna(int qnaNo, String qnaWriter, String qnaTitle, String qnaContent, String qnaDate, String status,
 			String answer, String answerWriter, Date answerDate) {
 		super();
 		this.qnaNo = qnaNo;
@@ -54,10 +54,10 @@ public class Qna {
 	public void setQnaContent(String qnaContent) {
 		this.qnaContent = qnaContent;
 	}
-	public Date getQnaDate() {
+	public String getQnaDate() {
 		return qnaDate;
 	}
-	public void setQnaDate(Date qnaDate) {
+	public void setQnaDate(String qnaDate) {
 		this.qnaDate = qnaDate;
 	}
 	public String getStatus() {
