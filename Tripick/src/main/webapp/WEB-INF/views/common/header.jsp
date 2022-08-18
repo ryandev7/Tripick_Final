@@ -49,7 +49,7 @@
 	}
 	div{
 	    box-sizing : border-box;
-	    border : 1px solid red;
+	    /* border : 1px solid red; */
 	}
 	li{
 		list-style: none;
@@ -114,6 +114,19 @@
 	#mypage{
 		width: 30px;
 	}
+	#menubar > ul > li > ul {
+		display: none;
+	}
+	#menubar > ul > li:hover > ul {
+		display: block;
+	}
+	
+	ul, li {list-style:none;}
+	
+	#menubar > ul > li:hover > ul {
+	    list-style:none;
+	    padding-left:0px;
+	}
 	
 </style>
 </head>
@@ -145,7 +158,15 @@
 						<a href="loginForm.me">로그인</a>
 					</c:when>
 					<c:when test="${loginUser.authority eq 'A'}">
-						<a href="">관리자페이지</a>           
+						<ul>
+		                	<li><a>관리자페이지</a>
+		                		<ul>
+			                		<li><a href="list.re">게시판 신고리스트</a></li>
+			                		<li><a href="">댓글 신고리스트</a></li>
+			                		<li><a href="">문의사항 리스트</a></li>
+		                		</ul>
+		                	</li>
+		                </ul>           
 						<a href="logout.me">로그아웃</a>
 					</c:when>
 					<c:otherwise>
