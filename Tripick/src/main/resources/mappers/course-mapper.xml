@@ -2,4 +2,172 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="courseMapper">
 
+	<resultMap type="planner" id="plannerResultSet">
+		<result column="PLANNER_NO" property="plannerNo" />
+		<result column="PLANNER_WRITER" property="plannerWriter" />
+		<result column="USER_NICKNAME" property="plannerWriter" />
+		<result column="PLANNER_TITLE" property="plannerTitle" />
+		<result column="F_DATE" property="fDate" />
+		<result column="L_DATE" property="lDate" />
+		<result column="W_DATE" property="wDate" />
+		<result column="AREA" property="area" />
+		<result column="TYPE" property="type" />
+		<result column="COUNT" property="count" />
+		<result column="CREATE_DATE" property="createDate" />
+		<result column="ORIGIN_NAME" property="originName" />
+		<result column="CHANGE_NAME" property="changeName" />
+		<result column="STATUS" property="status" />
+	</resultMap>
+	
+	<resultMap type="plan" id="planResultSet">
+		<result column="PLAN_NO" property="planNo" />
+		<result column="REF_PNO" property="refPno" />
+		<result column="PLAN_ORDER" property="planOrder" />
+		<result column="PLACE_NAME" property="placeName" />
+		<result column="PLACE_ADDRESS" property="placeAddress" />
+		<result column="X_COORDINATE" property="xCoordinate" />
+		<result column="Y_COORDINATE" property="yCoordinate" />
+		<result column="TRIP_DATE" property="tripDate" />
+		<result column="MEMO" property="memo" />
+	</resultMap>
+	
+	<resultMap type="likePlanner" id="likePlannerResultSet">
+		<result column="LIKE_NO" property="likeNo" />
+		<result column="USER_ID" property="userId" />
+		<result column="PLANNER_NO" property="plannerNo" />
+		<result column="TRIP_TYPE" property="tripType" />
+	</resultMap>
+
+	<!-- 코스 등록 (1) Planner -->
+	<insert id="insertPlanner" parameterType="planner">
+		<selectKey keyProperty="plannerNo" resultType="int" order="BEFORE">
+			SELECT SEQ_PNO.NEXTVAL FROM DUAL
+		</selectKey>	
+		INSERT
+		  INTO
+		  	   PLANNER(PLANNER_NO, PLANNER_WRITER, PLANNER_TITLE, F_DATE, L_DATE, W_DATE,AREA, TYPE, ORIGIN_NAME, CHANGE_NAME)
+		VALUES 
+			   (
+			   #{plannerNo},
+			   #{plannerWriter},
+			   #{plannerTitle},
+			   #{fDate},
+			   #{lDate},
+			   #{wDate},
+			   #{area},
+			   #{type},
+			   #{originName},
+			   #{changeName}
+			   )	   
+	</insert>
+
+	<!-- 코스 등록(2) Plan -->
+	<insert id="insertPlanList" parameterType="java.util.Map">   		
+		INSERT
+		  INTO
+		  	  PLAN (PLAN_NO, REF_PNO, PLAN_ORDER, PLACE_NAME, PLACE_ADDRESS, X_COORDINATE, Y_COORDINATE, TRIP_DATE, MEMO)
+		SELECT SEQ_PLNO.NEXTVAL, P.* FROM(
+	   <foreach collection="planList" item="plan" separator="UNION ALL">
+		   <![CDATA[
+		   			SELECT
+						   #{plan.refPno} AS REF_PNO,
+						   #{plan.planOrder} AS PLAN_ORDER,
+						   #{plan.placeName} AS PLACE_NAME,
+						   #{plan.placeAddress} AS PLACE_ADDRESS,
+						   #{plan.xCoordinate} AS X_COORDINATE,
+						   #{plan.yCoordinate} AS Y_COORDINATE,
+						   to_date(#{plan.tripDate}, 'YYYY-MM-DD') AS TRIP_DATE,
+						   #{plan.memo} AS MEMO
+		   
+		   FROM dual ]]>
+	   </foreach>
+	   ) P   
+	</insert>
+
+	<!-- 코스 목록(1) 총 게시글 수 -->
+	<select id="selectCourseListCount" resultType="_int">
+		SELECT 
+			   COUNT(*)
+		  FROM
+		  	   PLANNER
+		 WHERE
+		 	   STATUS='Y' 	   	
+	</select>
+
+	<!-- 코스 목록(2) 게시글 목록 가져오기 -->
+	<select id="selectCourseList" resultMap="plannerResultSet">
+		SELECT
+			   PLANNER_NO, USER_NICKNAME, PLANNER_TITLE, W_DATE, AREA, TYPE, COUNT, CREATE_DATE, ORIGIN_NAME, CHANGE_NAME
+		  FROM
+			   PLANNER P
+		  JOIN
+			   MEMBER ON(PLANNER_WRITER = USER_ID)
+		 WHERE
+			   P.STATUS ='Y'
+		 ORDER
+			BY PLANNER_NO DESC   
+	</select>
+	
+	<!-- 코스 상세조회(1) 조회수 증가 -->
+	<update id="increaseCount" parameterType="_int">
+		UPDATE
+			   PLANNER
+		   SET
+		   	   COUNT = COUNT + 1
+		 WHERE
+		 	   PLANNER_NO = #{pno}   	   	   		
+	</update>
+
+	<!-- 코스 상세조회(2) Planner -->
+	<select id="selectPlanner" resultMap="plannerResultSet">
+		SELECT
+		  	   PLANNER_NO, USER_NICKNAME, PLANNER_TITLE, F_DATE, L_DATE, W_DATE, AREA, TYPE, COUNT, CREATE_DATE, ORIGIN_NAME, CHANGE_NAME
+		  FROM
+			   PLANNER P
+		  JOIN
+			   MEMBER ON(PLANNER_WRITER = USER_ID)
+		 WHERE
+			   P.STATUS ='Y' AND PLANNER_NO = #{pno}	
+	</select>
+
+	<!-- 코스 상세조회(3) PlanList -->
+	<select id="selectPlanList" resultMap="planResultSet">
+		SELECT
+			   PLAN_ORDER, PLACE_NAME, PLACE_ADDRESS, X_COORDINATE, Y_COORDINATE, TRIP_DATE, MEMO
+		  FROM 
+			   PLAN
+		 WHERE
+		 	   REF_PNO = #{pno}
+		 ORDER
+		    BY PLAN_NO ASC	   	   	   
+	</select>
+
+	<insert id="insertLikePlanner" parameterType="_int">
+		INSERT
+		  INTO
+		  	   LIKEPLANNER(LIKE_NO, USER_ID, PLANNER_NO)
+		VALUES
+			   (SEQ_LNO.NEXTVAL, #{userId}, ${plannerNo})	   
+	</insert>
+
+	<select id="selectLikePlanner" resultMap="likePlannerResultSet">
+		SELECT
+			   PLANNER_NO
+		  FROM
+			   LIKEPLANNER
+		 WHERE
+		 	   USER_ID = #{userId}	   		  	   	   
+	</select>
+
+	<delete id="deleteLikePlanner">
+		DELETE
+		  FROM
+		  	   LIKEPLANNER
+		 WHERE
+		 	   USER_ID = #{userId} AND PLANNER_NO = #{plannerNo} 	   
+	</delete>
+
+
+
+
 </mapper>
