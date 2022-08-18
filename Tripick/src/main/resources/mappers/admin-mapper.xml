@@ -2,4 +2,38 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="adminMapper">
 
+	<resultMap id="reportResultSet" type="report">
+		<result column="RPT_NO" property="rptNo"/>
+		<result column="WRITE_NO" property="writeNo"/>
+		<result column="BOARD_NAME" property="divCode"/>
+		<result column="USER_ID" property="userId"/>
+		<result column="RTP_DATE" property="rptDate"/>
+		<result column="RPT_CONTENT" property="rptContent"/>
+		<result column="RPT_CNT" property="rptCnt"/>
+	</resultMap>
+
+	<select id="selectListCount" resultType="_int">
+		SELECT COUNT(*)
+		  FROM RPT
+		 WHERE DIVCODE != 'R'
+	</select>
+	
+	<select id="selectList" resultMap="reportResultSet">
+		SELECT RPT_NO,
+	    WRITE_NO,
+	    DIVCODE,
+	    CASE 
+	    	WHEN DIVCODE = 'L' THEN '지역별게시판'
+	    	WHEN DIVCODE = 'M' THEN '동행게시판'
+	    ELSE 'R'
+	    	END AS BOARD_NAME,
+	    USER_ID,
+	    RPT_DATE,
+	    RPT_CONTENT,
+	    RPT_CNT
+		FROM RPT
+		WHERE DIVCODE != 'R'
+		ORDER BY RPT_NO DESC
+	</select>
+	
 </mapper>
