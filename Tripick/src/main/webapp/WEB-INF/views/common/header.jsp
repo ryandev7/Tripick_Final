@@ -10,10 +10,8 @@
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js%22%3E"></script>
-
-<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js%22%3E"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js%22%3E"></script>
-<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />	
+<!-- 부트스트랩에서 제공하고 있는 스타일 -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
 <style>
 	@font-face {
@@ -49,7 +47,7 @@
 	}
 	div{
 	    box-sizing : border-box;
-	    /* border : 1px solid red; */
+	    /*border : 1px solid red;*/ 
 	}
 	li{
 		list-style: none;
@@ -62,6 +60,10 @@
 	}
 	/*밑줄제거*/
 	a{
+		text-decoration: none;
+		color: black;
+	}
+	a:hover{
 		text-decoration: none;
 		color: black;
 	}
@@ -89,10 +91,10 @@
 	}
 	#logo1{
 		font-size: 45px;
-		margin:0;
 		float:left;
+		margin:0;
 		margin-left: 70px;
-		margin-top: 30px;
+		margin-top: 20px;
 		
 	}
 	#logo2{
@@ -104,29 +106,47 @@
 	#menubar{
 	    width: 70%;
 	    text-align: right;
-	    margin-top: 40px;
+	    margin-top: 53px;
 	}
-	#menubar > a{
-	    color: black;
-	    margin-right: 15px;
-		font-size: 18px;
-	}
+	
 	#mypage{
 		width: 30px;
 	}
+	/*관리자 버튼*/
+	#menubar > ul{
+		overflow: auto;
+		float: right;
+	}
+	#menubar > ul > li{
+		float: left;
+	}
+
 	#menubar > ul > li > ul {
-		display: none;
+        display: none;
+		font-size: 18px;
+    }
+
+	#menubar > ul > li > ul > li {
+		margin-top: 10px;
 	}
-	#menubar > ul > li:hover > ul {
-		display: block;
-	}
-	
-	ul, li {list-style:none;}
-	
-	#menubar > ul > li:hover > ul {
-	    list-style:none;
-	    padding-left:0px;
-	}
+
+    #menubar > ul > li:hover > ul {
+        display: block;
+    }
+    
+    ul, li {list-style:none;}
+    
+    #menubar > ul > li:hover > ul {
+        list-style:none;
+        padding-left:0px;
+    }
+
+    #menubar > ul > li > a{
+        color: black;
+        margin-right: 15px;
+        font-size: 18px;
+    }
+
 	
 </style>
 </head>
@@ -149,32 +169,34 @@
             	</a>
 			</div>
             <div id="menubar">
-                <a href="main.co">여행코스</a>
-                <a href="">여행지</a>
-                <a href="list.lb">커뮤니티</a>
-				<c:choose>
-					<c:when test="${empty loginUser}">
-						<!-- 로그인 전 -->     
-						<a href="loginForm.me">로그인</a>
-					</c:when>
-					<c:when test="${loginUser.authority eq 'A'}">
-						<ul>
-		                	<li><a>관리자페이지</a>
+
+				<ul>
+					<li><a href="main.co">여행코스</a></li>
+					<li><a href="">여행지</a></li>
+					<li><a href="list.lb">커뮤니티</a></li>
+					<c:choose>
+						<c:when test="${empty loginUser}">
+							<li><a href="loginForm.me">로그인</a></li>
+						</c:when>
+						<c:when test="${loginUser.authority eq 'A'}">
+							<li><a>관리자페이지</a>
 		                		<ul>
 			                		<li><a href="list.re">게시판 신고리스트</a></li>
 			                		<li><a href="">댓글 신고리스트</a></li>
 			                		<li><a href="">문의사항 리스트</a></li>
 		                		</ul>
 		                	</li>
-		                </ul>           
-						<a href="logout.me">로그아웃</a>
-					</c:when>
-					<c:otherwise>
-						<!-- 로그인 후 -->   
-						<a href=""><!--<img id="mypage" src="./resources/common-upfiles/mypage.png">-->마이페이지</a>           
-						<a href="logout.me">로그아웃</a>
-					</c:otherwise>
-				</c:choose>
+							<li><a href="logout.me">로그아웃</a></li>
+						</c:when>
+						<c:otherwise>
+							<li><a href=""><!--<img id="mypage" src="./resources/common-upfiles/mypage.png">-->마이페이지</a></li>
+							<li><a href="logout.me">로그아웃</a></li>
+						</c:otherwise>
+					</c:choose>	
+					
+				</ul>
+
+
             </div>
         </div>
 

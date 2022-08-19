@@ -27,6 +27,23 @@
 		<result column="CHANGE_NAME" property="changeName"/> 
 		<result column="STATUS" property="status"/>
 	</resultMap>
+	
+	<resultMap type="planner" id="plannerResultSet">
+		<result column="PLANNER_NO" property="plannerNo" />
+		<result column="PLANNER_WRITER" property="plannerWriter" />
+		<result column="USER_NICKNAME" property="plannerWriter" />
+		<result column="PLANNER_TITLE" property="plannerTitle" />
+		<result column="F_DATE" property="fDate" />
+		<result column="L_DATE" property="lDate" />
+		<result column="W_DATE" property="wDate" />
+		<result column="AREA" property="area" />
+		<result column="TYPE" property="type" />
+		<result column="COUNT" property="count" />
+		<result column="CREATE_DATE" property="createDate" />
+		<result column="ORIGIN_NAME" property="originName" />
+		<result column="CHANGE_NAME" property="changeName" />
+		<result column="STATUS" property="status" />
+	</resultMap>
 
 	<select id="randomList" resultMap="mainTripdResultSet">
 	
@@ -47,6 +64,27 @@
 		  		 ORDER BY COUNT DESC) P
           JOIN MEMBER ON(USER_ID = PLANNER_WRITER)
 		 WHERE ROWNUM BETWEEN 1 AND 4
+	</select>
+	
+	<select id="searchCourseCount" resultType="_int">
+	
+		SELECT COUNT(*)
+		FROM PLANNER
+		WHERE STATUS='Y' 
+		AND PLANNER_TITLE LIKE '%' || #{keyword} || '%'
+		OR AREA LIKE '%' || #{keyword} || '%'
+	
+	</select>
+	
+	
+	<select id="searchCourseList" resultMap="plannerResultSet">
+		SELECT PLANNER_NO, USER_NICKNAME, PLANNER_TITLE, W_DATE, AREA, TYPE, COUNT, CREATE_DATE, ORIGIN_NAME, CHANGE_NAME
+		FROM PLANNER P
+		JOIN MEMBER ON(PLANNER_WRITER = USER_ID)
+		WHERE P.STATUS ='Y'
+		AND PLANNER_TITLE LIKE '%' || #{keyword} || '%'
+		OR AREA LIKE '%' || #{keyword} || '%'
+		ORDER BY PLANNER_NO DESC
 	</select>
 
 </mapper>

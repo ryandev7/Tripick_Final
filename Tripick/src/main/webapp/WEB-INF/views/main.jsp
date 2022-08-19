@@ -51,6 +51,7 @@
         background-color: #7AC5CD;
         border: none;
         color: white;
+        cursor: pointer;
     }
     #down-arrow{
         margin-top: 25vh;
@@ -83,7 +84,6 @@
     }
     #weather_area>div{
         float: left;
-        margin-left: 10px;
     }
     #weatherTitle{
         text-align: right;
@@ -92,18 +92,20 @@
     }
     #weatherTitle>p{
         margin: 0;
-        margin-right: 65px;
+        margin-right: 68px;
     }
     #region{
         width: 150px;
         text-align: right;
+        margin-right: 10px;
     }
     #currentT{
         width: 70px;
         text-align: center;
     }
     #weather{
-        width: 130px;
+        width: 100px;
+        text-align: right;
     }
 
     #mainImg{
@@ -238,9 +240,9 @@
                         <h2 id="search_h2">여행 코스 공유 사이트</h2>
                         <p id="search_P">Tripick</p>
                         
-                        <form action="">
+                        <form action="search.co" method="get">
                             <div>
-                                <input id="search_I" type="text" placeholder="✈︎ 떠나고 싶은 지역을 입력하세요 ✈︎"> <br>
+                                <input id="search_I" type="text" placeholder="✈︎ 떠나고 싶은 지역을 입력하세요 ✈︎" name="keyword"> <br>
                                 <button id="search_btn">검색하기</button>
                             </div>
                         </form>
@@ -368,23 +370,47 @@
                         success : function(data2){
                             console.log(data2);
 
+                            
+
 							let value2='';
                             for(let i in data2){
                                 value2 += "<div id='trip_course'>"
-										+ "<table id='course'>"
-										+ "<tr><td rowspan='5' id='thumbnail'>"
-										+ "<input type='hidden' name='plannerNo' value='" + data2[i].plannerNo + "'>"
-										+ "<img src='./resources/common-upfiles/mainImg.jpeg'>" + "</td>"
-										+ "<th>&nbsp;&nbsp;" + data2[i].plannerTitle + "</th></tr>"
-										+ "<tr><td>&nbsp;&nbsp;작성자 | " + data2[i].plannerWriter + "</td></tr>"
-										+ "<tr><td>&nbsp;&nbsp;" + (data2[i].wDate - 1) + "박" + data2[i].wDate + "일</td></tr>"
-                                		+ "<tr><td>&nbsp;&nbsp;" + data2[i].createDate + " |   " + data2[i].count + "</td></tr>"
-                                		+ "<tr><th>&nbsp;&nbsp;#" + data2[i].area + " #" + data2[i].type + "</th></tr>"
-										+ "</table></div>"
+                                        + "<table id='course'>"
+                                        + "<tr><td rowspan='5' id='thumbnail'>"
+                                        + "<input type='hidden' name='plannerNo' value='" + data2[i].plannerNo + "'>";
+                               
+
+                                        if(data2[i].type == '나홀로여행'){
+                                            value2 += "<img id='plannerImg' src='./resources/common-upfiles/type1.jfif'>" + "</td>";
+                                        }
+                                        else if(data2[i].type == '가족여행'){
+                                            value2 += "<img id='plannerImg' src='./resources/common-upfiles/type2.jfif'>" + "</td>";
+                                        }
+                                        else if(data2[i].type == '친구/지인'){
+                                            value2 += "<img id='plannerImg' src='./resources/common-upfiles/type3.jfif'>" + "</td>";
+                                        }
+                                        else if(data2[i].type == '연인/커플'){
+                                            value2 += "<img id='plannerImg' src='./resources/common-upfiles/type4.jfif'>" + "</td>";                  
+                                        }
+                                        else if(data2[i].type == '부모님'){
+                                            value2 += "<img id='plannerImg' src='./resources/common-upfiles/type5.jfif'>" + "</td>";
+                                        }
+                                
+
+                                value2 += "<th>&nbsp;&nbsp;" + data2[i].plannerTitle + "</th></tr>"
+                                        + "<tr><td>&nbsp;&nbsp;작성자 | " + data2[i].plannerWriter + "</td></tr>"
+                                        + "<tr><td>&nbsp;&nbsp;" + (data2[i].wDate - 1) + "박" + data2[i].wDate + "일</td></tr>"
+                                        + "<tr><td>&nbsp;&nbsp;" + data2[i].createDate + " |   " + data2[i].count + "</td></tr>"
+                                        + "<tr><th>&nbsp;&nbsp;#" + data2[i].area + " #" + data2[i].type + "</th></tr>"
+                                        + "</table></div>";
+                                    
+                                if(data2[i].type == '나홀로여행'){
+                                    console.log(data2[i].plannerTitle);
+                                }      
                             }
 
                             $('#C_trip').html(value2);
-
+                           
                             // 상세페이지로 이동
                             $(function(){
                                 $("table[id=course]").click(function(){
@@ -397,7 +423,6 @@
                     });
                 }
 
-                
             </script>
 
             <br><br><br><br>
@@ -405,8 +430,6 @@
         </div>
 
     </div>
-    
-    
-    
+
 </body>
 </html>
