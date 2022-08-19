@@ -189,7 +189,7 @@
 							<li><a href="logout.me">로그아웃</a></li>
 						</c:when>
 						<c:otherwise>
-							<li><a href=""><!--<img id="mypage" src="./resources/common-upfiles/mypage.png">-->마이페이지</a></li>
+							<li><a href="mypage.my"><!--<img id="mypage" src="./resources/common-upfiles/mypage.png">-->마이페이지</a></li>
 							<li><a href="logout.me">로그아웃</a></li>
 						</c:otherwise>
 					</c:choose>	

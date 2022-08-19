@@ -34,6 +34,12 @@ public class MyPageServiceImpl implements MyPageService{
 	public int deleteMember(Member m) {
 		return mypageDao.deleteMember(sqlSession, m);
 	}
+	
+	@Override
+	public int addWithdrawal(Member m, String withdrawal) {
+		m.setStatus(withdrawal);
+		return mypageDao.addWithdrawal(sqlSession, m);
+	}
 
 	@Override
 	public int getInquiryCount(String userId) {
@@ -54,5 +60,7 @@ public class MyPageServiceImpl implements MyPageService{
 	public ArrayList<Reply> getMyComments(String userId, PageInfo pi) {
 		return mypageDao.getMyComments(sqlSession, userId, pi);
 	}
+
+	
 
 }

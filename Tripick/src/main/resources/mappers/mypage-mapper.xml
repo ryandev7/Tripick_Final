@@ -22,6 +22,17 @@
 		<result column="answer_writer" property="answerWriter"/>
 		<result column="answer_date" property="answerDate"/>
 	</resultMap>
+	
+	<resultMap type="reply" id="replyResultSet">
+		<result column="REPLY_NO" property="replyNo"/>
+		<result column="REPLY_WRITER" property="replyWriter"/>
+		<result column="REPLY_CONTENT" property="replyContent"/>
+		<result column="CREATE_DATE" property="create_date"/>
+		<result column="STATUS" property="status"/>
+		<result column="REPLY_LEVEL" property="replyLevel"/>
+		<result column="REF_BOARD_NO" property="refBoardNo"/>
+	
+	</resultMap>
 
 	<select id="login" parameterType="string" resultMap="memberResultSet">
 		select 
@@ -56,6 +67,14 @@
 		where
 		    user_id = #{userId}
 	</update>
+	
+	<insert id="addWithdrawal" parameterType="member">
+		insert into 
+			withdrawal
+		VALUES(
+			#{userId}, 
+			#{status})
+	</insert>
 	
 	<select id="inquiryHistory" parameterType="string" resultMap="qnaResultSet">
 		select
@@ -97,7 +116,7 @@
 			REPLY_WRITER = #{userId}
 	</select>
 	
-	<select id="getMyComments" parameterType="string" resultMap="qnaResultSet">
+	<select id="getMyComments" parameterType="string" resultMap="replyResultSet">
 		select
 		    reply_no,
 		    reply_level,

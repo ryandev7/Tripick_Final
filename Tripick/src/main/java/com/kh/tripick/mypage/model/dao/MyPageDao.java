@@ -25,7 +25,10 @@ public class MyPageDao {
 	public int deleteMember(SqlSessionTemplate sqlSession, Member m) {
 		return sqlSession.update("myPageMapper.deleteMember", m);
 	}
-
+	
+	public int addWithdrawal(SqlSessionTemplate sqlSession, Member m) {
+		return sqlSession.insert("myPageMapper.addWithdrawal", m);
+	}
 	public ArrayList<Qna> inquiryHistory(SqlSessionTemplate sqlSession, String userId, PageInfo pi) {
 		
 		int offset = (pi.getCurrentPage() -1) * pi.getBoardLimit();
@@ -54,5 +57,7 @@ public class MyPageDao {
 		
 		return (ArrayList)sqlSession.selectList("myPageMapper.getMyComments", userId, rowBounds);
 	}
+
+	
 	
 }

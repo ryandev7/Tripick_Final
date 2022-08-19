@@ -23,4 +23,6 @@ public interface MyPageService {
 
 	ArrayList<Reply> getMyComments(String userId, PageInfo pi);
 
+	int addWithdrawal(Member m, String withdrawal);
+
 }
