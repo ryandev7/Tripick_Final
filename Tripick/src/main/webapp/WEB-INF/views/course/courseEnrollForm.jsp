@@ -626,7 +626,7 @@
 	</div>
 
 
-	<!-- 플래너 작성 container -->
+	<!-- 플래너 작성 -->
 	<div class="AR_plan-container">
 	    <!-- DAYS 나타내는 div -->
 	    <div class="AR_plan-daysbox">
@@ -670,7 +670,7 @@
 	    <!-- // 키워드로 장소 검색하는 div -->
 	
 	    <!-- 지도 div -->
-	    <div class="AR_plan-mapbox">
+	    <div class="AR_plan-mapbox" style="z-index: 0">
 	        <div class="AR_plan-map" id="AR_plan-map"></div>
 	    </div>
 	</div>

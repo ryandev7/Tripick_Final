@@ -8,6 +8,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Repository;
 
 import com.kh.tripick.common.model.vo.PageInfo;
+import com.kh.tripick.common.model.vo.Reply;
 import com.kh.tripick.course.model.vo.LikePlanner;
 import com.kh.tripick.course.model.vo.Plan;
 import com.kh.tripick.course.model.vo.Planner;
@@ -81,8 +82,25 @@ public class CourseDao {
 		return (ArrayList)sqlSession.selectList("courseMapper.selectLikePlanner", userId);
 	}
 
+	/**
+	 * 관심등록 해제
+	 */
 	public int deleteLikePlanner(SqlSession sqlSession, LikePlanner likePlanner) {
 		return sqlSession.delete("courseMapper.deleteLikePlanner", likePlanner);
+	}
+
+	/**
+	 * 댓글 목록
+	 */
+	public ArrayList<Reply> selectReplyList(SqlSession sqlSession, int plannerNo) {
+		return (ArrayList)sqlSession.selectList("courseMapper.selectReplyList", plannerNo);
+	}
+
+	/**
+	 * 댓글 작성
+	 */
+	public int insertReply(SqlSession sqlSession, Reply r) {
+		return sqlSession.insert("courseMapper.insertReply", r);
 	}
 
 }

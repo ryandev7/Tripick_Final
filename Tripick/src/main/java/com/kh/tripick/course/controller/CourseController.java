@@ -22,6 +22,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.google.gson.Gson;
 import com.kh.tripick.common.model.vo.PageInfo;
+import com.kh.tripick.common.model.vo.Reply;
 import com.kh.tripick.common.template.Pagination;
 import com.kh.tripick.course.model.service.CourseService;
 import com.kh.tripick.course.model.vo.LikePlanner;
@@ -60,8 +61,9 @@ public class CourseController {
 		
 		// 여행 시작날짜 ~ 끝날짜 사이의 날짜 List
 		ArrayList<Date> days = dateList(p.getFDate(), p.getLDate());
+		p.setWDate(days.size());
 		
-		//System.out.println(p);
+		// System.out.println(p);
 		mv.addObject("days", days);
 		mv.addObject("planner", p);
 		mv.setViewName("course/courseEnrollForm");
@@ -209,16 +211,30 @@ public class CourseController {
 	 * 코스 관심등록 해제
 	 */
 	@RequestMapping("unlike.co")
-	public String deletetLikePlanner(LikePlanner likePlanner, HttpSession session) {		
+	public String ajaxDeletetLikePlanner(LikePlanner likePlanner, HttpSession session) {		
 		String alertMsg = courseService.deleteLikePlanner(likePlanner)>0?"관심등록이 해제됐습니다.":"Error";		
 		session.setAttribute("alertMsg", alertMsg);		
 		return "redirect:detail.co?pno="+likePlanner.getPlannerNo();
 	}
 	
+	/**
+	 * 댓글 목록
+	 */
+	@ResponseBody
+	@RequestMapping(value="rlist.co", produces="application/json; charset=UTF-8")
+	public String ajaxSelectReplyList(int plannerNo) {
+		return new Gson().toJson(courseService.selectReplyList(plannerNo));
+	}
 	
-	
-	
-	
+	/**
+	 * 댓글 작성
+	 */
+	@ResponseBody
+	@RequestMapping("rinsert.co")
+	public String ajaxInsertReply(Reply r) {
+		System.out.println(r);
+		return courseService.insertReply(r) > 0 ? "success" : "fail";
+	}
 	
 	
 	

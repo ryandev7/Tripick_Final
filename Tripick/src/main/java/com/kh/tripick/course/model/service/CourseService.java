@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import com.kh.tripick.common.model.vo.PageInfo;
+import com.kh.tripick.common.model.vo.Reply;
 import com.kh.tripick.course.model.vo.LikePlanner;
 import com.kh.tripick.course.model.vo.Plan;
 import com.kh.tripick.course.model.vo.Planner;
@@ -28,4 +29,9 @@ public interface CourseService{
 	int deleteLikePlanner(LikePlanner likePlanner);
 	// 관심코스 가져오기
 	ArrayList<LikePlanner> selectLikePlanner(String userId);
+	
+	// 댓글 조회
+	ArrayList<Reply> selectReplyList(int plannerNo);
+	// 댓글 작성
+	int insertReply(Reply r);
 }

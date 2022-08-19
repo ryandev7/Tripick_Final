@@ -6,12 +6,12 @@
 <head>
 <meta charset="UTF-8">
 <title>Tripick : 여행코스</title>
-   <!-- jQuery 라이브러리 -->
-   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-   <!-- 부트스트랩에서 제공하고 있는 스타일 -->
-   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-   <!-- 부트스트랩에서 제공하고 있는 스크립트 -->
-   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<!-- jQuery 라이브러리 -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<!-- 부트스트랩에서 제공하고 있는 스타일 -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<!-- 부트스트랩에서 제공하고 있는 스크립트 -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script> 
 <style>
 	.AR-content{
 	    width: auto;
@@ -54,10 +54,19 @@
 	    margin-left: 10px;
 	    border-radius : 10%;
 	}
+	#courseList-area{
+		width: auto;
+		height: 500px;
+		display:flex;
+	}
+	#child-courseList-area{
+		width:1000px;
+		margin:0 auto;
+	}
 	#course{
 		float: left; 
 		margin-bottom: 50px;
-		margin-left : 100px; 
+		margin-left:5%;
 		text-align: left;
 	    width: 450px;
 	}
@@ -67,7 +76,7 @@
 		text-align:center;
 		color: black;
 		text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
-		background : url("https://t1.daumcdn.net/cfile/blog/23143B3753DB225A35");
+		background : url("resources/common-upfiles/courseMain.gif");
 		background-size:cover;
 		background-position:center;
 		opacity: 0.8;
@@ -79,6 +88,7 @@
 		background-color:transparent;
 		border : 0px;
 		outline: 3px solid rgb(142, 229, 238);
+		color: white;
 	}
 	#search-button{
 		border:0;
@@ -92,17 +102,20 @@
 		border-radius : 10px;
 		cursor : pointer;
 	}
-	#myplanbutton{
+	#myplan-btn-img{
 		width:80px;
 		height:80px;
 		margin-bottom:20px;
 	}
 	#myplan-btn-area{
-		cursor:pointer; 
-		font-size:40px; 
-		margin-left:30%
+		justify-content: center;
+		display:flex;
 	}
-	#myplan-btn-area:hover{
+	#myplan-btn{
+		cursor:pointer; 
+		font-size:35px; 
+	}
+	#myplan-btn:hover{
 		color:rgb(83, 134, 139);
 	}
 </style>
@@ -120,34 +133,19 @@
 		    }
 	    })
 	});
-
-	// 여행일정날짜선택
-	$(function () {
-        $('input[name="days"]').daterangepicker({
-            "locale": {
-                "format": "YYYY-MM-DD",
-                "separator": " ~ ",
-                "applyLabel": "확인",
-                "cancelLabel": "취소",
-                "fromLabel": "From",
-                "toLabel": "To",
-                "customRangeLabel": "Custom",
-                "weekLabel": "W",
-                "daysOfWeek": ["월", "화", "수", "목", "금", "토", "일"],
-                "monthNames": ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"],
-            },        
-            "startDate": new Date(),
-            "endDate": new Date(),
-            "drops": "down"
-        }, function (start, end) {
-            // console.log('New date range selected: ' + start.format('YYYY-MM-DD') + ' ~ ' + end.format('YYYY-MM-DD'));
-            // console.log(Math.ceil((end - start)/(1000*60*60*24)));
-	        $('input[name="fDate"]').attr('value', start.format('YYYY-MM-DD'))
-	        $('input[name="lDate"]').attr('value', end.format('YYYY-MM-DD'))
-	        $('input[name="wDate"]').attr('value', Math.ceil((end - start)/(1000*60*60*24)))
-	        $('input[name="days"]').attr("disabled", true)
-        });
-    });
+	
+	// fDate와 lDate 비교
+	$(function(){		
+		$("#next-btn").click(function(){
+			let startDate = new Date($("input[name='fDate']").val());
+			let endDate = new Date($("input[name='lDate']").val());
+			if(startDate <= endDate){
+				plannerForm.submit();
+			}else{
+				alert("여행 시작 날짜와 마지막 날짜를 확인해주세요");
+			}
+		})
+	});
 	
 	// 상세페이지로 이동
 	$(function(){
@@ -156,12 +154,11 @@
 			location.href="detail.co?pno=" + plannerNo;
 		})
 	})
+	
 </script>
 </head>
 <body>
-   
    <jsp:include page="../common/header.jsp"/>
-
     <br><br><br><br>
 
     <div class="AR-content">
@@ -172,31 +169,35 @@
 			<h2>어디로 여행을 떠나시나요?</h2>
 			<h6>여행 코스를 검색하거나 목록에서 직접 선택해주세요.</h6>
 			<br>
+			
 			<!-- 게시글 검색 영역 -->
-	        <div id="search-area">
-	            <form id="searchForm" action="" method="get" align="center">
-	                <input type="text" id="search-box" name="keyword">
-	                <button id="search-button" title = "검색">🔍</button>
-	            </form>
-	        </div>
+            <div id="search-area">
+                <!-- 지안수정 -->
+                <form id="searchForm" action="search.co" method="get" align="center">
+                    <input type="text" id="search-box" name="keyword" value="${keyword}">
+                    <button id="search-button" title = "검색">🔍</button>
+                </form>
+            </div>
 
         </div>
         <br>
         <br>
-		<c:choose>
-			<c:when test="${empty loginUser }">				
-		        <a onclick="alert('로그인 후 이용 가능한 서비스입니다.')" id="myplan-btn-area">
-					<img id="myplanbutton" src="resources/common-upfiles/myplan.png">
-						나만의 여행코스 만들기
-				</a>
-			</c:when>
-			<c:otherwise>
-		        <a data-toggle="modal" data-target="#courseModal" id="myplan-btn-area">
-					<img id="myplanbutton" src="resources/common-upfiles/myplan.png">
-						나만의 여행코스 만들기
-				</a>			
-			</c:otherwise>
-		</c:choose>
+        <div id="myplan-btn-area">
+			<c:choose>
+				<c:when test="${empty loginUser }">				
+			        <a onclick="alert('로그인 후 이용 가능한 서비스입니다.')" id="myplan-btn">
+						<img id="myplan-btn-img" src="resources/common-upfiles/myplan.png">
+							나만의 여행코스 만들기
+					</a>
+				</c:when>
+				<c:otherwise>
+			        <a data-toggle="modal" data-target="#courseModal" id="myplan-btn">
+						<img id="myplan-btn-img" src="resources/common-upfiles/myplan.png">
+							나만의 여행코스 만들기
+					</a>			
+				</c:otherwise>
+			</c:choose>
+        </div>
 		<!-- 지역 필터 -->
         <div id="wrapper-filter" style="height:100px">
             <ul id="filter-bar">
@@ -219,8 +220,12 @@
         </div>		
         <br><br>
         <!--코스 목록-->
-        <div id="courseList-area" style="width: 1200px;height: 500px; margin-left:150px">
+        <div id="courseList-area">
+        	<div id="child-courseList-area">
 			   <c:forEach var="planner" items="${list }">
+   		            <c:if test="${empty list}">
+		                <p>검색된 여행코스가 없습니다.</p>
+		            </c:if>
 		           <table id="course">
 		                <tr>
 			              <td rowspan="5" id="thumbnail">
@@ -261,7 +266,8 @@
 		                    <th style="font-size: 14px;"># ${planner.area } # ${planner.type }</th>
 		                </tr>
 		           </table>
-	     	   </c:forEach>   
+	     	   </c:forEach>
+	     	 </div>     
         </div>
         
         <!-- 여행일정 입력 모달창 -->
@@ -274,11 +280,11 @@
 	                    <button type="button" class="close" data-dismiss="modal"></button>
 	                </div>
 	        
-	                <form action="enrollform.co" method="post" enctype="multipart/form-data">
+	                <form name="plannerForm" action="enrollform.co" method="post" enctype="multipart/form-data">
 	                    <!-- Modal body -->
 	                    <div class="modal-body">
 							<input type="hidden" name="plannerWriter" value="${loginUser.userId }">
-							코스이름  &nbsp; <input type="text" name="plannerTitle" placeholder="15자 이내로 작성하세요" style="width:330px">
+							코스이름  &nbsp; <input type="text" name="plannerTitle" placeholder="15자 이내로 작성하세요" style="width:330px" required>
 							<span id="count">0</span>/15 <br><br>
 							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 							지 역 &nbsp;&nbsp;<select name="area">
@@ -308,15 +314,13 @@
 							사진첨부 &nbsp;&nbsp; 
 							<input type="file" name="upfile"><br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 							일 정 &nbsp; 
-							<input type="text" name="days" style="width:200px">
-							<input type="hidden" name="fDate">
-							<input type="hidden" name="lDate">
-							<input type="text" style="border:none; width:25px" name="wDate" value="1" readonly> 일
+							<input type="Date" name="fDate" required>
+							<input type="Date" name="lDate" required>
 	                    </div>
 	                           
 	                    <!-- Modal footer -->
 	                    <div class="modal-footer">
-	                        <button type="submit" class="btn btn-info">다음으로</button>
+	                        <button type="button" class="btn btn-info" id="next-btn">다음으로</button>
 	                        <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
 	                    </div>
 	                </form>
@@ -324,7 +328,7 @@
 	        </div>
 	    </div>
 		<br><br>
-        <div class="page-area" style="margin-left:650px">
+        <div class="page-area" style="display: flex;justify-content: center;">
 		    <ul class="pagination">
 		        <c:choose>
 		            <c:when test="${pi.currentPage eq 1 }">

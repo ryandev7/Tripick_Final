@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.kh.tripick.common.model.vo.PageInfo;
+import com.kh.tripick.common.model.vo.Reply;
 import com.kh.tripick.course.model.dao.CourseDao;
 import com.kh.tripick.course.model.vo.LikePlanner;
 import com.kh.tripick.course.model.vo.Plan;
@@ -100,6 +101,22 @@ public class CourseServiceImpl implements CourseService{
 	@Override
 	public int deleteLikePlanner(LikePlanner likePlanner) {
 		return courseDao.deleteLikePlanner(sqlSession, likePlanner);
+	}
+
+	/**
+	 * 댓글 목록
+	 */
+	@Override
+	public ArrayList<Reply> selectReplyList(int plannerNo) {
+		return courseDao.selectReplyList(sqlSession, plannerNo);
+	}
+
+	/**
+	 * 댓글 작성
+	 */
+	@Override
+	public int insertReply(Reply r) {
+		return courseDao.insertReply(sqlSession, r);
 	}
 
 

@@ -143,8 +143,20 @@
 		cursor : pointer;
 	}
 	#reply-area{
-		width:1000px;
-		margin-left:15%;
+		display: flex;
+		justify-content: center;
+	}
+	#reply-area-child{
+		width:800px;
+	}
+	#rpt-btn{
+		width:20px;
+		height:20px;
+		margin-left:5px;
+		margin-bottom:5px;
+	}
+	#rpt-reply, #delete-reply{
+		cursor:pointer;
 	}
 	
 	/*카카오맵 api*/
@@ -194,10 +206,7 @@
 				}
 			}
 		});
-
 	}
-	
-
 </script>
 </head>
 <body>
@@ -232,9 +241,10 @@
 
     		<div id="btn-area" align="right">
     			<c:if test="${(loginUser.userNickName eq planner.plannerWriter) || (loginUser.authority eq 'A') }">
-	    		 <button>수정하기</button>
-	    		 <button>삭제하기</button>
-	    		</c:if> 
+	    		 <button class="btn btn-info">수정</button>
+	    		 <button class="btn btn-danger">삭제</button>
+	    		</c:if>
+	    		 <button class="btn btn-warning">신고</button>   		
 	    		<!-- 관심등록 -->
     			<img id="like-btn" onclick="likeCourse()" title="관심 여행코스 등록" src="resources/common-upfiles/like.png">
     		</div>
@@ -293,7 +303,7 @@
 											  		<div id="plan-detail-left">
 											  			<b>${plan.placeName }</b><br>
 											  			   ${plan.placeAddress }<br>											  		 
-														   ${plan.memo }
+														 <div style="color:orange">  ${plan.memo } </div>
 											  		</div>
 											  	</div>	
 									  		</c:when>
@@ -365,42 +375,105 @@
 			</div>	   	
     	</div>  	 
     </div>
-			<!--------------------------------------------------댓글영역 시작------------------------------------------------->		
-			
+    
+	<!--------------------------------------------------댓글영역 시작------------------------------------------------->				
 	<div id="reply-area">
-		<thead>
-	    <c:choose>
-	        <c:when test="${empty loginUser }">
-	            <tr>
-	                <th colspan="2">
-	                    <textarea class="form-control" readonly cols="55" rows="2" style="resize:none; width:100%;">로그인 후 이용 가능합니다.</textarea>
-	                </th>
-	                <th style="vertical-align:middle"><button class="btn btn-secondary" disabled>등록하기</button></th>
-	            </tr>
-	        </c:when>
-	        
-	        <c:otherwise>
-	            <tr>
-	                <th colspan="2">
-	                    <textarea class="form-control" id="content" cols="55" rows="2" style="resize:none; width:100%;"></textarea>
-	                </th>
-	                <th style="vertical-align:middle"><button class="btn btn-secondary" onclick="addReply();">등록하기</button></th>
-	            </tr>
-	        </c:otherwise>
-	       </c:choose>
-	
-	       <tr>
-	           <td colspan="3">댓글(<span id="rcount">0</span>)</td>
-	       </tr>
-	   </thead>
-	   <tbody>
-	
-	   </tbody>
-	
-	</div>		
+		<div id="reply-area-child">
+		<table id="reply-list">
+			<thead>
+		    <c:choose>
+		        <c:when test="${empty loginUser }">
+		            <tr>
+		                <th colspan="2">
+		                    <textarea class="form-control" readonly cols="55" rows="2" style="resize:none; width:100%;">로그인 후 이용 가능합니다.</textarea>
+		                </th>
+		                <th style="vertical-align:middle"><button class="btn btn-secondary" disabled>등록하기</button></th>
+		            </tr>
+		        </c:when>
+		        
+		        <c:otherwise>
+		            <tr>
+		                <th colspan="2">
+		                    <textarea class="form-control" id="replyContent" cols="55" rows="2" style="resize:none; width:100%;"></textarea>
+		                </th>
+		                <th style="vertical-align:middle"><button class="btn btn-secondary" onclick="addReply();">등록하기</button></th>
+		            </tr>
+		        </c:otherwise>
+		       </c:choose>
+		       <tr>
+		           <td colspan="3">댓글(<span id="rcount">0</span>)</td>
+		       </tr>
+		   </thead>
+		   <tbody>
+		
+		   </tbody>
+		  </table> 
+		</div>		
+    </div>
     
+    <script>
+    // 댓글 조회
+    $(function(){
+        selectReplyList();
+	})
+	function selectReplyList(){
+	    $.ajax({
+	        url:'rlist.co',
+	        data : {plannerNo : ${planner.plannerNo}},
+	        success:function(list){
+	            let value='';
+	            for(let i in list){
+	                value += '<tr>'
+	                       + '<th>' + list[i].replyWriter + '</th>'
+	                       + '<td>' + list[i].replyContent + '</td>'
+	                       + '<td>' + list[i].create_date + '</td>'
+	                       + '<td id=\"rpt-reply\">'
+	                       + '<img id=\"rpt-btn\" onclick=\"\" title=\"댓글 신고\" src=\"resources/common-upfiles/rpt-btn.png\">'
+	                       + '<input type=\"hidden\" name=\"writeNo\" value=\"'+ list[i].replyNo +'\">'			
+	                       + '</td>'
+	                       + '<td id=\"delete-reply\" title=\"댓글 삭제\">❌</td>'
+	                       + '</tr>'
+	            }
+	
+	            $('#reply-list tbody').html(value);
+	            $('#rcount').text(list.length);
+	
+	        }, error:function(){					
+	            console.log("오류낫어")
+	        }   
+	    })
+	}
     
+    // 댓글 작성
+    function addReply(){
+        if($('#replyContent').val().trim() != ''){
+            $.ajax({
+                url : 'rinsert.co',
+                data : {
+                    replyWriter : '${loginUser.userId}',
+                    replyContent : $('#replyContent').val(),
+                    replyLevel : '3',
+                	refBoardNo : ${planner.plannerNo}
+                }, success:function(status){
+                    if(status == 'success'){
+                        selectReplyList();
+                        $('#replyContent').val('')
+                    }
+                }, error:function(){
+                    console.log('ㅗ')
+                }					
+            });
+        }
+        else{
+            alertify.alert('댓글 똑바로 써라')
+        }
+    }
+    </script>
+    <!--------------------------------------------------댓글영역 끝------------------------------------------------->
+  
    </div> 
+   
+   <br><br>
    
 <jsp:include page="../common/footer.jsp"/>
 <!-- 카카오맵API -->
