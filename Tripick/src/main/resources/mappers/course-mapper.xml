@@ -185,10 +185,10 @@
 		  	   REPLY R   
 		  JOIN
 			   MEMBER ON(REPLY_WRITER = USER_ID)
-		 WHERE
-	   		   R.STATUS ='Y' OR R.STATUS = 'R'
-	   		   AND REPLY_LEVEL = '3' 
-	   		   AND REF_BOARD_NO = #{plannerNo}
+		 WHERE 
+	   		   REF_BOARD_NO = #{plannerNo}
+               AND REPLY_LEVEL = '3'
+               AND R.STATUS ='Y' OR R.STATUS = 'R'
 	</select>
 
 	<insert id="insertReply">
