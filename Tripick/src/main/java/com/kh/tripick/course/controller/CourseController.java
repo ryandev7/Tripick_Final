@@ -232,7 +232,7 @@ public class CourseController {
 	@ResponseBody
 	@RequestMapping("rinsert.co")
 	public String ajaxInsertReply(Reply r) {
-		System.out.println(r);
+		// System.out.println(r);
 		return courseService.insertReply(r) > 0 ? "success" : "fail";
 	}
 	
