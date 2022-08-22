@@ -44,20 +44,25 @@
         text-align: center;
     }
     #search_btn{
-        width: 305px;
-        height: 55px;
+        width: 300px;
+        height: 50px;
         margin-top: 20px;
         font-size: 20px;
         background-color: #7AC5CD;
         border: none;
         color: white;
         cursor: pointer;
+        outline: 0;
     }
     #down-arrow{
-        margin-top: 25vh;
         width: 50px;
+        /*margin-top: 25vh;*/
+         
     }
-
+    #targetD{
+        margin-top: 200px;
+        
+    }
 
     #main1_2{
         width: 100% - 600px;
@@ -72,7 +77,6 @@
         height: 100px;
         margin-top: 85vh;
         position: absolute;
-        
     }
     #weather_area{
         width: 400px;
@@ -142,7 +146,7 @@
         cursor: pointer;
         transition: all 0.2s linear;
     }
-    #trip > img{
+    #trip > a > img{
         width: 100%;
         height: 400px;
     }
@@ -161,7 +165,7 @@
     #views{
         width: 100%;
         height: 550px;
-		position: absolute;
+        position: absolute;
     }
     #C_trip{
         width: 1500px;
@@ -169,9 +173,9 @@
         margin: auto;
     }
 
-	#C_trip > div{
-		float: left;
-	}
+    #C_trip > div{
+        float: left;
+    }
 
     #trip_course{
         margin: auto;
@@ -183,23 +187,23 @@
         font-size: 20px;
     }
 
-	#thumbnail{
-	    width: 200px;
-	}
-	#thumbnail>img{
-	    width: 95%;
-	    height: 95%;
+    #thumbnail{
+        width: 200px;
+    }
+    #thumbnail>img{
+        width: 95%;
+        height: 95%;
         margin-left: 5px;
         margin-top: 5px;
-	    border-radius : 10%;
-	}
+        border-radius : 10%;
+    }
 
     #course{
         float: left; 
         margin-bottom: 50px;
         text-align: left;
         width: 600px;
-		height: 200px;
+        height: 200px;
         cursor: pointer;
         box-shadow: 1px 1px 8px 1px gray;
         border-radius : 10px;
@@ -215,6 +219,18 @@
     #course td:last-child{
         font-size: 17px;
         height: 15px;
+    }
+
+
+
+    #tripLocal{
+        font-size: 30px;
+        margin-top: 5px;
+        margin-bottom: 0;
+    }
+    #tripName{
+        font-size: 20px;
+        margin-top: 10px;
     }
 </style>
 </head>
@@ -234,6 +250,10 @@
         <div id="wrap">
             <jsp:include page="common/header.jsp"/>
             <div id="main">
+
+
+
+                
                 <div id="main1_1">
 
                     <div id="search">
@@ -247,13 +267,17 @@
                             </div>
                         </form>
                     </div>
-                    <a href="#target" style="margin-top: 25vh;">
-                        <img id="down-arrow" src="./resources/common-upfiles/downarrow.png" >
-                    </a>
+                    <div id="targetD">
+                        <a href="#target">
+                            <img id="down-arrow" src="./resources/common-upfiles/downarrow.png" >
+                        </a>
+                    </div>
+                    
                 </div>
 
                 
                 <div id="main_weather">
+                    
                     <div id="weatherTitle">
                         <p>today's weather</p>
                     </div>
@@ -331,15 +355,40 @@
 
                             let value='';
                             for(let i in data){
-                                value += '<div id="trip"><img src="./resources/common-upfiles/mainImg.jpeg">'
-                                       + '<p id="tripLocal">'
+                                value += '<div id="trip"><a data-toggle="modal" href="#myModal">'
+                                       + '<img src="./'+ data[i].changeName +'">'
+                                       + '<p id="tripLocal" name="tripLocal">'
                                        + data[i].localName
                                        + '</p>'
                                        + '<p id="tripName">'
                                        + data[i].trboardTitle
-                                       + '</p></div>';
+                                       + '</p></div></a>';
+                                l1 = data[0];
+                                l2 = data[1];
+                                l3 = data[2];
                             }
                             $('#W_trip').html(value);
+                            
+                            $(function(){
+                                $("#W_trip > div:nth-child(1)").click(function(){
+                                    $("#modalImg > img").attr("src", l1.changeName);
+                                    $("#modelArea > p").text(l1.localName);
+                                    $("#modelTripName > p").text(l1.trboardTitle);
+                                    $("#modelTripContent > p").text(l1.trboardContent);
+                                })
+                                $("#W_trip > div:nth-child(2)").click(function(){
+                                    $("#modalImg > img").attr("src", l2.changeName);
+                                    $("#modelArea > p").text(l2.localName);
+                                    $("#modelTripName > p").text(l2.trboardTitle);
+                                    $("#modelTripContent > p").text(l2.trboardContent);
+                                })
+                                $("#W_trip > div:nth-child(3)").click(function(){
+                                    $("#modalImg > img").attr("src", l3.changeName);
+                                    $("#modelArea > p").text(l3.localName);
+                                    $("#modelTripName > p").text(l3.trboardTitle);
+                                    $("#modelTripContent > p").text(l3.trboardContent);
+                                })
+                            })
 
                         }
                     });
@@ -350,7 +399,7 @@
             
             <div id="main3">
                 <p style="font-size: 40px; text-align: center;">조회수 TOP4 여행코스</p>
-				<br>
+                <br>
                 <div id="views">
                     <div id="C_trip">
                        
@@ -370,43 +419,44 @@
                         success : function(data2){
                             console.log(data2);
 
-                            
-
-							let value2='';
+                            let value2='';
                             for(let i in data2){
                                 value2 += "<div id='trip_course'>"
                                         + "<table id='course'>"
                                         + "<tr><td rowspan='5' id='thumbnail'>"
                                         + "<input type='hidden' name='plannerNo' value='" + data2[i].plannerNo + "'>";
                                
-
-                                        if(data2[i].type == '나홀로여행'){
-                                            value2 += "<img id='plannerImg' src='./resources/common-upfiles/type1.jfif'>" + "</td>";
-                                        }
-                                        else if(data2[i].type == '가족여행'){
-                                            value2 += "<img id='plannerImg' src='./resources/common-upfiles/type2.jfif'>" + "</td>";
-                                        }
-                                        else if(data2[i].type == '친구/지인'){
-                                            value2 += "<img id='plannerImg' src='./resources/common-upfiles/type3.jfif'>" + "</td>";
-                                        }
-                                        else if(data2[i].type == '연인/커플'){
-                                            value2 += "<img id='plannerImg' src='./resources/common-upfiles/type4.jfif'>" + "</td>";                  
-                                        }
-                                        else if(data2[i].type == '부모님'){
-                                            value2 += "<img id='plannerImg' src='./resources/common-upfiles/type5.jfif'>" + "</td>";
-                                        }
-                                
+                                if((data2[i].changeName) == null){
+                                    if(data2[i].type == '나홀로여행'){
+                                        value2 += "<img id='plannerImg' src='./resources/common-upfiles/type1.jfif'>" + "</td>";
+                                    }
+                                    else if(data2[i].type == '가족여행'){
+                                        value2 += "<img id='plannerImg' src='./resources/common-upfiles/type2.jfif'>" + "</td>";
+                                    }
+                                    else if(data2[i].type == '친구/지인'){
+                                        value2 += "<img id='plannerImg' src='./resources/common-upfiles/type3.jfif'>" + "</td>";
+                                    }
+                                    else if(data2[i].type == '연인/커플'){
+                                        value2 += "<img id='plannerImg' src='./resources/common-upfiles/type4.jfif'>" + "</td>";                  
+                                    }
+                                    else if(data2[i].type == '부모님'){
+                                        value2 += "<img id='plannerImg' src='./resources/common-upfiles/type5.jfif'>" + "</td>";
+                                    }
+                                }else{
+                                    value2 += "<img id='plannerImg' src='"+ data2[i].changeName +"'>" + "</td>";
+                                }
 
                                 value2 += "<th>&nbsp;&nbsp;" + data2[i].plannerTitle + "</th></tr>"
                                         + "<tr><td>&nbsp;&nbsp;작성자 | " + data2[i].plannerWriter + "</td></tr>"
                                         + "<tr><td>&nbsp;&nbsp;" + (data2[i].wDate - 1) + "박" + data2[i].wDate + "일</td></tr>"
-                                        + "<tr><td>&nbsp;&nbsp;" + data2[i].createDate + " |   " + data2[i].count + "</td></tr>"
+                                        + "<tr><td>&nbsp;&nbsp;" + "조회수 : " + data2[i].count + "</td></tr>"
                                         + "<tr><th>&nbsp;&nbsp;#" + data2[i].area + " #" + data2[i].type + "</th></tr>"
                                         + "</table></div>";
-                                    
-                                if(data2[i].type == '나홀로여행'){
-                                    console.log(data2[i].plannerTitle);
-                                }      
+                                
+                                $('#C_trip').html(value2);        
+
+                                
+                                        
                             }
 
                             $('#C_trip').html(value2);
@@ -425,6 +475,102 @@
 
             </script>
 
+            <style>
+                #myModal.modal.hide.show{
+                    padding: 0;
+                }
+                .modal-body{
+                    width: 1600px;
+                    height: 550px;
+                    background-color: white;
+                    margin: auto;
+                    margin-top: 250px;
+                    padding: 0;
+                }
+                .modal-body > div{
+                    float: left;
+                }
+                #modalClose{
+                    margin-right: 10px;
+                    outline: 0;
+                    font-size: 30px;
+                }
+                #modalImg{
+                    width: 450px;
+                    height: 100%;
+                    overflow: hidden;
+                    text-align: center;
+                }
+                #modalImg > img{
+                    width: 100%;
+                    height: 100%;
+                    object-fit:cover;
+                }
+                #modalText{
+                    width: 1100px;
+                    height: 100%;
+                }
+                #modelArea{
+                    width:300px;
+                    font-size: 40px;
+                    margin-left: 40px;
+                    margin-top: 60px;
+                }
+                #modelTripName{
+                    width:800px;
+                    font-size: 30px;
+                    margin-left: 40px;
+                }
+
+                #modelTripContent{
+                    width: 1000px;
+                    font-size: 20px;
+                    margin-left: 40px;
+                    margin-top: 50px;
+                    height: 150px;
+                    color: gray;
+                }
+
+                #modelTripLink{
+                    float: right;
+                    margin-top: 80px;
+                    padding: 10px;
+                    background-color: #7AC5CD;
+                }
+
+                #modelTripLink > a{
+                    color: white;
+                }
+            </style>
+
+            <!--모달창-->
+
+            <div class="modal hide" id="myModal">
+                
+                <div class="modal-body">
+                    <button id="modalClose" class="close" data-dismiss="modal">x</button>
+                    <div id="modalImg">
+                        <!--사진-->
+                        <img src="./resources/common-upfiles/mainImg.jpeg" alt="">
+                    </div>
+                    <div id="modalText">
+                        <div id="modelArea">
+                            <p></p>
+                        </div>
+                        <div id="modelTripName">
+                            <p></p>
+                        </div>
+                        <div id="modelTripContent">
+                            <p></p>
+                        </div>
+                        <div id="modelTripLink">
+                            <a href="">자세히 보기</a>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+
             <br><br><br><br>
             <jsp:include page="common/footer.jsp"/>
         </div>
@@ -433,3 +579,4 @@
 
 </body>
 </html>
+

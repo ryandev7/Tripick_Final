@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.gson.Gson;
+import com.kh.tripick.common.model.vo.LocalCategory;
 import com.kh.tripick.common.model.vo.PageInfo;
 import com.kh.tripick.common.template.Pagination;
+import com.kh.tripick.course.model.service.CourseService;
 import com.kh.tripick.course.model.vo.Planner;
 import com.kh.tripick.main.model.service.MainService;
 import com.kh.tripick.tripboard.model.vo.TripBoard;
@@ -22,6 +24,9 @@ public class MainController {
 	
 	@Autowired
 	private MainService mainService;
+	
+	@Autowired
+    private CourseService courseService;
 	
 	@ResponseBody
 	@RequestMapping(value="random.tb", produces="application/json; charset=UTF-8")
@@ -40,17 +45,17 @@ public class MainController {
 	// 코스 검색
 	
 	@RequestMapping("search.co")
-	public ModelAndView searchCourse(@RequestParam(value="cpage", defaultValue="1") int currentPage, String keyword, ModelAndView mv) {
-		PageInfo pi = Pagination.getPageInfo(mainService.searchCourseCount(keyword), currentPage, 5, 6);
-		
-		ArrayList<Planner> list = mainService.searchCourseList(keyword, pi);
-		
-		System.out.println(list);
-		
-		mv.addObject("pi", pi).addObject("list", list).addObject("keyword", keyword).setViewName("course/courseMain");
-		return mv;
-		
-	}
+    public ModelAndView searchCourse(@RequestParam(value="cpage", defaultValue="1") int currentPage, String keyword, ModelAndView mv) {
+        PageInfo pi = Pagination.getPageInfo(mainService.searchCourseCount(keyword), currentPage, 5, 6);
+
+        ArrayList<Planner> list = mainService.searchCourseList(keyword, pi);
+
+        ArrayList<LocalCategory> localList = courseService.selectLocalList(); // 지역 카테고리 list
+
+        mv.addObject("pi", pi).addObject("list", list).addObject("keyword", keyword).addObject("localList", localList).setViewName("course/courseMain");
+        return mv;
+
+    }
 	
 	
 	

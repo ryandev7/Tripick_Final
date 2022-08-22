@@ -6,6 +6,7 @@
 <head>
 <meta charset="UTF-8">
 <title>공지사항 목록 페이지</title>
+
 <style>
     table { 
         border-collapse: collapse; 
@@ -27,7 +28,7 @@
         margin: auto;
         padding-top: 5px;
         font-size: 25px;
-        margin-bottom: 30px;
+        margin-bottom: 20px;
     }
 
     #notice > a:nth-child(1){
@@ -50,10 +51,12 @@
     }
 
     #notice_btn{
-        text-align: right;
         width: 1300px;
+        height: 50px;
         margin: auto;
-        margin-bottom: 30px;
+    }
+    #notice_btn > *{
+        float: right;
     }
     #inputNoticeBtn{
         font-size: 18px;
@@ -62,24 +65,26 @@
         background-color: #7AC5CD;
         border: 1px solid #7AC5CD;
         cursor: pointer;
+        outline: 0;
     }
     #notice_btn > form > button{
         font-size: 18px;
-        padding: 10px;
+        padding: 5px;
         color: white;
+        outline: none;
         background-color: #7AC5CD;
-        border: 1px solid #7AC5CD;
-        margin-left: 10px;
         cursor: pointer;
+        
     }
     #searchInput{
         font-size: 18px;
-        padding: 10px;
+        padding: 5px;
+        border-right: none;
     }
 
     /*공지사항 리스트*/
     #notice_list{
-        margin-top: 40px;
+        margin-top: 20px;
     }
     
     #notice_table{
@@ -118,6 +123,7 @@
     }
     #pagingArea>ul>li>a{
         font-size: 20px;
+        color: #7AC5CD;
     }
 </style>
 </head>
@@ -142,16 +148,16 @@
             
                 
                 <div id="notice_btn">
-                    <form action="search.no">
-                        <input id="searchInput" type="text" name="keyword" value="${keyword}" style="float: left;">
-                        <button style="float: left;">검색</button>
-                    </form>
+                    
                     <c:choose>
                         <c:when test="${loginUser.authority eq 'A'}">
                             <button id="inputNoticeBtn" onclick="location.href='enrollForm.no' ">공지사항 작성</button>
                         </c:when>
                         <c:otherwise>
-                            <br>
+                            <form action="search.no">
+                                <input id="searchInput" type="text" name="keyword" value="${keyword}" style="float: left;">
+                                <button style="float: left;">검색</button>
+                            </form>
                         </c:otherwise> 
                     </c:choose> 
                 </div>
@@ -198,23 +204,23 @@
                     <ul class="pagination">
                         <c:choose>
                             <c:when test="${pi.currentPage eq 1}">
-                                <li class="page-item"><a>&lt;</a></li>
+                                <li class="page-item"><a class="page-link">&lt;</a></li>
                             </c:when>
                             <c:otherwise>
-                                <li class="page-item"><a href="list.no?cpage=${pi.currentPage - 1}">&lt;</a></li>
+                                <li class="page-item"><a href="list.no?cpage=${pi.currentPage - 1}" class="page-link">&lt;</a></li>
                             </c:otherwise>
                         </c:choose>
 
                         <c:forEach var="p" begin="${pi.startPage}" end="${pi.endPage}">
-                            <li class="page-item"><a href="list.no?cpage=${p}">${p}</a></li>
+                            <li class="page-item"><a href="list.no?cpage=${p}" class="page-link">${p}</a></li>
                         </c:forEach>
 
                         <c:choose>
                             <c:when test="${pi.currentPage eq pi.maxPage}">
-                                <li class="page-item"><a>&gt;</a></li>
+                                <li class="page-item"><a class="page-link">&gt;</a></li>
                             </c:when>
                             <c:otherwise>
-                                <li class="page-item"><a href="list.no?cpage=${pi.currentPage + 1}">&gt;</a></li>
+                                <li class="page-item"><a href="list.no?cpage=${pi.currentPage + 1}" class="page-link">&gt;</a></li>
                             </c:otherwise>
                         </c:choose>
                     </ul>

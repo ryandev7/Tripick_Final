@@ -41,6 +41,7 @@
         border: none;
         background-color: #7AC5CD;
         color: white;
+        outline: 0;
     }
     #updateCancelBtn{
         width: 100px;
@@ -49,6 +50,7 @@
         cursor: pointer;
         border: 1px solid black;
         background-color: white;
+        outline: 0;
     }
 </style>
 </head>

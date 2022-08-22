@@ -128,6 +128,7 @@
         margin-top: 18px;
         border: none;
         cursor: pointer;
+        outline: 0;
     }
 
     #qnaUpdateBtn{
@@ -158,6 +159,7 @@
         resize: none; 
         margin-top:10px;
     }
+    
     #answerBtnArea > button:nth-child(1){
         font-size: 20px;
         padding-left: 10px;
@@ -166,7 +168,7 @@
         padding-bottom: 8px;
         border: 1px solid black;
         cursor: pointer;
-        margin-top: 10px;
+        outline: 0;
     }
     #answerBtnArea > button:nth-child(2){
         font-size: 20px;
@@ -178,7 +180,7 @@
         border: 1px solid red;
         background-color: red;
         cursor: pointer;
-        margin-top: 10px;
+        outline: 0;
     }
     #answerUpdateBtn{
         font-size: 20px;
@@ -191,6 +193,7 @@
         background-color: #7AC5CD;
         cursor: pointer;
         margin-top: 10px;
+        outline: 0;
     }
 </style>
 </head>
@@ -260,8 +263,8 @@
                         <p>답변</p>
                         
                         <div style="width: 150px;">
-                            <c:if test="${q.answerWriter eq 'admin'}">
-                            <p>관리자</p>
+                            <c:if test="${not empty q.answerWriter}">
+                                <p>관리자</p>
                             </c:if>
                         </div>
                         <div id="answerText" style="width: 700px;">

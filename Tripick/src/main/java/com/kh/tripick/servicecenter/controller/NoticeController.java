@@ -134,10 +134,7 @@ public class NoticeController {
 		
 		System.out.println(list);
 		
-		mv.addObject("list", list)
-		  .addObject("pi", pi)
-		  .addObject("keyword", keyword)
-		  .setViewName("notice/noticeListView");
+		mv.addObject("list", list).addObject("pi", pi).addObject("keyword", keyword).setViewName("notice/noticeListView");
 		
 		return mv;
 		

@@ -9,10 +9,10 @@
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.5/dist/web/variable/pretendardvariable.css" />
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js%22%3E"></script>
 <!-- 부트스트랩에서 제공하고 있는 스타일 -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-
+<!-- 부트스트랩에서 제공하고 있는 스크립트 -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script> 
 <style>
 	@font-face {
 	    font-family: 'RixYeoljeongdo_Regular';
@@ -47,7 +47,7 @@
 	}
 	div{
 	    box-sizing : border-box;
-	    /*border : 1px solid red;*/ 
+	    /*border : 1px solid red;*/
 	}
 	li{
 		list-style: none;
@@ -66,6 +66,10 @@
 	a:hover{
 		text-decoration: none;
 		color: black;
+	}
+	a:focus + a:active{
+		outline: 0;
+		border: 0;
 	}
 	/*하이라이트제거*/
 	input:focus {outline:none;}
@@ -172,7 +176,7 @@
 
 				<ul>
 					<li><a href="main.co">여행코스</a></li>
-					<li><a href="">여행지</a></li>
+					<li><a href="list.tb">여행지</a></li>
 					<li><a href="list.lb">커뮤니티</a></li>
 					<c:choose>
 						<c:when test="${empty loginUser}">

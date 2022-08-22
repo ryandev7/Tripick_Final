@@ -27,7 +27,7 @@
         margin: auto;
         padding-top: 5px;
         font-size: 25px;
-        margin-bottom: 30px;
+        margin-bottom: 20px;
     }
 
     #qna > a:nth-child(1){
@@ -52,6 +52,7 @@
         text-align: right;
         width: 1300px;
         margin: auto;
+        height: 50px;
     }
     #qna_btn > a{
         font-size: 18px;
@@ -62,7 +63,7 @@
 
     /*Qna 리스트*/
     #qna_list{
-        margin-top: 25px;
+        margin-top: 20px;
     }
     
     #qna_table{
@@ -111,6 +112,7 @@
         vertical-align:middle;
         margin-right: 20px;
         margin-left: 10px;
+        margin-top: 10px;
     }
 
     .switch input {
@@ -226,7 +228,7 @@
                                                 value += '<td>미답변</td>';
                                                }
 
-                                               value += '<td id="qnaTitleTd">🔒 ' + myList[i].qnaTitle + '</td>'
+                                               value += '<td id="qnaTitleTd"><img src="./resources/common-upfiles/padlock.png" style="width: 15px;"> ' + myList[i].qnaTitle + '</td>'
                                                + '<td>'+ myList[i].qnaWriter + '</td>'
                                                + '<td>' + myList[i].qnaDate + '</td></tr>';
 
@@ -305,33 +307,35 @@
 
                 </script>
 
+                
 
+                <c:if test="${pi.maxPage eq 1}">
                 <div id="pagingArea">
                     <ul class="pagination">
                         <c:choose>
                             <c:when test="${pi.currentPage eq 1}">
-                                <li class="page-item"><a>&lt;</a></li>
+                                <li class="page-item"><a class="page-link">&lt;</a></li>
                             </c:when>
                             <c:otherwise>
-                                <li class="page-item"><a href="list.qna?cpage=${pi.currentPage - 1}">&lt;</a></li>
+                                <li class="page-item"><a href="list.qna?cpage=${pi.currentPage - 1}" class="page-link">&lt;</a></li>
                             </c:otherwise>
                         </c:choose>
 
                         <c:forEach var="p" begin="${pi.startPage}" end="${pi.endPage}">
-                            <li class="page-item"><a href="list.qna?cpage=${p}">${p}</a></li>
+                            <li class="page-item"><a href="list.qna?cpage=${p}" class="page-link">${p}</a></li>
                         </c:forEach>
 
                         <c:choose>
                             <c:when test="${pi.currentPage eq pi.maxPage}">
-                                <li class="page-item"><a>&gt;</a></li>
+                                <li class="page-item"><a class="page-link">&gt;</a></li>
                             </c:when>
                             <c:otherwise>
-                                <li class="page-item"><a href="list.qna?cpage=${pi.currentPage + 1}">&gt;</a></li>
+                                <li class="page-item"><a href="list.qna?cpage=${pi.currentPage + 1}" class="page-link">&gt;</a></li>
                             </c:otherwise>
                         </c:choose>
                     </ul>
                 </div>
-
+                </c:if>
             </div>
             <br><br><br><br><br>
             

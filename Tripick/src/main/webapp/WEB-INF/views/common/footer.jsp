@@ -23,8 +23,8 @@
         
         <div id="footer">
             <hr><br>  
-            <span>이용약관 | </span> <a href="list.no">고객센터</a> 
-            <p>트립픽</p>
+            <span>이용약관 | </span> <a href="list.no">고객센터</a>
+            <p style="margin-top: 15px;">트립픽</p>
             <p>서울특별시 중구 남대문로 120 대일빌딩 2F, 3F</p>
             <p>© 2022. Tripick Co. all rights reserved.</p>
             <br>
