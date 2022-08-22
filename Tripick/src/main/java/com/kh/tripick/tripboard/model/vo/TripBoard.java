@@ -21,5 +21,5 @@ public class TripBoard {
 	private String createDate; 		// CREATE_DATE DATE DEFAULT SYSDATE,
 	private String status;			// STATUS VARCHAR2(1)	DEFAULT 'Y' CHECK (STATUS IN('Y', 'N')),
 	private String localName;		//LOCAL_NAME NOT NULL REFERENCES LOCAL(LOCAL_NAME)
-
+	private String changeName;
 }
