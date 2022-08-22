@@ -142,6 +142,13 @@ public class CourseDao {
 		RowBounds rowBounds = new RowBounds(offset, limit);
 		return (ArrayList)sqlSession.selectList("courseMapper.selectFilterList", localName, rowBounds);
 	}
+	
+	/**
+	 * 댓글 신고여부 확인
+	 */
+	public int reportCheck(SqlSession sqlSession, Report report) {
+		return sqlSession.selectOne("courseMapper.reportCheck", report);
+	}
 
 	/**
 	 * 코스 댓글 신고

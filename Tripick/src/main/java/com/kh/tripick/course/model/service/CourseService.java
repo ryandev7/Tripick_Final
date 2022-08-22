@@ -44,6 +44,7 @@ public interface CourseService{
 	ArrayList<Planner> selectFilterList(PageInfo pi, String localName);
 	
 	// 코스 댓글 신고
+	int reportCheck(Report report);
 	int reportCourseReply(Report report);
 	
 	// 코스 수정

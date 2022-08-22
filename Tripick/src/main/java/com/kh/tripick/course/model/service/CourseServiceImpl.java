@@ -161,6 +161,14 @@ public class CourseServiceImpl implements CourseService{
 	public ArrayList<Planner> selectFilterList(PageInfo pi, String localName) {
 		return courseDao.selectFilterList(sqlSession, pi, localName);
 	}
+	
+	/**
+	 * 신고여부 확인
+	 */
+	@Override
+	public int reportCheck(Report report) {
+		return courseDao.reportCheck(sqlSession, report);
+	}	
 
 	/**
 	 * 코스 댓글 신고
@@ -184,5 +192,5 @@ public class CourseServiceImpl implements CourseService{
 	@Override
 	public int deletePlanList(int plannerNo) {
 		return courseDao.deletePlanList(sqlSession, plannerNo);
-	}	
+	}
 }

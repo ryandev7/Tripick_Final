@@ -267,7 +267,9 @@ public class CourseController {
 	 */
 	@RequestMapping("report.co")
 	public String reportCourseReply(Report report, int plannerNo, HttpSession session) {
-		String alertMsg = courseService.reportCourseReply(report) > 0 ? "신고가 접수되었습니다" : "error:신고실패";
+		// 1. 신고여부 확인,  2. 신고
+		String alertMsg = courseService.reportCheck(report) > 0 ? "이미 신고한 댓글입니다." : 
+						 (courseService.reportCourseReply(report) > 0 ? "신고가 접수되었습니다" : "error:신고실패");
 		session.setAttribute("alertMsg", alertMsg);
 		return "redirect:detail.co?pno=" + plannerNo;
 	}
