@@ -82,6 +82,7 @@
     BORDER-LEFT: medium none;
     BORDER-RIGHT: medium none;
     BORDER-TOP: medium none;
+    outline: none;
 		
 	}
 	
@@ -93,15 +94,18 @@
      BORDER-LEFT: medium none;
      BORDER-RIGHT: medium none;
      BORDER-TOP: medium none;
+     outline: none;
 		
 	}
 	
 	.id {
 	margin-right : 265px;
+	
 	}
 	
 	.pwd {
 	margin-right : 250px;
+	
 	}
 
 	.idpwd {
@@ -127,7 +131,9 @@
 </style>
 </head>
 <body>
+<jsp:include page="../common/header.jsp"/>
 
+<br><br><br><br><br>
 
 	<div class="container" align="center">
 	 		<form action ="login.me" method="post">

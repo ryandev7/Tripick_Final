@@ -211,63 +211,76 @@
                         <div class="NickName-area">
                             <input class="input-nickname" type="text" id="userNickName" name="userNickName" required style="padding-left: 10px;" maxlength="6">
                         </div>
-	                    <span class="jeyak-area" id="nickCheck" style="margin-left: 140px;">2~6자의 한글만 사용 가능합니다.</span>                        
+	                    <div class="jeyak-area" id="nickCheck" style="margin-left: 140px; display: block;">2~6자의 한글만 사용 가능합니다.</div>   
+	                    <div class="jeyak-area" id="nickCheckdob" style="margin-left: 20px; display: none;"></div>   
+                   		<div class="jeyak-area" id="nickCheckfal" style="margin-left: 45px; display: none;"></div>   
+                  		<div class="jeyak-area" id="nickChecktr" style="margin-left: 50px; display: none;"></div>                      
+                      
                     </div>
 	        		<div style="padding-top: 10px">
                         <label class="label-text" for="userId" style="margin-right: 275px;">아이디</label>
                         <div class="Id-area">
                             <input class="input-id" type="text" id="userId" name="userId" required style="padding-left: 10px;" maxlength="15">
                    		</div>
+                    <div class="jeyak-area" id="checkId" style="margin-left: 130px; display: block;">5~15자의 영어, 숫자만 사용 가능합니다.</div>   
+                    <div class="jeyak-area" id="checkIddob" style="margin-left: 20px; display: none;"></div>   
+                    <div class="jeyak-area" id="checkIdfal" style="margin-left: 45px; display: none;"></div>   
+                    <div class="jeyak-area" id="checkIdtr" style="margin-left: 50px; display: none;"></div>   
                     </div>	
-                    <span class="jeyak-area" id="checkResultId" style="margin-left:55px; display:none;"></span> 
-                    <span class="jeyak-area" id="checkId" style="margin-left: 130px; display: block;">5~15자의 영어, 숫자만 사용 가능합니다.</span>   
+                    <div class="jeyak-area" id="checkResultId" style="margin-left:55px; display:none;"></div> 
                     <div style="padding-top: 10px">
                         <label class="label-text" for="userPwd" style="margin-right: 260px;">비밀번호</label>
                         <div class="Pwd-area">
                             <input class="input-pwd" type="password" id="userPwd" name="userPwd" required style="padding-left: 10px;">
                         </div>
                     </div>
-                    <span class="jeyak-area" id="checkPwd" style="margin-left:230px; display:block;" maxlength="15">6~15자의 영문 대/소문자, 숫자, 특수문자 사용 가능합니다.</span>
+                    <div class="jeyak-area" id="checkPwd" style="margin-left:240px; display:block;" maxlength="15">6~15자의 영문 대/소문자, 숫자, 특수문자 사용이 가능합니다.</div>
 	       			<div style="padding-top: 10px">
                         <label class="label-text" for="checkuserPwd" id="cpwd" style="margin-right: 217px;">비밀번호 확인</label>
                         <div class="checkPwd-area">
                             <input class="input-repwd" type="password" id="checkuserPwd" required style="padding-left: 10px;">
                         </div>
                     </div>
-                    <span class="jeyak-area" id="recheckPwd"style="margin-left: 43px; display:block;"></span>
-                    <div style="padding-top: 10px">
+                    <div>
+                    <p class="jeyak-area" id="recheckPwd"style="margin-left: 43px; display:block;"></p>
+                   <!--   <div class="jeyak-area" id="recheckPwdtr"style="margin-left: 43px; display:none;"></div> -->
+                    </div>
+                    
+                    <div >
                         <label class="label-text" for="userName" style="margin-right: 285px;">이름</label>
                         <div class="Name-area">
                             <input class="input-name" type="text" id="userName" name="userName" required style="padding-left: 10px;">
                         </div>
                     </div>
-                    <span class="jeyak-area" id="checkName" style="margin-left: 100px;">2~10자의 한글만 사용 가능합니다.</span>
+                    <div class="jeyak-area" id="checkName" style="margin-left: 100px;">2~10자의 한글만 사용 가능합니다.</div>
                     <div style="padding-top: 10px">
                         <label class="label-text" for="email" style="margin-right: 265px;">이메일</label>
                         <div class="Email-area">
                             <input class="input-email" type="text" id="email" name="email" required style="padding-left: 10px;">
-                            <button class="email-number" id="emailRanNo" style="background-color: #7ad7ba;">인증번호 발송</button>                     
+                            <button class="email-number" id="emailRanNo" style="background-color: #7ad7ba;" onclick="emailNumber();" disabled type="button">인증번호 발송</button>                     
                         </div>
                     </div> 
-                    <span class="jeyak-area">이메일 제약조건</span>
+                    <div class="jeyak-area" id="checkEmail"></div>
                      <div style="padding-top: 10px">
                    		<label class="label-text" for="emailNo" id="inemail">인증번호 입력</label>
                    		<div>
-                            <input class="input-emailNo" type="text" id="emailNo"  required style="padding-left: 10px;">
-		   					<button class="confirm" type="button" id="emailNoCheck">확인</button>	
+                            <input class="input-emailNo" type="text" id="emailNo" name="secret" required style="padding-left: 10px;" maxlength="6">
+		   					<button class="confirm" type="button" id="emailNoCheck" onclick="emailNumberCheck();">확인</button>	
                       	</div>
-                        <span class="jeyak-area" style="margin-left: 50px;">이메일 인증번호 제약조건</span>
+                        <div class="jeyak-area" id="checkEmailNo" style="margin-left: 50px;"></div>
                       	<br><br>
                     </div> 
                     
                     <div>
-                        <button class="signIn-btn disabled" type="submit">회원가입</button>
+                        <button class="signIn-btn" id="enrollBtn"  type="submit">회원가입</button>
                     </div>
                     <br>
                     
                     <div>
 						<button type="button" onclick="location.href='loginForm.me'" class="back">로그인 하러가기</button>
                     </div>
+                    
+                    
 
                     <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
                 </form>
@@ -275,8 +288,39 @@
       </div>
 
 	<script>
+	var NICK = "N";
+	var ID = "N";
+	var PWD = "N";
+	var NAME = "N";
+	var EMAIL = "N";
+	var EMAILNO = "N";
 	
+	
+	
+	// 회원가입 체크
+	
+    $(function() {
+        $('#enrollForm').submit(function(){
+           //맞으면 true
+           
+	        var success;
+			success = NICK + ID + PWD + NAME + EMAIL + EMAILNO;
+			if(success == 'YYYYYY') {
+				
+				return true;
+			}
+			else {
+				alert('조건에 충족하게 값을 입력해주세요');
+				return false;
+			}
+	         
+	       });
+      
+     });
+	
+		
 		// id 중복체크
+		
 		$(function() {
 			
 			const $idInput/*jQuery선택자로 선택*/ = $('#userId');
@@ -287,91 +331,146 @@
 				
 				if($idInput.val().length >= 5) {
 					
+					var $checkId = $('#checkId');
+					
 					$.ajax({
 						
 						url :'idCheck.me',
 						data : {checkId:$idInput.val()},
 						success : function(result) {
 							
-							if(result == 'NNNNN') { // 사용불가
-									
-									$('#checkResultId').show();
-									$('#checkResultId').css('color', 'red').text('중복된 아이디입니다!');
+							if(result == 'NNNNN' ) { // 사용불가
+																
+									$('#checkIddob').show();							
+									$('#checkIddob').css('margin-left', '20px');
+									$('#checkIddob').css('color', 'red').text('중복된 아이디입니다!');
 	                                $('#checkId').hide();
-									$('#enrollForm : submit').attr('disabled', true);
-							
-							}else { // 사용가능
-								
-										$('#checkResultId').show();
-										$('#checkResultId').css('color', 'yellowgreen').text('사용 가능한 아이디입니다!');
-										$('#checkId').hide();
-										$('#enrollForm : submit').removeAttr('disabled');				
+	                                $('#checkIdtr').hide();
+	                                $('#checkIdfal').hide();    
+	                                ID = 'N';
+													
 							}
-							
+							else { // 사용가능
+										
+										// 아이디 유효성 검사
+										var idCheckRegExp = /^[a-zA-Z0-9]{5,15}$/;
+										
+										if(!idCheckRegExp.test($idInput.val())) { // 유효성 조건에 맞지 않았을 때
+											
+											$('#checkIdfal').show();
+											$('#checkIdfal').css('color', 'red').text('조건에 맞춰 입력해주세요');
+											$('#checkId').hide();
+											$('#checkIdtr').hide();  
+											$('#checkIddob').hide();
+											ID = 'N';
+											
+										}
+										else {                                   // 유효성 조건에 맞았을 때
+											$('#checkIdtr').show();
+											$('#checkIdtr').css('color', 'yellowgreen').text('사용 가능한 아이디입니다!');
+											$('#checkId').hide();
+											$('#checkIdfal').hide();  
+											$('#checkIddob').hide();
+											ID = 'Y';
+																	
+										}
+								}				
 						}, error : function() {
 							console.log("아이디 중복체크용 ajax통신 실패");
 							}
 						});
 					  }
 					else {
-						
-						$('#enrollForm : submit').attr('disabled', true);
-						$('#checkResultId').hide();
-						
-							
+												
+						$('#checkId').show();
+						$('#checkIdfal').hide();
+						$('#checkIdtr').hide();
+						$('#checkIddob').hide();
+						ID = 'N';
+									
 					}
 				  })	
 		  })
 		
-		// 닉네임 유효성 검사
-		
-		$('#userNickName').keyup(function(){
-			
-			var $userNickName = $('#userNickName').val();
-			var $nickCheck = $('#nickCheck');
-			var nickCheckRegExp = /^[가-힣]{2,6}$/;
-			
-			if(!nickCheckRegExp.test($userNickName)) {
-				
-				$nickCheck.css('color', 'red').text('조건에 맞춰 입력해주세요');
-				
-					if($userNickName == "") {
+		// 닉네임 중복체크
 	
-						$nickCheck.css('color', 'red').text('2~6자의 한글만 사용 가능합니다.');
-					}		
-				}
-				else {
-					$nickCheck.css('color', 'yellowgreen').text('사용 가능합니다!');	
-				}
-		});
-		
-	
-	// 아이디 유효성 검사
-	
-	
-		$('#userId').keyup(function(){
-			
-			var $userId = $('#userId').val();
-			var $checkId = $('#checkId');
-			var idCheckRegExp = /^[a-zA-Z0-9]{5,15}$/;
-			
-			if(!idCheckRegExp.test($userId)) {
+			$(function() {
 				
-				$checkId.css('color', 'red').text('조건에 맞춰 입력해주세요');
+				const $userNickName/*jQuery선택자로 선택*/ = $('#userNickName');
 				
-					if($userId == "") {
+				$userNickName.keyup(function() {
+				
+					// 최소 다섯글자 이상 입력했을 때만 ajax요청해서 중복체크
+					
+					if($userNickName.val().length >= 2 && $userNickName.val().length <= 6 ) {
 						
-						$checkId.css('color', 'red').text('5~15자의 영어, 숫자만 사용 가능합니다.');
-					}
-			}
-			else {
-				
-				$checkId.css('color', 'yellowgreen').text('사용 가능합니다!');
-			}
+						var $nickCheck = $('#nickCheck');
+									
+						$.ajax({
+							
+							url :'NickNameCheck.me',
+							data : {checkNickName:$userNickName.val()},
+							success : function(result) {
+								
+								if(result == 'NNNNN' ) { // 사용불가
+														
+									
+										$('#nickCheckdob').show();
+										$('#nickCheckdob').css('margin-left', '75px');								
+										$('#nickCheckdob').css('color', 'red').text('중복된 닉네임입니다!');									
+		                                $('#nickCheck').hide();
+		                                $('#nickChecktr').hide();
+		                                $('#nickCheckfal').hide();    
+		                                NICK = "N";
+							
+							     }
+								else { // 사용가능
+											
+											// 닉네임 유효성 검사
+											var nickCheckRegExp = /^[가-힣]{2,6}$/;
+											
+											if(!nickCheckRegExp.test($userNickName.val())) { // 유효성 조건에 맞지 않았을 때
+												
+												$('#nickCheckfal').show();										
+												$('#nickCheckfal').css('margin-left', '97px');
+												$('#nickCheckfal').css('color', 'red').text('조건에 맞춰 입력해주세요');
+												$('#nickCheck').hide();
+												$('#nickChecktr').hide();  
+												$('#nickCheckdob').hide();
+												NICK = "N";
+													
+												
+											}
+											else {                                   // 유효성 조건에 맞았을 때
+												$('#nickChecktr').show();
+											
+												$('#nickChecktr').css('margin-left', '100px').text;
+												$('#nickChecktr').css('color', 'yellowgreen').text('사용 가능한 닉네임입니다!');
+												$('#nickCheck').hide();
+												$('#nickCheckfal').hide();  
+												$('#nickCheckdob').hide();
+												NICK = "Y";
+																	
+											}
+									}				
+							}, error : function() {
+								console.log("닉네임 중복체크용 ajax통신 실패");
+								}
+							});
+						  }
+						else {
+							
+						
+							$('#nickCheck').show();
+							$('#nickCheckfal').hide();
+							$('#nickChecktr').hide();
+							$('#nickCheckdob').hide();
+							NICK = "N";
+										
+						}
+					  })	
+			  })
 			
-			
-		});
-		
 	
 	// 비밀번호 체크(유효성)
 	
@@ -384,21 +483,27 @@
 	  var pwdCheckRegExp = /^(?!((?:[A-Za-z]+)|(?:[~!@#$%^&*()_+=]+)|(?=[0-9]+))$)[A-Za-z\d~!@#$%^&*()_+=]{6,15}$/;
 			
 		
-	  	if(!pwdCheckRegExp.test($userPwd)) {
+	  	if(!pwdCheckRegExp.test($userPwd)) { // 유효성이 맞지않았을 때
 	  		
 	  		
-	  		$checkPwd.css('color', 'red').text('조건에 맞춰 입력해주세요');
+	  		$('#checkPwd').css('margin-left', '50px');
+	  		$('#checkPwd').css('color','red').text('조건에 맞춰 입력해주세요.');
+	  		
+	  		
+	  		if($userPwd == "") {
 	  			
-	  			if($userPwd == "") {
-	  				
-	  				$checkPwd.css('color', 'red').text('6~15자의 영문 대/소문자, 숫자, 특수문자 사용 가능합니다.');
-	  				
-	  			}
-	  		
+	  			
+	  			$('#checkPwd').css('margin-left', '240px');
+	  			$('#checkPwd').css('color', 'red').text('6~15자의 영문 대/소문자, 숫자, 특수문자 사용이 가능합니다.');
+	  				  			
+	  		}
+  		
 	  	}
-	  	else {
-	  		
-	  		$checkPwd.css('color', 'yellowgreen').text('사용 가능합니다!');
+	  	else { // 유효성 일치했을 때
+	  	  		
+	  		$('#checkPwd').css('margin-left', '1px');
+	  		$('#checkPwd').css('color', 'yellowgreen').text('사용 가능합니다!');
+	  			  		
 	  	}
 	  	
 	  
@@ -414,15 +519,30 @@
 	   var $pwdCheckRegExp = /^(?!((?:[A-Za-z]+)|(?:[~!@#$%^&*()_+=]+)|(?=[0-9]+))$)[A-Za-z\d~!@#$%^&*()_+=]{6,15}$/;
 	   
 	   if($pwdCheckRegExp.test($userPwd)) {  // 비밀번호 유효성 일치(사용이 가능 할 경우)
+		   PWD = 'N';
 		   
 		   if($checkuserPwd != $userPwd) { // 비밀번호와 비밀번호 확인이 불일치
 			   
-			  $recheckPwd.css('color', 'red').text('비밀번호가 일치하지 않습니다');
+			  $recheckPwd.css('margin-left', '70px');		
+			  $recheckPwd.css('color', 'red').text('비밀번호가 일치하지 않습니다');		
+			  PWD = 'N';
+		   
+		   	   if($checkuserPwd == "") {
+		   		   
+		   		   $recheckPwd.text("");
+		   		   PWD = 'N';
+		   		   
+		   		   
+		   	   }
 			   
 		   }
 		   else if($checkuserPwd == $userPwd) { // 비밀번호와 비밀번호 확인이 일치
 			   
-			   $recheckPwd.css('color', 'yellowgreen').text('비밀번호가 일치합니다!');
+
+			   $recheckPwd.css('margin-left', '1px');
+			   $recheckPwd.css('color', 'yellowgreen').text('사용 가능합니다!');
+			   PWD = 'Y';
+			
 			   
 		   }
 
@@ -430,6 +550,8 @@
 	   	else { // 비밀번호 유효성 불일치(사용 불가), 보여줄 필요 없음
 	   		
 	   		$recheckPwd.text('');
+	   		PWD = 'N';
+	   		
 	   	}
 		  
 		  
@@ -441,26 +563,146 @@
 	$('#userName').keyup(function(){
 			
 		var $userName = $('#userName').val();
-		var $checkName = $('#checkName')
+		var $checkName = $('#checkName');
 		var nameCheckRegExp = /^[가-힣]{2,10}$/;
 	
 		if(!nameCheckRegExp.test($userName)) {
 			
+			
+			$checkName.css('margin-left', '50px');
 			$checkName.css('color', 'red').text('조건에 맞춰 입력해주세요');
+			NAME = "N";
 			
 				if($userName == "") {
 
+					$checkName.css('margin-left', '100px');
 					$checkName.css('color', 'red').text('2~10자의 한글만 사용 가능합니다.');
+					NAME = "N";
 				}		
 			}
 			else {
+				
+				$checkName.css('margin-left', '1px');	
 				$checkName.css('color', 'yellowgreen').text('사용 가능합니다!');	
+				NAME = "Y";
 			}
-	  
-	  
 	});
+	
+	// 이메일 유효성
+	
+	$('#email').keyup(function() {
+		
 	  
-	</script>
+	    var $email = $('#email').val();
+		var $checkEmail = $('#checkEmail');
+		var regExpEmail = /([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
+			
+		 // /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/;
+		
+		
+		if(!regExpEmail.test($email)) {
+			
+			$checkEmail.css('margin-left', '90px');
+			$checkEmail.css('color', 'red').text('이메일 형식에 맞게 입력해주세요.');
+			$('#emailRanNo').attr("disabled");
+			EMAIL = "N";
+					
+			if($email == "") {
+				
+				$checkEmail.text('');
+				EMAIL = "N";
+			}
+			
+		}
+		else {
+			
+	         $checkEmail.css('margin-left', '1px');
+	         $checkEmail.css('color', 'yellowgreen').text('사용 가능합니다!');
+	         $('#emailRanNo').removeAttr("disabled");
+	         EMAIL = "Y";
+			
+		}
+		
+		
+	});
+	
+	
+	// 이메일 인증번호 발송
+	
+	function emailNumber() {
+		var $email = $('#email').val();
+			
+			$.ajax({
+				
+				url : "input",
+				type : "post",
+				data : {email : $email},
+				success : function(result) {
+					
+					if(result == 'Y') {
+						
+						alert('인증번호발송!');
+					}
+					
+				},
+				
+				error : function() {
+					
+						console.log('발송실패!');
+				}
+			
+			});
+				
+	}
+	
+	// 이메일 인증번호 확인
+	
+	function emailNumberCheck() {
+		
+		var $secret = $('#emailNo').val();
+		
+		if($secret == "") {
+			alert('인증번호를 입력해주세요');
+			EMAILNO = 'N';
+			
+		}else{
+			
+			$.ajax({
+				
+				url : "check",
+				type : "post",
+				data : {secret : $secret},
+				success : function(result) {
+					
+					if(result == 'Y') {
+						
+						alert('인증성공!');
+						EMAILNO = 'Y';
+					}else {
+						
+						alert('인증실패!');
+						EMAILNO = 'N';
+					}
+					
+				},
+				
+				error : function() {
+					
+					   console.log('실패');
+					   EMAILNO = 'N';
+				}
+				
+				
+				
+			});
+		}
+			
+			
+	}
+		
 
+	
+	</script>
+ <jsp:include page="../common/footer.jsp"/>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <mapper namespace="memberMapper">
 
 	
-		<resultMap id ="memberResultSet" type="member">
+	<resultMap id ="memberResultSet" type="member">
   		<result column="USER_ID" property="userId"/>
   		<result column="USER_NICKNAME" property="userNickName"/>
   		<result column="USER_PWD" property="userPwd"/>
@@ -39,9 +39,7 @@
 
   	</select>
   	
-  	
-  		<!--  회원가입용 쿼리문  -->
-  	
+  	<!--  회원가입용 쿼리문  -->
   	<insert id ="insertMember">
   		INSERT INTO	
   					MEMBER
@@ -70,7 +68,7 @@
   					)
   	</insert>
   	
-  	
+  	<!--  아이디 중복체크용 쿼리문 -->
   	<select id="idCheck" resultType="_int">
   	
   		SELECT COUNT(*)
@@ -79,8 +77,73 @@
   		
   	</select>
   	
+  	<!--  닉네임 중복체크용 쿼리문 -->
+  	 <select id = "NickNameCheck" resultType="_int">
+  	 
+  		SELECT COUNT(*)
+  		FROM MEMBER
+  		WHERE USER_NICKNAME = #{userNickName}	
+  		
+  	</select>
+  	
+  	<!--  이메일 전송관련 쿼리문 -->
+  	<insert id="regist" parameterType="certvo">
+  	
+  		INSERT INTO CERT(who, secret, when)
+  		VALUES (#{who}, #{secret}, sysdate)
+  		
+  	</insert>
+  	
+  	<select id="validate" resultType="certvo" parameterType="certvo">
+  	
+  		SELECT * FROM CERT
+  		WHERE WHO = #{who}
+  		AND  SECRET = #{secret}
+  		AND  WHEN BETWEEN SYSDATE - 3/24/60 AND SYSDATE	
+  			
+  	</select>
+  	
+  	<!--  인증번호 정보 삭제 쿼리문 -->
+  	<delete id="remove" parameterType="certvo">
+  	
+  		DELETE CERT
+  		WHERE WHO = #{who}
+  		AND  SECRET = #{secret}
+  		
+  	</delete>
   	
   	
+  	<!--  아이디 찾기용 쿼리문 -->
+  	<select id="findId" resultMap ="memberResultSet" parameterType="member"> 
+  	 	
+	SELECT USER_ID
+  	FROM MEMBER
+  	WHERE USER_NAME = #{userName}
+  	AND EMAIL = #{email}
+  	AND STATUS = 'Y'
+  	
+  	</select>
+  	
+  	<!--  비밀번호 조회용 쿼리문 --> 	
+  	<select id="findPwd" resultMap ="memberResultSet" parameterType="member">	
+  	
+  	SELECT USER_PWD
+  	FROM MEMBER
+  	WHERE USER_ID = #{userId}
+  	AND EMAIL = #{email}
+  	AND STATUS = 'Y'	
+  	
+  	</select>
+  	
+  	<!--  비밀번호 변경용 쿼리문 -->
+  	
+  	<update id="changePwd" parameterType="member">
+  		
+  		UPDATE MEMBER
+  		   SET USER_PWD = #{userPwd}
+         WHERE USER_ID = #{userId}
+         	
+  	</update>
   	
   	
   	
