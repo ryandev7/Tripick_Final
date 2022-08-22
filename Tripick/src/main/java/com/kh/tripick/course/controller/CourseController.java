@@ -21,6 +21,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.gson.Gson;
+import com.kh.tripick.admin.model.vo.Report;
+import com.kh.tripick.common.model.vo.LocalCategory;
 import com.kh.tripick.common.model.vo.PageInfo;
 import com.kh.tripick.common.model.vo.Reply;
 import com.kh.tripick.common.template.Pagination;
@@ -41,8 +43,9 @@ public class CourseController {
 	@RequestMapping("main.co")
 	public ModelAndView selectCourseList(@RequestParam(value="cpage", defaultValue="1") int currentPage, ModelAndView mv) {
 		PageInfo pi = Pagination.getPageInfo(courseService.selectCourseListCount(), currentPage, 5, 6);
-		ArrayList<Planner> list = courseService.selectCourseList(pi);
-		mv.addObject("pi", pi).addObject("list", list).setViewName("course/courseMain");
+		ArrayList<Planner> list = courseService.selectCourseList(pi); // 플래너 list
+		ArrayList<LocalCategory> localList = courseService.selectLocalList(); // 지역 카테고리 list
+		mv.addObject("pi", pi).addObject("list", list).addObject("localList", localList).setViewName("course/courseMain");
 		return mv;
 	}
 	
@@ -89,7 +92,7 @@ public class CourseController {
 		} catch (IllegalStateException | IOException e) {
 			e.printStackTrace();
 		} 
-		System.out.println(savePath);
+		// System.out.println(savePath);
 		return changeName;
 	}
 	
@@ -128,14 +131,6 @@ public class CourseController {
 										, @RequestParam(value="planOrder[]") List<Integer> planOrder
 										, @RequestParam(value="memo[]") List<String> memo
 										) {
-//		System.out.println(planner);
-//		System.out.println(tripDate);
-//		System.out.println(placeName);
-//		System.out.println(placeAddress);
-//		System.out.println(xCoordinate);
-//		System.out.println(yCoordinate);
-//		System.out.println(planOrder);
-//		System.out.println(memo);
 		
 		// Planner insert 후 plannerNo 시퀀스 값 받아옴
 		int plannerNo = courseService.insertPlanner(planner);
@@ -157,13 +152,9 @@ public class CourseController {
 				planList.add(p);
 			}
 			map.put("planList", planList);
-			int result = courseService.insertPlanList(map);
 			
-			if(result > 0) {
-				return "나만의 코스가 등록되었습니다.";
-			} else {
-				return "실패(plan)";
-			}
+			return courseService.insertPlanList(map) > 0 ? "나만의 코스가 등록되었습니다.":"실패(plan)";	
+			
 		} else {
 			return "실패(planner)";
 		}
@@ -179,8 +170,9 @@ public class CourseController {
 			Planner planner = courseService.selectPlanner(pno);
 			ArrayList<Plan> planList = courseService.selectPlanList(pno);
 			ArrayList<Date> days = dateList(planner.getFDate(), planner.getLDate());
+			ArrayList<LocalCategory> localList = courseService.selectLocalList();
 			
-			mv.addObject("planner", planner).addObject("planList", planList).addObject("days", days).setViewName("course/courseDetail");			
+			mv.addObject("planner", planner).addObject("planList", planList).addObject("days", days).addObject("localList", localList).setViewName("course/courseDetail");			
 		} else {
 			mv.addObject("errorMsg", "게시글 상세조회 실패").setViewName("common/errorPage");
 		}
@@ -236,14 +228,117 @@ public class CourseController {
 		return courseService.insertReply(r) > 0 ? "success" : "fail";
 	}
 	
+	/**
+	 * 코스 삭제
+	 */
+	@RequestMapping("delete.co")
+	public String deletePlanner(int plannerNo, HttpSession session) {
+		String alertMsg = courseService.deletePlanner(plannerNo) > 0 ? "삭제되었습니다" : "error:삭제 실패";
+		session.setAttribute("alertMsg", alertMsg);
+		return "redirect:main.co";
+	}
 	
+	/**
+	 * 댓글 삭제
+	 */
+	@RequestMapping("rdelete.co")
+	public String deleteReply(Reply r, HttpSession session) {
+//		System.out.println(r);
+		String alertMsg = courseService.deleteReply(r) > 0 ? "삭제되었습니다" : "error:삭제 실패";
+		session.setAttribute("alertMsg", alertMsg);
+		return "redirect:detail.co?pno="+r.getRefBoardNo();
+		
+	}
 	
+	/**
+	 * 코스 메인 - 지역필터
+	 */
+	@RequestMapping("filter.co")
+	public ModelAndView filterCourse(@RequestParam(value="cpage", defaultValue="1") int currentPage, String localName, ModelAndView mv) {		
+		PageInfo pi = Pagination.getPageInfo(courseService.selectFilterListCount(localName), currentPage, 5, 6);
+		ArrayList<Planner> list = courseService.selectFilterList(pi, localName);
+		ArrayList<LocalCategory> localList = courseService.selectLocalList();
+		mv.addObject("pi", pi).addObject("list", list).addObject("localName", localName).addObject("localList", localList).setViewName("course/courseMain");
+		return mv;
+	}
 	
+	/**
+	 * 코스 댓글 신고
+	 */
+	@RequestMapping("report.co")
+	public String reportCourseReply(Report report, int plannerNo, HttpSession session) {
+		String alertMsg = courseService.reportCourseReply(report) > 0 ? "신고가 접수되었습니다" : "error:신고실패";
+		session.setAttribute("alertMsg", alertMsg);
+		return "redirect:detail.co?pno=" + plannerNo;
+	}
 	
+	/**
+	 * 코스 수정 폼
+	 */
+	@RequestMapping("updateForm.co")
+	public ModelAndView courseUpdateFrom(Planner planner, MultipartFile reupfile, ModelAndView mv, HttpSession session) {
+		
+		if(!reupfile.getOriginalFilename().equals("")) { // 새 첨부파일이 있는 경우
+			String changeName = saveFile(reupfile, session);
+			planner.setOriginName(reupfile.getOriginalFilename());
+			planner.setChangeName("resources/course-upfiles/" + changeName);	
+		}	
 	
+		ArrayList<Date> days = dateList(planner.getFDate(), planner.getLDate());
+		planner.setWDate(days.size());
+
+		ArrayList<Plan> planList = courseService.selectPlanList(planner.getPlannerNo());
+		
+		mv.addObject("planner", planner);
+		mv.addObject("days", days);
+		mv.addObject("planList", planList);
+		mv.setViewName("course/courseUpdateForm");
+		
+		return mv;
+	}
 	
+	/**
+	 * 코스 수정
+	 */
+	@ResponseBody
+	@RequestMapping(value="update.co", produces="text/html; charset=UTF-8")
+	public String updateCourse(Planner planner, @RequestParam(value="tripDate[]") List<String> tripDate
+											  , @RequestParam(value="placeName[]") List<String> placeName
+											  , @RequestParam(value="placeAddress[]") List<String> placeAddress
+											  , @RequestParam(value="xCoordinate[]") List<String> xCoordinate
+											  , @RequestParam(value="yCoordinate[]") List<String> yCoordinate
+											  , @RequestParam(value="planOrder[]") List<Integer> planOrder
+											  , @RequestParam(value="memo[]") List<String> memo											  
+											  ) {
 	
-	
-	
-	
+		ArrayList<Plan> planList = new ArrayList();
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		for(int i = 0; i < placeName.size(); i++) {
+			Plan p = new Plan();
+			p.setRefPno(planner.getPlannerNo());
+			p.setPlanOrder(planOrder.get(i));
+			p.setPlaceName(placeName.get(i));
+			p.setPlaceAddress(placeAddress.get(i));
+			p.setXCoordinate(xCoordinate.get(i));
+			p.setYCoordinate(yCoordinate.get(i));
+			p.setTripDate(tripDate.get(i));
+			p.setMemo(memo.get(i));
+			planList.add(p);		
+		}
+		map.put("planList", planList);
+				
+		// 1. planner 먼저 수정(update)
+		int result1 = courseService.updatePlanner(planner);
+		
+		// 2. 기존의 plans 모두 삭제 (delete)
+		int result2 = courseService.deletePlanList(planner.getPlannerNo());
+				
+		// 3. 새로 받아온 plans 등록 (insert)
+		int result3 = courseService.insertPlanList(map);
+		
+		String alertMsg = result1*result2*result3 > 0 ? "나만의 코스가 수정되었습니다" : "error:코스 수정 실패";
+				
+		return alertMsg;
+	}	
 }

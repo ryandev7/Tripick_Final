@@ -6,7 +6,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>상세일정</title>
+<title>Tripick:나만의 여행코스 (수정)</title>
 <style>
     .map_wrap, .map_wrap * {margin:0;padding:0;font-family:'Malgun Gothic',dotum,'돋움',sans-serif;font-size:12px;}
     .map_wrap a, .map_wrap a:hover, .map_wrap a:active{color:#000;text-decoration: none;}
@@ -500,6 +500,7 @@
 	       // submit 버튼 클릭했을 경우 
 	       $(".AR_button-area_button-sumbit").click(function () {
 	    	   // Planner
+	    	   var plannerNo = $("#plannerNo").val();
 	           var plannerTitle = $("#plannerTitle").val();
 	           var plannerWriter = $("#plannerWriter").val();
 	           var f_date = $("#f_date").val();
@@ -572,8 +573,9 @@
 	               });
 
 	               $.ajax({
-	                   url:"insert.co",
+	                   url:"update.co",
 	                   data:{
+	                	   plannerNo : plannerNo,
 	                	   plannerTitle : plannerTitle,
 	                       plannerWriter : plannerWriter,
 	                       fDate : f_date,
@@ -595,7 +597,7 @@
 	                   type:"post",
 	                   success: function (result) {
 	                       alert(result);
-	                       location.href="main.co";
+	                       location.href='detail.co?pno=${planner.plannerNo}';
 	                   }
 	               });
             }
@@ -607,6 +609,7 @@
 
    <jsp:include page="../common/header.jsp"/>
 	<!-- Planner -->
+	<input type="hidden" name="plannerNo" id="plannerNo" value="${planner.plannerNo}" />
 	<input type="hidden" name="plannerTitle" id="plannerTitle" value="${planner.plannerTitle}" />
 	<input type="hidden" name="plannerWriter" id="plannerWriter" value="${planner.plannerWriter }" />
 	<input type="hidden" name="fDate" id="f_date" value="<fmt:formatDate value="${planner.getFDate()}" pattern="yyyy-MM-dd" />" />
@@ -617,15 +620,13 @@
 	<input type="hidden" name="originName" id="originName" value="${planner.originName}" />
 	<input type="hidden" name="changeName" id="changeName" value="${planner.changeName}" />
 
-
-	<br><br>
+	<br><br><br><br>
 	<!-- button -->
 	<div class="AR_button-area">
 	    <button class="AR_button-area_button-sumbit">등록</button>
 	    <button class="AR_button-area_button-close" onclick="history.back()">닫기</button>
 	</div>
-
-
+	
 	<!-- 플래너 작성 -->
 	<div class="AR_plan-container">
 	    <!-- DAYS 나타내는 div -->
@@ -648,6 +649,31 @@
 	        <c:forEach items="${days}" var="day" varStatus="status">
 	            <div class="AR_plan-plansbox" data-date="<fmt:formatDate value="${day}" pattern="YYYY-MM-dd" />">
 	                <div class="AR_plan-plansboxtitle">DAY${status.count} | <fmt:formatDate value="${day}" pattern="MM.dd E요일" /></div>
+	            
+	            	<c:forEach items="${planList }" var="plan">	            	
+						  <fmt:parseDate value="${plan.tripDate}" var="fmtTripDate" pattern="yyyy-MM-dd"/>
+						  <fmt:parseNumber value="${day.time/(1000*60*60*24)}" integerOnly="true" var="planDate"/>
+						  <fmt:parseNumber value="${fmtTripDate.time/(1000*60*60*24)}" integerOnly="true" var="tripDate"/>
+						  					  
+						  <c:if test="${planDate-tripDate eq 0}">
+						  	
+						  	<div class="AR_plan-planbox" data-date="<fmt:formatDate value="${fmtTripDate }" pattern="yyyy-MM-dd"/>" data-y="${plan.getYCoordinate() }" data-x="${plan.getXCoordinate() }"
+						  								 data-placeRoadAddress="${plan.placeAddress }" data-placeName="${plan.placeName }" data-planOrder="${plan.planOrder }">
+						  		<div class="AR_plan-plannum">
+						  			<div class="AR_data-plannum" id="data-planOrder"> No.${plan.planOrder }</div>
+						  			<span class="AR_plan-plannum_span--address"></span>
+						  			<span class="AR_plan-plannum_span-memo"></span>
+						  		</div>
+						  		<div class="AR_plan-plandetail">
+						  			<span class="AR_plan-plandetail_span-place" title="${plan.placeName }">${plan.placeName }</span>
+						  			<div class="AR_data-plandetail-placeAddress">${plan.placeAddress }</div>
+						  			<input type="text" name="memo" class="AR_plan-plandetail_input-memo" value="${plan.memo }" placeholder="메모를 입력해주세요."  maxlength="20">
+						  			<button class="AR_plan-plandetail_button-blue" onclick="planDelete(${plan.planOrder})">&times;</button>
+						  			
+						  		</div>
+						  	</div>				  
+						  </c:if>							  
+	            	</c:forEach>          
 	            </div>
 	        </c:forEach>
 	    </div>

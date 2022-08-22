@@ -1,12 +1,15 @@
 package com.kh.tripick.course.model.dao;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Repository;
 
+import com.kh.tripick.admin.model.vo.Report;
+import com.kh.tripick.common.model.vo.LocalCategory;
 import com.kh.tripick.common.model.vo.PageInfo;
 import com.kh.tripick.common.model.vo.Reply;
 import com.kh.tripick.course.model.vo.LikePlanner;
@@ -46,7 +49,13 @@ public class CourseDao {
 		RowBounds rowBounds = new RowBounds(offset, limit);
 		return (ArrayList)sqlSession.selectList("courseMapper.selectCourseList", null, rowBounds);
 	}
-
+	
+	/**
+	 * 코스 목록(3) 지역 카테고리
+	 */
+	public ArrayList<LocalCategory> selectLocalList(SqlSession sqlSession) {
+		return (ArrayList)sqlSession.selectList("courseMapper.selectLocalList");
+	}
 	/**
 	 * 코스 상세조회(1) 조회수 증가
 	 */
@@ -101,6 +110,58 @@ public class CourseDao {
 	 */
 	public int insertReply(SqlSession sqlSession, Reply r) {
 		return sqlSession.insert("courseMapper.insertReply", r);
+	}
+
+	/**
+	 * 코스 삭제
+	 */
+	public int deletePlanner(SqlSession sqlSession, int plannerNo) {
+		return sqlSession.update("courseMapper.deletePlanner", plannerNo);
+	}
+
+	/**
+	 * 댓글 삭제
+	 */
+	public int deleteReply(SqlSession sqlSession, Reply r) {
+		return sqlSession.update("courseMapper.deleteReply", r);
+	}
+
+	/**
+	 * 코스 메인 - 지역필터(1)
+	 */
+	public int selectFilterListCount(SqlSession sqlSession, String localName) {
+		return sqlSession.selectOne("courseMapper.selectFilterListCount", localName);
+	}
+
+	/**
+	 * 코스 메인 - 지역필터(2)
+	 */
+	public ArrayList<Planner> selectFilterList(SqlSession sqlSession, PageInfo pi, String localName) {
+		int offset = (pi.getCurrentPage()-1)*pi.getBoardLimit();
+		int limit = pi.getBoardLimit();
+		RowBounds rowBounds = new RowBounds(offset, limit);
+		return (ArrayList)sqlSession.selectList("courseMapper.selectFilterList", localName, rowBounds);
+	}
+
+	/**
+	 * 코스 댓글 신고
+	 */
+	public int reportCourseReply(SqlSession sqlSession, Report report) {
+		return sqlSession.insert("courseMapper.reportCourseReply", report);
+	}
+
+	/**
+	 * 코스 수정(1) - Planner 수정
+	 */
+	public int updatePlanner(SqlSession sqlSession, Planner planner) {
+		return sqlSession.update("courseMapper.updatePlanner", planner);
+	}
+
+	/**
+	 * 코스 수정(2) - 기존의 Plans 삭제
+	 */
+	public int deletePlanList(SqlSession sqlSession, int plannerNo) {
+		return sqlSession.delete("courseMapper.deletePlanList", plannerNo);
 	}
 
 }

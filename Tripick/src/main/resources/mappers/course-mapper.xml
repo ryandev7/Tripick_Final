@@ -48,6 +48,11 @@
 		<result column="REPLY_LEVEL" property="replyLevel"/>
 		<result column="REF_BOARD_NO" property="refBoardNo"/>
 	</resultMap>
+	
+	<resultMap type="localCate" id="localCategorySet">
+		<result column="LOCAL_CODE" property="localCode" />
+		<result column="LOCAL_NAME" property="localName" />
+	</resultMap>
 
 	<!-- 코스 등록 (1) Planner -->
 	<insert id="insertPlanner" parameterType="planner">
@@ -119,6 +124,14 @@
 			BY PLANNER_NO DESC   
 	</select>
 	
+	<!-- 코스 목록(3) 지역 카테고리 -->
+	<select id="selectLocalList" resultMap="localCategorySet">
+		SELECT
+			  LOCAL_CODE, LOCAL_NAME
+		 FROM
+		  	  LOCAL  
+	</select>
+	
 	<!-- 코스 상세조회(1) 조회수 증가 -->
 	<update id="increaseCount" parameterType="_int">
 		UPDATE
@@ -153,6 +166,7 @@
 		    BY PLAN_NO ASC	   	   	   
 	</select>
 
+	<!-- 관심코스 등록 -->
 	<insert id="insertLikePlanner" parameterType="_int">
 		INSERT
 		  INTO
@@ -160,7 +174,8 @@
 		VALUES
 			   (SEQ_LNO.NEXTVAL, #{userId}, ${plannerNo})	   
 	</insert>
-
+	
+	<!-- 관심코스 불러오기 -->
 	<select id="selectLikePlanner" resultMap="likePlannerResultSet">
 		SELECT
 			   PLANNER_NO
@@ -170,6 +185,7 @@
 		 	   USER_ID = #{userId}	   		  	   	   
 	</select>
 
+	<!-- 관심코스 삭제 -->
 	<delete id="deleteLikePlanner">
 		DELETE
 		  FROM
@@ -178,6 +194,7 @@
 		 	   USER_ID = #{userId} AND PLANNER_NO = #{plannerNo} 	   
 	</delete>
 
+	<!-- 댓글 목록 -->
 	<select id="selectReplyList" resultMap="replyResultSet">
 		SELECT
 			   REPLY_NO, USER_NICKNAME, REPLY_CONTENT, TO_CHAR(CREATE_DATE, 'YYYY-MM-DD') AS CREATE_DATE
@@ -188,16 +205,99 @@
 		 WHERE 
 	   		   REF_BOARD_NO = #{plannerNo}
                AND REPLY_LEVEL = '3'
-               AND R.STATUS ='Y' OR R.STATUS = 'R'
+               AND R.STATUS ='Y'
+         ORDER
+         	BY REPLY_NO DESC
+         	         
 	</select>
 
+	<!-- 댓글 작성 -->
 	<insert id="insertReply">
 		INSERT
 		  INTO
 		  	   REPLY(REPLY_NO, REPLY_WRITER, REPLY_CONTENT, REPLY_LEVEL, REF_BOARD_NO)
 		VALUES 
-			   (SEQ_RNO.NEXTVAL, #{replyWriter}, #{replyContent}, #{replyLevel}, #{refBoardNo})
-			   	  
+			   (SEQ_RNO.NEXTVAL, #{replyWriter}, #{replyContent}, #{replyLevel}, #{refBoardNo})	   	  
+	</insert>
+	
+	<!-- 코스 삭제 -->
+	<update id="deletePlanner" parameterType="_int">
+		UPDATE
+			   PLANNER
+		   SET
+		   	   STATUS = 'N'
+		 WHERE
+		 	   PLANNER_NO = #{plannerNo} 	   	   
+	</update>
+	
+	<!-- 댓글 삭제 -->
+	<update id="deleteReply" parameterType="_int">
+		UPDATE
+			   REPLY
+		   SET
+		   	   STATUS = 'N'
+		 WHERE
+		 	   REPLY_NO = #{replyNo}
+		   AND REF_BOARD_NO = #{refBoardNo}   	      
+	</update>
+	
+	<!-- 코스 메인 - 지역필터(1) -->
+	<select id="selectFilterListCount" parameterType="String" resultType="_int">
+		SELECT 
+			   COUNT(*)
+		  FROM
+		  	   PLANNER
+		 WHERE
+		 	   STATUS='Y' AND AREA=#{localName} 	  
+	</select>
+
+	<!-- 코스 메인 - 지역필터(2) -->
+	<select id="selectFilterList" resultMap="plannerResultSet">
+		SELECT
+			   PLANNER_NO, USER_NICKNAME, PLANNER_TITLE, W_DATE, AREA, TYPE, COUNT, CREATE_DATE, ORIGIN_NAME, CHANGE_NAME
+		  FROM
+			   PLANNER P
+		  JOIN
+			   MEMBER ON(PLANNER_WRITER = USER_ID)
+		 WHERE
+			   P.STATUS ='Y' AND AREA=#{localName}   
+		 ORDER
+			BY PLANNER_NO DESC 	
+	
+	</select>
+	
+	<!-- 코스 댓글 신고 -->
+	<insert id="reportCourseReply">
+		INSERT
+		  INTO
+		  	   RPT(RPT_NO, WRITE_NO, DIVCODE, USER_ID, RPT_CONTENT)
+		VALUES
+			  (SEQ_RPNO.NEXTVAL, #{writeNo}, #{divCode}, #{userId}, #{rptContent})	   		      
 	</insert>
 
+	<!-- 코스 수정(1) - Planner 수정 -->
+	<update id="updatePlanner" parameterType="planner">
+		UPDATE
+			   PLANNER
+		   SET 
+		   	   PLANNER_TITLE = #{plannerTitle},
+		   	   F_DATE = #{fDate},
+		   	   L_DATE = #{lDate},
+		   	   W_DATE = #{wDate},
+		   	   AREA = #{area},
+		   	   TYPE = #{type},
+		   	   ORIGIN_NAME = #{originName},
+		   	   CHANGE_NAME = #{changeName}
+		 WHERE
+		 	   PLANNER_NO = #{plannerNo} 	     
+	</update>
+	
+	<!-- 코스 수정(2) - 기존의 Plans 삭제 -->
+	<delete id="deletePlanList">
+		DELETE
+		  FROM
+		  	   PLAN
+		 WHERE
+		  	   REF_PNO = #{plannerNo}
+	</delete>
 </mapper>

@@ -1,12 +1,15 @@
 package com.kh.tripick.course.model.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.kh.tripick.admin.model.vo.Report;
+import com.kh.tripick.common.model.vo.LocalCategory;
 import com.kh.tripick.common.model.vo.PageInfo;
 import com.kh.tripick.common.model.vo.Reply;
 import com.kh.tripick.course.model.dao.CourseDao;
@@ -53,6 +56,14 @@ public class CourseServiceImpl implements CourseService{
 	@Override
 	public ArrayList<Planner> selectCourseList(PageInfo pi) {
 		return courseDao.selectCourseList(sqlSession, pi);
+	}
+	
+	/**
+	 * 코스 목록(3) 지역 카테고리
+	 */
+	@Override
+	public ArrayList<LocalCategory> selectLocalList() {
+		return courseDao.selectLocalList(sqlSession);
 	}
 
 	/**
@@ -119,21 +130,59 @@ public class CourseServiceImpl implements CourseService{
 		return courseDao.insertReply(sqlSession, r);
 	}
 
+	/**
+	 * 코스 삭제
+	 */
+	@Override
+	public int deletePlanner(int plannerNo) {
+		return courseDao.deletePlanner(sqlSession, plannerNo);
+	}
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	/**
+	 * 댓글 삭제
+	 */
+	@Override
+	public int deleteReply(Reply r) {
+		return courseDao.deleteReply(sqlSession, r);
+	}
+
+	/**
+	 * 코스 메인 - 지역필터(1)
+	 */
+	@Override
+	public int selectFilterListCount(String localName) {
+		return courseDao.selectFilterListCount(sqlSession, localName);
+	}
+
+	/**
+	 * 코스 메인 - 지역필터(2)
+	 */
+	@Override
+	public ArrayList<Planner> selectFilterList(PageInfo pi, String localName) {
+		return courseDao.selectFilterList(sqlSession, pi, localName);
+	}
+
+	/**
+	 * 코스 댓글 신고
+	 */
+	@Override
+	public int reportCourseReply(Report report) {
+		return courseDao.reportCourseReply(sqlSession, report);
+	}
+
+	/**
+	 * 코스 수정(1) - Planner 수정
+	 */
+	@Override
+	public int updatePlanner(Planner planner) {
+		return courseDao.updatePlanner(sqlSession, planner);
+	}
+
+	/**
+	 * 코스 수정(2) - 기존의 Plans 삭제
+	 */
+	@Override
+	public int deletePlanList(int plannerNo) {
+		return courseDao.deletePlanList(sqlSession, plannerNo);
+	}	
 }

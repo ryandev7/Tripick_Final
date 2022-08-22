@@ -170,7 +170,6 @@
 	.distanceInfo:after {content:none;}
 </style>
 <script>
-	
 	// 관심등록
 	function likeCourse(){
 		if(${empty loginUser}){
@@ -189,7 +188,6 @@
 				location.href="unlike.co?plannerNo=${planner.plannerNo}&userId=${loginUser.userId}"
 			}
 		}	
-		
 		// 관심등록 버튼 속성 변경
 		$.ajax({
 			url:"getLike.co",
@@ -207,6 +205,126 @@
 			}
 		});
 	}
+	
+	// 제목 글자수
+	$(function(){
+	    $('input[name="plannerTitle"]').keyup(function(){
+	    	let count = $(this).val().length;
+	        $('#count').text(count); // 실시간 글자수	      
+		    if(count > 15){
+		    	alert('코스 이름은 15자 이내로 입력해주세요');
+		    	$(this).val("");
+	       	    $('#count').text('0'); // 실시간 글자수	      
+		    }
+	    })
+	});
+	
+	// fDate와 lDate 비교
+	$(function(){		
+		$("#next-btn").click(function(){
+			let startDate = new Date($("input[name='fDate']").val());
+			let endDate = new Date($("input[name='lDate']").val());
+			if(startDate <= endDate){
+				plannerForm.submit();
+			}else{
+				alert("여행 시작 날짜와 마지막 날짜를 확인해주세요");
+			}
+		})
+	});	
+	
+	// 코스 삭제
+	function deleteCourse(){
+		if(confirm("코스를 삭제하시겠습니까?")){
+			location.href="delete.co?plannerNo=${planner.plannerNo}"
+		}
+	}	
+
+    // 댓글 조회
+    $(function(){
+        selectReplyList();
+	})
+	function selectReplyList(){
+	    $.ajax({
+	        url:'rlist.co',
+	        data : {plannerNo : ${planner.plannerNo}},
+	        success:function(list){
+	            let value='';
+	            for(let i in list){
+	                value += '<tr>'
+	                       + '<th>' + list[i].replyWriter + '</th>'
+	                       + '<td>' + list[i].replyContent + '</td>'
+	                       + '<td>' + list[i].create_date + '</td>'
+	                       + '<td id=\"rpt-reply\" onclick=\"reportReply('+ list[i].replyNo +')\" data-toggle=\"modal\" data-target=\"#replyReportModal\">'
+	                       + '<img data-replyNo=\"'+list[i].replyNo+'\" id=\"rpt-btn\" title=\"댓글 신고\" src=\"resources/common-upfiles/rpt-btn.png\">'
+	                       + '<input type=\"hidden\" name=\"writeNo\" value=\"'+ list[i].replyNo +'\">'			
+	                       + '</td>'
+	                       + '<td id=\"delete-reply\" onclick=\"deleteReply(\''+ list[i].replyNo + '\',\'' + list[i].replyWriter +'\')\" title=\"댓글 삭제\">❌'		
+	                       + '</td>'
+	                       + '</tr>'
+	            }
+	
+	            $('#reply-list tbody').html(value);
+	            $('#rcount').text(list.length);
+	
+	        }, error:function(){					
+	            console.log("오류낫어")
+	        }   
+	    })
+	}
+    
+    // 댓글 작성
+    function addReply(){
+        if($('#replyContent').val().trim() != ''){
+            $.ajax({
+                url : 'rinsert.co',
+                data : {
+                    replyWriter : '${loginUser.userId}',
+                    replyContent : $('#replyContent').val(),
+                    replyLevel : '3',
+                	refBoardNo : ${planner.plannerNo}
+                }, success:function(status){
+                    if(status == 'success'){
+                        selectReplyList();
+                        $('#replyContent').val('')
+                    }
+                }, error:function(){
+                    console.log('ㅗ')
+                }					
+            });
+        }
+        else{
+            alert('댓글 똑바로 써라')
+        }
+    }
+    
+    // 댓글 삭제
+    function deleteReply(replyNo, replyWriter){
+    	if('${loginUser.userNickName}' == replyWriter){
+    		if(confirm("댓글을 삭제하시겠습니까?")){
+    			location.href='rdelete.co?replyNo='+ replyNo + '&refBoardNo=${planner.plannerNo}'
+    		}
+    	}else{
+    		alert("댓글 작성자만 삭제 가능합니다")
+    	}
+    }
+    
+    // 댓글 신고
+   function reportReply(replyNo){
+	   if(${empty loginUser}){
+		   alert("로그인 후 이용 가능한 서비스입니다.");
+		   $("td[id='rpt-reply']").attr('data-target', '');
+	   } else {
+	    	data= replyNo;
+	    	//alert(data);
+	    	$('.modal-body #writeNo').val(data);    		
+	   }
+    } 	
+    
+    // 코스 수정 모달 설정
+	$(function(){
+		$("#selectbox-local option[value='${planner.area}']").attr("selected", true);
+		$("#selectbox-type option[value='${planner.type}']").attr("selected", true);
+	});	
 </script>
 </head>
 <body>
@@ -220,31 +338,30 @@
               	<c:choose>
 	               	<c:when test="${not empty planner.originName }">
 	                   		<img src="${planner.changeName}"/>
-	                   </c:when>
-		                <c:when test="${planner.type eq '나홀로여행'}">
-		                    	<img src="resources/common-upfiles/type1.jfif">		                    
-						</c:when>	
-		                <c:when test="${planner.type eq '가족여행'}">
-		                    	<img src="resources/common-upfiles/type2.jfif">		                    
-						</c:when>	
-		                <c:when test="${planner.type eq '친구/지인'}">
-		                    	<img src="resources/common-upfiles/type3.jfif">		                    
-						</c:when>	
-		                <c:when test="${planner.type eq '연인/커플'}">
-		                    	<img src="resources/common-upfiles/type4.jfif">		                    
-						</c:when>	
-		                <c:when test="${planner.type eq '부모님'}">
-		                    	<img src="resources/common-upfiles/type5.jfif">		                    
-						</c:when>		
-                  </c:choose>
+                   </c:when>
+	                <c:when test="${planner.type eq '나홀로여행'}">
+	                    	<img src="resources/common-upfiles/type1.jfif">		                    
+					</c:when>	
+	                <c:when test="${planner.type eq '가족여행'}">
+	                    	<img src="resources/common-upfiles/type2.jfif">		                    
+					</c:when>	
+	                <c:when test="${planner.type eq '친구/지인'}">
+	                    	<img src="resources/common-upfiles/type3.jfif">		                    
+					</c:when>	
+	                <c:when test="${planner.type eq '연인/커플'}">
+	                    	<img src="resources/common-upfiles/type4.jfif">		                    
+					</c:when>	
+	                <c:when test="${planner.type eq '부모님'}">
+	                    	<img src="resources/common-upfiles/type5.jfif">		                    
+					</c:when>		
+                 </c:choose>
 	    	</div>
 
     		<div id="btn-area" align="right">
     			<c:if test="${(loginUser.userNickName eq planner.plannerWriter) || (loginUser.authority eq 'A') }">
-	    		 <button class="btn btn-info">수정</button>
-	    		 <button class="btn btn-danger">삭제</button>
-	    		</c:if>
-	    		 <button class="btn btn-warning">신고</button>   		
+	    		 <button class="btn btn-info" data-toggle="modal" data-target="#courseUpdateModal">수정</button>
+	    		 <button class="btn btn-danger" onclick="deleteCourse()">삭제</button>
+	    		</c:if> 		
 	    		<!-- 관심등록 -->
     			<img id="like-btn" onclick="likeCourse()" title="관심 여행코스 등록" src="resources/common-upfiles/like.png">
     		</div>
@@ -254,7 +371,66 @@
 				<h6> ${planner.plannerWriter }  | ${planner.getFDate() } ~ ${planner.getLDate() } | ${planner.getWDate()-1 }박 ${planner.getWDate() }일 | 👁 ${planner.count }</h6>    	   	
 	    	</div>
     	</div>
-	    
+    	
+    	
+    	<!---------------------------------------------------- 여행일정 수정 모달창------------------------------------------------ -->
+	    <div class="modal fade" id="courseUpdateModal">
+	        <div class="modal-dialog">
+	            <div class="modal-content">
+	                <!-- Modal Header -->
+	                <div class="modal-header">
+	                    <h5 class="modal-title">Tripick 코스 수정하기</h5>
+	                    <button type="button" class="close" data-dismiss="modal"></button>
+	                </div>
+	        
+	                <form name="plannerForm" action="updateForm.co" method="post" enctype="multipart/form-data">
+	                    <!-- Modal body -->
+	                    <div class="modal-body">
+							<input type="hidden" name="plannerWriter" value="${loginUser.userId }">
+							<input type="hidden" name="plannerNo" value="${planner.plannerNo }">
+							코스이름  &nbsp; <input type="text" name="plannerTitle" value="${planner.plannerTitle }" placeholder="15자 이내로 작성하세요" style="width:330px" required>
+							<span id="count">0</span>/15 <br><br>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							지 역 &nbsp;&nbsp;<select name="area" id="selectbox-local">
+				                <c:forEach var="local" items="${localList }">
+									<option value="${local.localName }">${local.localName }</option>				                
+				                </c:forEach>					
+							</select>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							여행타입&nbsp;&nbsp; <select name="type" id="selectbox-type">
+								<option value="나홀로여행" selected>나홀로여행</option>						
+								<option value="가족여행">가족여행</option>						
+								<option value="친구/지인">친구/지인</option>						
+								<option value="연인/커플">연인/커플</option>						
+								<option value="부모님">부모님</option>											
+							</select><br><br>
+			               	<c:if test="${not empty planner.originName }">
+			               		<div style="color:blue">
+		                    	  기존사진 &nbsp;&nbsp; 
+				                     <a href="${planner.changeName }" download="${planner.originName }">${planner.originName }</a><br>
+				                     <input type="hidden" name="originName" value="${planner.originName }">
+				                     <input type="hidden" name="changeName" value="${planner.changeName }">			    
+			               		</div>
+		                   	</c:if>
+							사진첨부 &nbsp;&nbsp;
+							<input type="file" name="reupfile"><br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							
+							일 정 &nbsp; 
+							<input type="Date" name="fDate" value="${planner.getFDate() }" required>
+							<input type="Date" name="lDate" value="${planner.getLDate() }" required>
+	                    </div>
+	                           
+	                    <!-- Modal footer -->
+	                    <div class="modal-footer">
+	                        <button type="button" class="btn btn-info" id="next-btn">다음으로</button>
+	                        <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
+	                    </div>
+	                </form>
+	            </div>
+	        </div>
+	    </div>
+    	
+	    <!-- ----------------------------------------------------------------------------------------------------------------- -->
 	    <div id="AR-plans-view-area">
 	    	<div id="AR-schedule-menu">
 				<ul class="nav nav-tabs" id="postTab">
@@ -315,7 +491,7 @@
 											  		<div id="plan-detail-right">
 											  			<b>${plan.placeName }</b><br>
 											  			   ${plan.placeAddress }<br>
-														   ${plan.memo }
+														 <div style="color:orange">  ${plan.memo } </div>
 
 											  		</div>
 											  	</div>
@@ -361,7 +537,7 @@
 									  		<input type="hidden" name="yCoordinate" value="${plan.getYCoordinate() }" >
 									  			<b>${plan.placeName }</b><br>
 									  			   ${plan.placeAddress }<br>											  		 
-												   ${plan.memo }
+												<div style="color:orange">  ${plan.memo } </div>
 									  	</div>	
 								  </div>
 							  </c:if>						  
@@ -411,64 +587,39 @@
 		</div>		
     </div>
     
-    <script>
-    // 댓글 조회
-    $(function(){
-        selectReplyList();
-	})
-	function selectReplyList(){
-	    $.ajax({
-	        url:'rlist.co',
-	        data : {plannerNo : ${planner.plannerNo}},
-	        success:function(list){
-	            let value='';
-	            for(let i in list){
-	                value += '<tr>'
-	                       + '<th>' + list[i].replyWriter + '</th>'
-	                       + '<td>' + list[i].replyContent + '</td>'
-	                       + '<td>' + list[i].create_date + '</td>'
-	                       + '<td id=\"rpt-reply\">'
-	                       + '<img id=\"rpt-btn\" onclick=\"\" title=\"댓글 신고\" src=\"resources/common-upfiles/rpt-btn.png\">'
-	                       + '<input type=\"hidden\" name=\"writeNo\" value=\"'+ list[i].replyNo +'\">'			
-	                       + '</td>'
-	                       + '<td id=\"delete-reply\" title=\"댓글 삭제\">❌</td>'
-	                       + '</tr>'
-	            }
-	
-	            $('#reply-list tbody').html(value);
-	            $('#rcount').text(list.length);
-	
-	        }, error:function(){					
-	            console.log("오류낫어")
-	        }   
-	    })
-	}
+    <!-- 댓글 신고 모달 -->
+    <div class="modal fade" id="replyReportModal">
+  	    <div class="modal-dialog">
+           <div class="modal-content">
+               <!-- Modal Header -->
+               <div class="modal-header">
+               	   <img style="width:25px; height:25px" src="resources/common-upfiles/rpt-btn.png">
+                   &nbsp;<h5 class="modal-title"><b>댓글 신고</b></h5>
+                   <button type="button" class="close" data-dismiss="modal"></button>
+               </div>
+       
+               <form name="reportForm" action="report.co" method="post">
+                   <!-- Modal body -->
+                   <div class="modal-body">
+					<input type="hidden" name="plannerNo" value="${planner.plannerNo }"> <!-- 코스 번호 : redirect위함 -->
+					<input type="hidden" name="userId" value="${loginUser.userId }"> <!-- 신고자 ID -->
+					<input type="hidden" name="writeNo" id="writeNo" value=""> <!-- 신고할 댓글 번호 -->
+					<input type="hidden" name="divCode" value="R"> <!-- 구분코드 R : 댓글 -->
+					신고 사유<br>
+					<textarea name="rptContent" style="width:100%; height:200px" required></textarea>
+                   </div>
+                          
+                   <!-- Modal footer -->
+                   <div class="modal-footer">
+                       <button type="submit" class="btn btn-danger">신고하기</button>
+                       <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
+                   </div>
+               </form>
+
+		   </div>
+		 </div>   
+	</div>
     
-    // 댓글 작성
-    function addReply(){
-        if($('#replyContent').val().trim() != ''){
-            $.ajax({
-                url : 'rinsert.co',
-                data : {
-                    replyWriter : '${loginUser.userId}',
-                    replyContent : $('#replyContent').val(),
-                    replyLevel : '3',
-                	refBoardNo : ${planner.plannerNo}
-                }, success:function(status){
-                    if(status == 'success'){
-                        selectReplyList();
-                        $('#replyContent').val('')
-                    }
-                }, error:function(){
-                    console.log('ㅗ')
-                }					
-            });
-        }
-        else{
-            alertify.alert('댓글 똑바로 써라')
-        }
-    }
-    </script>
     <!--------------------------------------------------댓글영역 끝------------------------------------------------->
   
    </div> 

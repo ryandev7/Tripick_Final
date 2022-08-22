@@ -43,6 +43,10 @@
 	    color: rgb(142, 229, 238);
 	}
 	
+	.filter-option.active{
+	    color: rgb(142, 229, 238);	
+	}
+	
 	#thumbnail{
 	    width: 100px;
 	    height: 100px;
@@ -201,31 +205,49 @@
 		<!-- 지역 필터 -->
         <div id="wrapper-filter" style="height:100px">
             <ul id="filter-bar">
-                <li class="filter-option option-1 active" data-target="option-1" onclick="filterArea('all')">전체</li>
-                <li class="filter-option option-2">서울</li>
-                <li class="filter-option option-3">경기</li>
-                <li class="filter-option option-4">강원</li>
-                <li class="filter-option option-5">충청</li>
-                <li class="filter-option option-6">전라</li>
-                <li class="filter-option option-7">경상</li>
-                <li class="filter-option option-8">제주</li>
-                <li class="filter-option option-9">부산</li>
-                <li class="filter-option option-10">인천</li>
-                <li class="filter-option option-11">대구</li>
-                <li class="filter-option option-12">대전</li>
-                <li class="filter-option option-13">광주</li>
-                <li class="filter-option option-14">울산</li>
-                <li class="filter-option option-15">세종</li>
+                <li class="filter-option active" data-local="all">전체</li>
+                <c:forEach var="local" items="${localList }">
+	                <li class="filter-option" data-local="${local.localName }">${local.localName }</li>
+                </c:forEach>
             </ul>
-        </div>		
+        </div>
+        
+        
+        <script>
+        	// 지역 필터 클릭 시
+        	$('.filter-option').on("click", function(){
+				let localName = $(this).attr("data-local");
+				if(localName == 'all'){
+	        		location.href="main.co"					
+				}else{
+	        		location.href="filter.co?localName=" + localName					
+				}  		
+        	});
+        	
+        	// 클릭한 지역 필터에 클래스 추가
+        	$(function(){
+        		if(${not empty localName}){
+	        		$('.filter-option.active').removeClass('active');
+        			$('.filter-option').each(function (i){
+        				if($(this).attr("data-local") == '${localName}'){
+        					$(this).addClass("active");
+        				}
+        			});	
+        		}	
+        	});
+        </script>   
+        		
         <br><br>
         <!--코스 목록-->
         <div id="courseList-area">
         	<div id="child-courseList-area">
+ 		       <c:if test="${empty list}">
+                  <div align="center" style="color:rgb(83, 134, 139)">
+                  	<br><br>
+                  	<h3><b>조회된 여행코스가 없습니다😢</b></h3>
+                  </div>
+               </c:if>
 			   <c:forEach var="planner" items="${list }">
-   		            <c:if test="${empty list}">
-		                <p>검색된 여행코스가 없습니다.</p>
-		            </c:if>
 		           <table id="course">
 		                <tr>
 			              <td rowspan="5" id="thumbnail">
@@ -288,20 +310,9 @@
 							<span id="count">0</span>/15 <br><br>
 							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 							지 역 &nbsp;&nbsp;<select name="area">
-								<option value="서울" selected>서울</option>
-								<option value="경기">경기</option>
-								<option value="강원">강원</option>
-								<option value="충청">충청</option>
-								<option value="전라">전라</option>
-								<option value="경상">경상</option>
-								<option value="부산">부산</option>
-								<option value="인천">인천</option>
-								<option value="대구">대구</option>
-								<option value="대전">대전</option>
-								<option value="광주">광주</option>
-								<option value="울산">울산</option>
-								<option value="세종">세종</option>
-								<option value="제주">제주</option>						
+				                <c:forEach var="local" items="${localList }">
+									<option value="${local.localName }">${local.localName }</option>				                
+				                </c:forEach>					
 							</select>
 							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 							여행타입&nbsp;&nbsp; <select name="type">
