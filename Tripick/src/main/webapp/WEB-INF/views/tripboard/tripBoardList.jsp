@@ -182,7 +182,7 @@
 
                         <!-- 반복문으로 리스트 가져와서 뿌리기 -->
                         <c:forEach var="t" items="${list}">
-                            <div id="trip">
+                            <div id="trip" onclick="location.href='detail.tb?trboardNo=${t.trboardNo}'">
                                 <img src="${t.changeName}">
                                 <p id="tripLocal">${t.localName}</p>
                                 <p id="tripTitle">${t.trboardTitle}</p>
@@ -190,9 +190,7 @@
                         </c:forEach>
                     </div>
 
-                </div>
-                
-                
+                </div>       
             </div>
 
             <div id="pagingArea">

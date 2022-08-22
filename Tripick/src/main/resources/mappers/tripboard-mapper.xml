@@ -13,6 +13,17 @@
 		<result column="CHANGE_NAME" property="changeName"/>
 	</resultMap>
 	
+	<resultMap type="tripattachment" id="tripAttachmentResultSet">
+		<result column="TR_FILE_NO" property="trfileNo" />
+		<result column="REF_TBNO" property="refTBno" />
+		<result column="ORIGIN_NAME" property="originName" />
+		<result column="CHANGE_NAME" property="changeName" />
+		<result column="FILE_PATH" property="filePath" />
+		<result column="UPLOAD_DATE" property="uploadDate" />
+		<result column="FILE_LEVEL" property="fileLevel" />
+		<result column="STATUS" property="status" />
+	</resultMap>
+	
 	<select id="trBoardListCount" resultType="_int">
 		SELECT COUNT(*)
 		  FROM TR_BOARD
@@ -43,6 +54,20 @@
          WHERE TB.STATUS = 'Y'
            AND LOCAL_NAME = #{localName}
          ORDER BY TR_BOARD_NO DESC
+	</select>
+	
+	<!-- 여행지 상세보기 - 게시글 가져오기(아람) -->
+	<select id="selectTripBoard" resultMap="TripBoardResultSet">
+		SELECT TR_BOARD_NO, TR_BOARD_TITLE,TR_BOARD_CONTENT, CREATE_DATE, LOCAL_NAME
+		  FROM TR_BOARD
+		 WHERE TR_BOARD_NO = #{trboardNo}
+	</select>
+	
+	<!-- 여행지 상세보기 - 첨부파일 가져오기(아람) -->
+	<select id="selectTripAttachment" resultMap="tripAttachmentResultSet">
+	SELECT ORIGIN_NAME, CHANGE_NAME, FILE_PATH, FILE_LEVEL
+	  FROM TR_ATTACHMENT
+	 WHERE REF_TBNO = #{trboardNo}
 	</select>
 
 </mapper>

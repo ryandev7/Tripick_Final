@@ -7,13 +7,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.kh.tripick.common.model.vo.LocalCategory;
 import com.kh.tripick.common.model.vo.PageInfo;
 import com.kh.tripick.common.template.Pagination;
 import com.kh.tripick.course.model.service.CourseService;
-import com.kh.tripick.course.model.vo.Planner;
 import com.kh.tripick.tripboard.model.service.TripBoardService;
+import com.kh.tripick.tripboard.model.vo.TripAttachment;
 import com.kh.tripick.tripboard.model.vo.TripBoard;
 
 @Controller
@@ -53,5 +54,19 @@ public class TripBoardController {
 		
 		return "tripboard/tripBoardList";
 	}
-
+	
+	/**
+	 * 여행지 상세보기 - 아람
+	 */
+	@RequestMapping("detail.tb")
+	public ModelAndView selectDetailTripBoard(int trboardNo, ModelAndView mv) {
+		// 1. 게시글 가져오기
+		TripBoard tripBoard = tbService.selectTripBoard(trboardNo);
+		// 2. 첨부파일 가져오기
+		ArrayList<TripAttachment> tripAttachment = tbService.selectTripAttachment(trboardNo);
+		// 3. return
+		mv.addObject("tripBoard", tripBoard).addObject("tripAttachment", tripAttachment);
+		mv.setViewName("tripboard/tripBoardDetailView");
+		return mv;
+	}
 }
