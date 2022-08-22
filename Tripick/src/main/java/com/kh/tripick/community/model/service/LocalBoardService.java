@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import org.springframework.cglib.core.Local;
 
+import com.kh.tripick.admin.model.vo.Report;
 import com.kh.tripick.common.model.vo.PageInfo;
 import com.kh.tripick.common.model.vo.Reply;
 import com.kh.tripick.community.model.vo.ComAttachment;
@@ -48,6 +49,12 @@ public interface LocalBoardService {
 		
 		//댓글 작성 서비스
 		int insertReply(Reply r);
+		
+		// 댓글 신고
+		int reportLocalBoardReply(Report report);
+		
+		// 게시글 신고
+		int reportLocalBoardPost(Report report);
 		
 		
 		// 검색 총 갯수 selectSearchCount

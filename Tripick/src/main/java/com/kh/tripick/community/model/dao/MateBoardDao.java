@@ -8,11 +8,13 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Repository;
 
+import com.kh.tripick.admin.model.vo.Report;
 import com.kh.tripick.common.model.vo.PageInfo;
 import com.kh.tripick.common.model.vo.Reply;
 import com.kh.tripick.community.model.vo.ComAttachment;
 import com.kh.tripick.community.model.vo.LocalBoard;
 import com.kh.tripick.community.model.vo.Mate;
+import com.kh.tripick.community.model.vo.MateMember;
 
 @Repository
 public class MateBoardDao {
@@ -90,6 +92,58 @@ public class MateBoardDao {
 
 	public int updateNewAttachment(SqlSessionTemplate sqlSession, ComAttachment a) {
 		return sqlSession.insert("mateMapper.updateNewAttachment", a);
+	}
+
+	public int insertMate(SqlSessionTemplate sqlSession, MateMember mm) {
+		return sqlSession.insert("mateMapper.mateMemberInsert", mm);
+	}
+
+	public int dupChk(SqlSessionTemplate sqlSession, MateMember mm) {
+		return sqlSession.selectOne("mateMapper.dupChk", mm);
+	}
+
+	public int updateMateOk(SqlSessionTemplate sqlSession, MateMember mm) {
+		return sqlSession.update("mateMapper.updateMateOk", mm);
+	}
+
+	public int increaseMateCount(SqlSessionTemplate sqlSession, int mateNo) {
+		return sqlSession.update("mateMapper.increaseMateCount", mateNo);
+	}
+
+	public int updateMateEnd(SqlSessionTemplate sqlSession, Mate m) {
+		return sqlSession.update("mateMapper.updateMateEnd", m);
+	}
+	/*
+	public void memberCountChk(SqlSessionTemplate sqlSession, int mateNo) {
+	}
+	*/
+
+	public ArrayList<MateMember> selectApplyList(SqlSessionTemplate sqlSession, String userId, PageInfo pi) {
+		return (ArrayList)sqlSession.selectList("mateMapper.selectApplyList", userId);
+	}
+
+	public int selectApplyListCount(SqlSessionTemplate sqlSession, String userId) {
+		return sqlSession.selectOne("mateMapper.selectApplyListCount", userId);
+	}
+
+	public ArrayList<MateMember> selectGetApplyList(SqlSessionTemplate sqlSession, String userId, PageInfo pi) {
+		return (ArrayList)sqlSession.selectList("mateMapper.selectGetApplyList", userId);
+	}
+
+	public int selectGetApplyListCount(SqlSessionTemplate sqlSession, String userId) {
+		return sqlSession.selectOne("mateMapper.selectGetApplyListCount", userId);
+	}
+
+	public int reportMateReply(SqlSessionTemplate sqlSession, Report report) {
+		return sqlSession.insert("mateMapper.reportMateReply", report);
+	}
+
+	public ArrayList<Mate> selectMyList(SqlSessionTemplate sqlSession, String userId, PageInfo pi) {
+		return (ArrayList)sqlSession.selectList("mateMapper.selectMyList", userId);
+	}
+
+	public int selectMyListCount(SqlSessionTemplate sqlSession, String userId) {
+		return sqlSession.selectOne("mateMapper.selectMyListCount", userId);
 	}
 	
 

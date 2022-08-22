@@ -31,12 +31,24 @@
 		<result column="LOCAL_BOARD_NO" property="localBoardNo"/> 
 	</resultMap>
 	
+	<resultMap id="mateMemberResultSet" type="mateMember">
+		<result column="M_MATE_NO" property="memberMateNo"/> 
+		<result column="REF_MATE_NO" property="refMateNo"/> 
+		<result column="MATE_MEMBER" property="mateMember"/> 
+		<result column="STATUS" property="status"/> 
+		
+		<result column="MATE_TITLE" property="mateTitle"/>
+	</resultMap>
+	
+	
+	<!-- 동행 게시글 총 갯수 -->
 	<select id="selectListCount" resultType="_int">
 		select count(*)
 		  from mate
 		 where NOT status = 'N'
 	</select>
 	
+	<!-- 동행 게시글 리스트 -->
 	<select id="selectList" resultMap="mateResultSet">
         select
 				mate_no,
@@ -54,6 +66,7 @@
 		 	order by
 		 		mate_no desc
 	</select>
+	
 	<!-- 게시글 상세보기 첨부파일 -->
 	<select id="selectAttachment" parameterType="_int" resultMap="attachmentResultSet">
 		select
@@ -66,6 +79,7 @@
 		where
 			mate_no = #{boardNo}
 	</select>
+	
 	<!-- 게시글 상세보기 -->
 	<select id="selectBoard" resultMap="mateResultSet">
       select
@@ -91,6 +105,7 @@
 		and 
 			mate_no = #{mateNo}
 	</select>
+	
 	<!-- 게시글 작성 -->
 	<insert id="insertBoard" parameterType="mate">
 		insert
@@ -118,6 +133,7 @@
 		 	  #{lastDate}
 		 	  )
 	</insert>
+	
 	<!-- 게시글 첨부파일 작성 -->
 	<insert id="insertAttachment" parameterType="comAttachment">
 		insert
@@ -136,7 +152,8 @@
                 seq_mno.currval
                 )
 	</insert>
-		<insert id="updateNewAttachment" parameterType="comAttachment">
+	<!-- 첨부파일 수정 (고쳐야함) -->
+	<insert id="updateNewAttachment" parameterType="comAttachment">
 		insert
 		   into
                 com_attachment
@@ -153,6 +170,30 @@
                 #{mateNo}
                 )
 	</insert>
+	
+	<!-- 첨부파일 수정 --><!-- 있는거 바꿔주는거-->
+	<update id="updateAttachment" parameterType="comAttachment">
+	update
+		 com_attachment
+	  set
+	     origin_name = #{originName},
+	     change_name = #{changeName}
+	where
+		 mate_no = #{mateNo}
+	</update>
+	
+	<!--  조회수 증가  -->
+	<update id="increaseCount">
+	 update 
+	 		mate 
+	 	set 
+	 		count = count + 1 
+	   where 
+	 		 mate_no = #{mateNo} 
+	    and 
+	    	NOT status = 'N' 
+	 </update>
+	 
 	<!-- 게시글 삭제 -->
 	<update id="deleteMate" parameterType="_int">
 		update
@@ -160,8 +201,9 @@
 			set
 			   status = 'N'
 		 where
-		 		mate_no = #{boardNo}
+		 	   mate_no = #{boardNo}
 	</update>
+	
 	<!-- 게시글 수정 -->
 		<update id="updateMate" parameterType="mate">
 		update
@@ -176,78 +218,224 @@
 		 where
 		 		mate_no = #{mateNo}
 	</update>
-	<!-- 첨부파일 수정 --><!-- 있는거 바꿔주는거-->
-	<update id="updateAttachment" parameterType="comAttachment">
-	update
-		 com_attachment
-	  set
-	     origin_name = #{originName},
-	     change_name = #{changeName}
-	where
-		 mate_no = #{mateNo}
-	</update>
-	<!-- 댓글 리스트조회 -->
-	<select id="selectReplyList" parameterType="_int" resultType="reply">
-		select
-			reply_no replyNo,
-			reply_writer replyWriter,
-			reply_content replyContent,
-			to_char(create_date, 'YYYY-MM-DD') as "create_date"
-		from
-			reply
-		where
-                ref_board_no = #{bno}
-            and
-                NOT status = 'N'
-            and
-                reply_level = '2'
-        order
-        	by reply_no desc
-	</select>
-	<!-- 댓글 추가 -->
-	<insert id="insertReply" parameterType="reply">
+	
+	<!-- 동행 기능들 -->
+	<!-- 동행 신청 추가 -->
+	<insert id="mateMemberInsert" parameterType="mateMember">
 		insert
 		  into
-		  		reply
-		  		(
-		  		reply_no,
-		  		reply_content,
-		  		ref_board_no,
-		  		reply_writer,
-		  		reply_level
-		  		)
-		   values
-		   		(
-		   		 seq_rno.nextval,
-		   		 #{replyContent},
-		   		 #{refBoardNo},
-		   		 #{replyWriter},
-		   		 '2'
-		   		)
+		  	   mate_member
+		  	   (
+		  	   m_mate_no,
+		  	   ref_mate_no,
+		  	   mate_member
+		  	   )
+		  	   values
+		  	   (
+		  	   seq_mmno.nextval,
+		  	   #{refMateNo},
+		  	   #{mateMember}
+		  	   )
 	</insert>
-	<!-- 조회수 증가 -->
-	<update id="increaseCount">
-		update
-			  mate
-		  set
-		  	  count = count + 1
+	
+
+	<!-- 동행 마감 -->
+	<update id="updateMateEnd">
+		update 
+			   mate
+		   set
+			   recruit_status = 'N'
 		  where
-		   		mate_no = #{mateNo}
-		   	and
-		   		NOT status = 'N'
+			   mate_no = #{mateNo}
 	</update>
-	<!-- 동행 신청 인원 증가 -->
-	<update id="increaseMate">
+	<!-- 동행 수락 -->
+	<update id="updateMateOk" parameterType="mateMember">
+		update
+			  mate_member
+		   set
+		   	  status = 'Y'
+		 where
+		 	  mate_member = #{mateMember}
+		   and
+		   	  ref_mate_no = #{refMateNo}
+		  
+	</update>
+	<!-- 받은 동행 신청 조회 (리스트)-->
+	<select id="selectGetApplyList" parameterType="string" resultMap="mateMemberResultSet" >
+		select
+			  a.*,
+			  b.mate_member,
+			  ref_mate_no,
+			  b.status bstatus
+		from
+			  mate a, mate_member b
+		where
+			  mate_no = ref_mate_no
+		  and
+			  mate_writer = #{userId}
+	</select>
+	<!-- 받은 동행 신청 갯수(count) -->
+	<select id="selectGetApplyListCount" parameterType="string" resultType="_int">
+		select count(*)
+		   from (
+		   		select
+					  a.*,
+					  b.mate_member,
+					  ref_mate_no,
+					  b.status bstatus
+				from
+			 		 mate a, mate_member b
+				where
+			  		mate_no = ref_mate_no
+		  		and
+			  		mate_writer = #{userId}
+		   )
+	</select>
+	<!-- 보낸 신청 조회 (리스트)  -->
+	<select id="selectApplyList" parameterType="string" resultMap="mateMemberResultSet">
+		select a.*, b.mate_title, b.status bstatus
+		  from 
+		  	   mate_member a, mate b
+		 where
+		 	  mate_no = ref_mate_no
+		   and 
+		 	  mate_member = #{userId}
+	  order by 
+		 	  m_mate_no desc
+	</select>
+	<!-- 보낸 동행 신청 조회 갯수 (count) -->
+	<select id="selectApplyListCount" parameterType="string" resultType="_int">
+		select count(*)
+		  from
+		      (
+		      	select a.*, b.mate_title, b.status bstatus
+		  		from 
+		  	   		mate_member a, mate b
+		 		where
+		 	  		mate_no = ref_mate_no
+		   		and 
+		 	  		mate_member = #{userId}
+	  			order by 
+		 	  		m_mate_no desc
+		      )
+	</select>
+	<!-- 신청 중복조회 이 결과값이 1 이하이어야 함 -> 이상이면 리턴해서 오류 반환시키기 -->
+	<select id="dupChk" resultType="_int" >
+			select count(*)
+		  from
+		      (
+		      	select b.mate_title
+		  		from 
+		  	   		mate_member a, mate b
+		 		where
+		 	  		mate_no = ref_mate_no
+		 	    and
+		 	   		mate_no = #{refMateNo}
+		   		and 
+		 	  		mate_member = #{mateMember}
+		      )
+	</select>
+	<!-- 동행 신청 인원 증가 (모집인원 이하까지만 증가)-->
+	<update id="increaseMateCount">
 		update
 			  mate
-		  set
-		  	 member_curcount = member_curCount + 1
-	    where
-		  	 mate_no = #{boardNo}
+		   set
+		  	  member_curcount = member_curcount + 1
+	     where
+		   	  mate_no = #{boardNo}
 		  and  
-		  	 NOT status = 'N'
+		  	  NOT status = 'N'
+		  and
+		  	 member_curcount &lt; member_count
 	</update>
-		<!-- 키워드 검색 게시글 총 갯 수 -->
+
+
+	<!-- 나의 동행리스트 전체 (작성, 신청) -->
+	<select id="selectMyList" parameterType="string" resultMap="mateResultSet">
+	        select * from
+        (select 
+            ma.mate_no,
+            ma.mate_writer,
+            ma.mate_title,
+            ma.member_count,
+            ma.member_curcount,
+            ma.recruit_status,
+            ma.f_date,
+            ma.l_date
+		  from 
+		  	   mate ma
+		 where
+		 	  mate_writer = #{userId}
+		   and
+		   	  status = 'Y'
+              
+              union all
+              
+            select
+            a.mate_no,
+            a.mate_writer,
+            a.mate_title,
+            a.member_count,
+            a.member_curcount,
+            a.recruit_status,
+            a.f_date,
+            a.l_date
+		from
+			  mate a, mate_member b
+		where
+			  a.mate_no = ref_mate_no
+		  and
+			  mate_member = #{userId}
+          and
+                b.status = 'Y')
+              order by mate_no desc
+	</select>
+	<!-- 나의 동행리스트 전체 (작성, 신청) 페이징처리 -->
+	<select id="selectMyListCount" resultType="_int">
+		select count(*)
+		   from (select * from
+        (select 
+            ma.mate_no,
+            ma.mate_writer,
+            ma.mate_title,
+            ma.member_count,
+            ma.member_curcount,
+            ma.recruit_status,
+            ma.f_date,
+            ma.l_date
+		  from 
+		  	   mate ma
+		 where
+		 	  mate_writer = #{userId}
+		   and
+		   	  status = 'Y'
+              
+              union all
+              
+            select
+            a.mate_no,
+            a.mate_writer,
+            a.mate_title,
+            a.member_count,
+            a.member_curcount,
+            a.recruit_status,
+            a.f_date,
+            a.l_date
+		from
+			  mate a, mate_member b
+		where
+			  a.mate_no = ref_mate_no
+		  and
+			  mate_member = #{userId}
+          and
+                b.status = 'Y')
+              order by mate_no desc)
+	</select>
+	
+	
+	
+	<!-- 검색 관련 -->
+	<!-- 키워드 검색 게시글 총 갯수 -->
 	<select id="selectSearchCount" resultType="_int" parameterType="hashmap">
 		select
 			  count(*)
@@ -266,6 +454,7 @@
 		 </if>
 		       like '%' || #{keyword} || '%'
 	</select>
+	
 	<!-- 검색 게시판 리스트 -->
 	<select id="selectSearchList" resultMap="mateResultSet" parameterType="hashmap">
         select
@@ -292,10 +481,60 @@
 					and mate_content
 				</otherwise>
 			</choose>
-			   like '%' || #{keyword} || '%'
-		 	order by
-		 		mate_no desc
+			      like '%' || #{keyword} || '%'
+		 	  order by
+		 		  mate_no desc
 	</select>
+	<!-- 댓글 관련 -->
+	<!-- 댓글 리스트조회 -->
+	<select id="selectReplyList" parameterType="_int" resultType="reply">
+		select
+			reply_no replyNo,
+			reply_writer replyWriter,
+			reply_content replyContent,
+			to_char(create_date, 'YYYY-MM-DD') as "create_date"
+		from
+			reply
+		where
+                ref_board_no = #{bno}
+            and
+                NOT status = 'N'
+            and
+                reply_level = '2'
+        order
+        	by reply_no desc
+	</select>
+	
+	<!-- 댓글 추가 -->
+	<insert id="insertReply" parameterType="reply">
+		insert
+		  into
+		  		reply
+		  		(
+		  		reply_no,
+		  		reply_content,
+		  		ref_board_no,
+		  		reply_writer,
+		  		reply_level
+		  		)
+		   values
+		   		(
+		   		 seq_rno.nextval,
+		   		 #{replyContent},
+		   		 #{refBoardNo},
+		   		 #{replyWriter},
+		   		 '2'
+		   		)
+	</insert>
+	<!-- 신고  -->
+	<!-- 댓글 신고 및 글 신고 -->
+	<insert id="reportMateReply">
+        INSERT
+          INTO
+                 RPT(RPT_NO, WRITE_NO, DIVCODE, USER_ID, RPT_CONTENT)
+        VALUES
+              (SEQ_RPNO.NEXTVAL, #{writeNo}, #{divCode}, #{userId}, #{rptContent})
+    </insert>
 	
 
 </mapper>

@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.gson.Gson;
+import com.kh.tripick.admin.model.vo.Report;
 import com.kh.tripick.common.model.vo.PageInfo;
 import com.kh.tripick.common.model.vo.Reply;
 import com.kh.tripick.common.template.Pagination;
@@ -224,6 +225,18 @@ public class LocalBoardController {
 		return localBoardService.insertReply(r) > 0 ? "success" : "fail";
 	}
 	
+	/**
+     *  신고
+     */
+    @RequestMapping("report.lb")
+    public String reportMateReply(Report report, int bno, HttpSession session) {
+        String alertMsg = localBoardService.reportLocalBoardReply(report)>0?"신고가 접수되었습니다":"error:신고실패";
+        session.setAttribute("alertMsg", alertMsg);
+        return "redirect:detail.lb?bno=" + bno;
+    }
+
+	
+    // 게시글 검색
 	@RequestMapping("search.lb")
 	public ModelAndView selectSearch(@RequestParam(value="cpage", defaultValue="1")int currentPage,
 										String keyword, String condition, ModelAndView mv ) {
@@ -247,6 +260,7 @@ public class LocalBoardController {
 		
 		return mv;
 	}
+	
 	
 	}
 	

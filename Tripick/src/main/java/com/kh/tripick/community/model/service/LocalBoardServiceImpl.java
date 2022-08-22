@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
+import com.kh.tripick.admin.model.vo.Report;
 import com.kh.tripick.common.model.vo.PageInfo;
 import com.kh.tripick.common.model.vo.Reply;
 import com.kh.tripick.community.model.dao.LocalBoardDao;
@@ -93,6 +94,14 @@ public class LocalBoardServiceImpl implements LocalBoardService {
 	@Override
 	public ArrayList<LocalBoard> selectSearchList(HashMap<String, String> map, PageInfo pi) {
 		return LocalBoardDao.selectSearchList(sqlSession, map, pi);
+	}
+	@Override
+	public int reportLocalBoardReply(Report report) {
+		return LocalBoardDao.reportLocalBoardReply(sqlSession, report);
+	}
+	@Override
+	public int reportLocalBoardPost(Report report) {
+		return LocalBoardDao.reportLocalBoardPost(sqlSession, report);
 	}
 
 

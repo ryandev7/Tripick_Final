@@ -8,12 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
+import com.kh.tripick.admin.model.vo.Report;
 import com.kh.tripick.common.model.vo.PageInfo;
 import com.kh.tripick.common.model.vo.Reply;
 import com.kh.tripick.community.model.dao.MateBoardDao;
 import com.kh.tripick.community.model.vo.ComAttachment;
 import com.kh.tripick.community.model.vo.LocalBoard;
 import com.kh.tripick.community.model.vo.Mate;
+import com.kh.tripick.community.model.vo.MateMember;
 
 @Service
 public class MateBoardServiceImpl implements MateBoardService{
@@ -103,6 +105,73 @@ public class MateBoardServiceImpl implements MateBoardService{
 	public int updateNewAttachment(ComAttachment a) {
 		return mateBoardDao.updateNewAttachment(sqlSession, a);
 	}
+
+	@Override
+	public int insertMate(MateMember mm) {
+		return mateBoardDao.insertMate(sqlSession, mm);
+	}
+
+	@Override
+	public int dupChk(MateMember mm) {
+		return mateBoardDao.dupChk(sqlSession, mm);
+	}
+
+	@Override
+	public int updateMateOk(MateMember mm) {
+		return mateBoardDao.updateMateOk(sqlSession, mm);
+	}
+
+	@Override
+	public int increaseMateCount(int mateNo) {
+		return mateBoardDao.increaseMateCount(sqlSession, mateNo);
+	}
+
+	@Override
+	public int updateMateEnd(Mate m) {
+		return mateBoardDao.updateMateEnd(sqlSession, m);
+	}
+	/*
+	@Override
+	public int memberCountChk(int mateNo) {
+		mateBoardDao.memberCountChk(sqlSession, mateNo);
+	}
+	*/
+
+	@Override
+	public ArrayList<MateMember> selectApplyList(String userId, PageInfo pi) {
+		return mateBoardDao.selectApplyList(sqlSession, userId, pi);
+	}
+
+	@Override
+	public int selectApplyListCount(String userId) {
+		return mateBoardDao.selectApplyListCount(sqlSession, userId);
+	}
+
+	@Override
+	public ArrayList<MateMember> selectGetApplyList(String userId, PageInfo pi) {
+		return mateBoardDao.selectGetApplyList(sqlSession, userId, pi);
+	}
+
+	@Override
+	public int selectGetApplyListCount(String userId) {
+		return mateBoardDao.selectGetApplyListCount(sqlSession, userId);
+	}
+
+	@Override
+	public ArrayList<Mate> selectMyList(String userId, PageInfo pi) {
+		return mateBoardDao.selectMyList(sqlSession,userId, pi);
+	}
+
+	@Override
+	public int selectMyListCount(String userId) {
+		return mateBoardDao.selectMyListCount(sqlSession, userId);
+	}
+
+	@Override
+	public int reportMateReply(Report report) {
+		return mateBoardDao.reportMateReply(sqlSession, report);
+	}
+
 
 
 

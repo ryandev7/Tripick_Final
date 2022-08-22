@@ -5,8 +5,25 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
-<style></style>
+<title>동행게시글 상세보기</title>
+<style>
+	#reply-area{
+		display: flex;
+		justify-content: center;
+	}
+	#reply-area-child{
+		width:800px;
+	}
+	#rpt-btn{
+		width:20px;
+		height:20px;
+		margin-left:5px;
+		margin-bottom:5px;
+	}
+	#rpt-reply, #delete-reply{
+		cursor:pointer;
+	}
+</style>
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <!-- 부트스트랩에서 제공하고 있는 스타일 -->
@@ -81,9 +98,6 @@
                     <td colspan="4"><p style="height:150px;">${ m.mateContent }</p></td>
                 </tr>
             </table>
-                <div id="singo" align="right">
-                	<button>신고하기</button>
-                </div>
             <br>
 
 			<c:choose>
@@ -98,13 +112,14 @@
 			 </c:when>
 			 <c:otherwise>
 				 <div align="center">
-				 	<a class="btn btn-success" href="">신청하기</a>
+				 	<a class="btn btn-success" onclick="postFormSubmit(3)">신청하기</a>
 				 	<a class="btn btn-secondary" href="list.mb">목록으로</a>
+				 	<a class="btn btn-warning" data-toggle="modal" data-target='#PostReportModal'>신고하기</a>
 				 </div>
 			 </c:otherwise>
 			</c:choose>
 
-				  <!-- 삭제모달 -->
+				  <!-- 게시글 삭제모달 -->
 		  <div class="modal fade" id="myModal">
 		    <div class="modal-dialog">
 		      <div class="modal-content">
@@ -131,48 +146,118 @@
 		    <form action="delete.mb" id="postForm" method="post">
 				<input type="hidden" value="${ m.mateNo }" name="mno">
 				<input type="hidden" value="${ at.changeName }" name="filePath">
+				<input type="hidden" value="${ loginUser.userId }" name="userId">
 			</form>
 			<script>
 				function postFormSubmit(num){
 					if(num == 1){ // 수정하기 클릭 시
 						$('#postForm').attr('action','updateForm.mb').submit();
-					} else{ // 삭제하기 클릭 시
+					} else if(num == 2){ // 삭제하기 클릭 시
 						$('#postForm').attr('action','delete.mb').submit();
+					} else{ // 신청하기 클릭 시
+						$('#postForm').attr('action','insertApply.mb').submit();
 					}
 				}
 			</script>
             <br><br>
-
-            <table id="replyArea" class="table" align="center">
-                <thead>
-                	<c:choose>
-                		<c:when test="${ empty loginUser }">
+            <div id="reply-area">
+            	<div id="reply-area-child">
+		            <table id="reply-list" class="table" align="center">
+		                <thead>
+		                	<c:choose>
+		                		<c:when test="${ empty loginUser }">
+				                    <tr>
+				                        <th colspan="2">
+				                            <textarea class="form-control" readonly cols="55" rows="2" style="resize:none; width:100%;">로그인 후 이용 가능합니다. 로그인하세요</textarea>
+				                        </th>
+				                        <th style="vertical-align:middle"><button class="btn btn-secondary disabled">등록하기</button></th>
+				                    </tr>
+		                    	 </c:when>
+		                    	<c:otherwise>
+				                    <tr>
+				                        <th colspan="2">
+				                            <textarea class="form-control" id="content" cols="55" rows="2" style="resize:none; width:100%;"></textarea>
+				                        </th>
+				                        <th style="vertical-align:middle"><button class="btn btn-secondary" onclick="addReply()">등록하기</button></th>
+				                    </tr>
+		                    	</c:otherwise>
+		                    </c:choose>
 		                    <tr>
-		                        <th colspan="2">
-		                            <textarea class="form-control" readonly cols="55" rows="2" style="resize:none; width:100%;">로그인 후 이용 가능합니다. 로그인하세요</textarea>
-		                        </th>
-		                        <th style="vertical-align:middle"><button class="btn btn-secondary disabled">등록하기</button></th>
-		                    </tr>
-                    	 </c:when>
-                    	<c:otherwise>
-		                    <tr>
-		                        <th colspan="2">
-		                            <textarea class="form-control" id="content" cols="55" rows="2" style="resize:none; width:100%;"></textarea>
-		                        </th>
-		                        <th style="vertical-align:middle"><button class="btn btn-secondary" onclick="addReply()">등록하기</button></th>
-		                    </tr>
-                    	</c:otherwise>
-                    </c:choose>
-                    <tr>
-                        <td colspan="3">댓글(<span id="rcount">0</span>)</td>
-                    </tr> 
-                </thead>
-                <tbody>
-                   
-                </tbody>
-            </table>
+		                        <td colspan="3">댓글(<span id="rcount">0</span>)</td>
+		                    </tr> 
+		                </thead>
+		                <tbody>
+		                   
+		                </tbody>
+		            </table>
+            	</div>
+            </div>
         </div>
         <br><br>
+        <!-- 댓글 신고 모달 -->
+    <div class="modal fade" id="replyReportModal">
+          <div class="modal-dialog">
+           <div class="modal-content">
+               <!-- Modal Header -->
+               <div class="modal-header">
+                      <img style="width:25px; height:25px" src="resources/common-upfiles/rpt-btn.png">
+                   &nbsp;<h5 class="modal-title"><b>댓글 신고</b></h5>
+                   <button type="button" class="close" data-dismiss="modal"></button>
+               </div>
+
+               <form name="reportForm" action="report.mb" method="post">
+                   <!-- Modal body -->
+                   <div class="modal-body">
+                    <input type="hidden" name="mateNo" value="${m.mateNo }"> <!-- 코스 번호 : redirect위함 -->
+                    <input type="hidden" name="userId" value="${loginUser.userId }"> <!-- 신고자 ID -->
+                    <input type="hidden" name="writeNo" id="writeNo" value=""> <!-- 신고할 댓글 번호 -->
+                    <input type="hidden" name="divCode" value="R"> <!-- 구분코드 R : 댓글 -->
+                    신고 사유<br>
+                    <textarea name="rptContent" style="width:100%; height:200px" required></textarea>
+                   </div>
+
+                   <!-- Modal footer -->
+                   <div class="modal-footer">
+                       <button type="submit" class="btn btn-danger">신고하기</button>
+                       <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
+                   </div>
+               </form>
+
+           </div>
+         </div>
+    </div>
+        <!-- 글 신고모달 -->
+    <div class="modal fade" id="PostReportModal">
+          <div class="modal-dialog">
+           <div class="modal-content">
+               <!-- Modal Header -->
+               <div class="modal-header">
+                      <img style="width:25px; height:25px" src="resources/common-upfiles/rpt-btn.png">
+                   &nbsp;<h5 class="modal-title"><b>글 신고</b></h5>
+                   <button type="button" class="close" data-dismiss="modal"></button>
+               </div>
+
+               <form name="reportForm" action="report.mb" method="post">
+                   <!-- Modal body -->
+                   <div class="modal-body">
+                    <input type="hidden" name="bno" value="${m.mateNo}"> <!-- 게시글 번호 : redirect위함 -->
+                    <input type="hidden" name="writeNo" value="${m.mateNo}"> <!-- 게시글 번호 : redirect위함 -->
+                    <input type="hidden" name="userId" value="${loginUser.userId }"> <!-- 신고자 ID -->
+                    <input type="hidden" name="divCode" value="M"> <!-- 구분코드 R : 댓글 -->
+                    신고 사유<br>
+                    <textarea name="rptContent" style="width:100%; height:200px" required></textarea>
+                   </div>
+
+                   <!-- Modal footer -->
+                   <div class="modal-footer">
+                       <button type="submit" class="btn btn-danger">신고하기</button>
+                       <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
+                   </div>
+               </form>
+
+           </div>
+         </div>
+    </div>
 
     </div>
 
@@ -227,11 +312,14 @@
 	    					  + '<th>' + list[i].replyWriter + '</th>'
 	    					  + '<td>' + list[i].replyContent + '</td>'
 	    					  + '<td>' + list[i].create_date + '</td>'
-	    					  + '<td><a href="">신고하기</a></td>'
-	    					  + '</tr>'
+		                       + '<td id="rpt-reply" onclick="reportReply('+ list[i].replyNo +')" data-toggle="modal" data-target="#replyReportModal">'
+		                       + '<img data-replyNo="'+list[i].replyNo+'" id="rpt-btn" title="댓글 신고" src="resources/common-upfiles/rpt-btn.png">'		                       + '<input type="hidden" name="writeNo" value="'+ list[i].replyNo +'">'			
+		                       + '</td>'
+		                       + '<td id="delete-reply" title="댓글 삭제">❌</td>'
+		                       + '</tr>'
 	    			}
     			
-    			$('#replyArea tbody').html(value);
+    			$('#reply-list tbody').html(value);
     			$('#rcount').text(list.length);
     		}, error : function(){
     			console.log("에러났어~");
@@ -239,6 +327,18 @@
     		
     		})
     	}
+    	
+    	// 댓글 신고
+    	   function reportReply(replyNo){
+    	       if(${empty loginUser}){
+    	           alert("로그인 후 이용 가능한 서비스입니다.");
+    	           $("td[id='rpt-reply']").attr('data-target', '');
+    	       } else {
+    	            data= replyNo;
+    	            //alert(data);
+    	            $('.modal-body #writeNo').val(data);
+    	       }
+    	    }
     
     </script>
     

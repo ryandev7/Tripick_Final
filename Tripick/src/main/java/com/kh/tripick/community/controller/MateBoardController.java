@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.gson.Gson;
+import com.kh.tripick.admin.model.vo.Report;
 import com.kh.tripick.common.model.vo.PageInfo;
 import com.kh.tripick.common.model.vo.Reply;
 import com.kh.tripick.common.template.Pagination;
@@ -26,6 +27,8 @@ import com.kh.tripick.community.model.service.MateBoardService;
 import com.kh.tripick.community.model.vo.ComAttachment;
 import com.kh.tripick.community.model.vo.LocalBoard;
 import com.kh.tripick.community.model.vo.Mate;
+import com.kh.tripick.community.model.vo.MateMember;
+import com.kh.tripick.member.model.vo.Member;
 
 @Controller
 public class MateBoardController {
@@ -69,13 +72,13 @@ public class MateBoardController {
 		
 		return mv;
 	}
-	// 작성폼
+	// 게시글 작성폼
 	@RequestMapping("enrollForm.mb")
 	public String enrollForm(HttpSession session) {
 		session.setAttribute("lclist", mateBoardService.selectLocalcatList());
 		return "mateboard/mateboardEnroll";
 	}
-	// 수정폼
+	// 게시글 수정폼
 	@RequestMapping("updateForm.mb")
 	public String updateForm(int mno, Model model) {
 		//System.out.println(mateBoardService.selectLocalcatList());
@@ -138,7 +141,7 @@ public class MateBoardController {
 			return "common/errorPage";
 		}
 	}
-	// 게시글 수정
+	// 게시글 (첨부파일) 수정
 	@RequestMapping("update.mb")
 	public String updateBoard(Mate m, MultipartFile reupfile, HttpSession session, Model model) {
 		
@@ -219,7 +222,7 @@ public class MateBoardController {
 		}
 		return "main";
 	}
-	
+	// 게시글 삭제
 	@RequestMapping("delete.mb")
 	public String deleteBoard(int mno, String filePath, HttpSession session, Model model) {
 		
@@ -241,6 +244,117 @@ public class MateBoardController {
 			
 		}
 	}
+	/*
+	 * 동행 신청 관련 기능
+	 */
+	// 동행 신청 현황 페이지
+	@RequestMapping("applyList.mb")
+	public ModelAndView ApplyList(@RequestParam(value="cpage", defaultValue="1")int currentPage, ModelAndView mv, HttpSession session) {
+		
+		String userId = ((Member)session.getAttribute("loginUser")).getUserId();
+		//System.out.println(userId);
+		// 보낸신청리스트 페이징
+		PageInfo pi = Pagination.getPageInfo(mateBoardService.selectApplyListCount(userId), currentPage, 5, 5);
+		// 받은신청리스트 페이징
+		PageInfo pi2 = Pagination.getPageInfo(mateBoardService.selectGetApplyListCount(userId), currentPage, 5, 5);
+		
+		
+		// 보낸신청리스트
+		ArrayList<MateMember> list = mateBoardService.selectApplyList(userId, pi);
+		//System.out.println(list);
+		// 받은신청리스트
+		ArrayList<MateMember> list2 = mateBoardService.selectGetApplyList(userId, pi);
+		//System.out.println(list2);
+		//System.out.println(list);
+		mv.addObject("pi", pi)
+		  .addObject("pi2", pi2)
+		  .addObject("list", list)
+		  .addObject("list2", list2)
+		  .setViewName("mypage/myMateInfo");
+		  
+		return mv;
+	}
+	
+	// 나의 동행 리스트들을 보여주는 페이지
+	@RequestMapping("myApplyList.mb")
+	public ModelAndView myApplyList(@RequestParam(value="cpage", defaultValue="1")int currentPage, ModelAndView mv, HttpSession session) {
+		String userId = ((Member)session.getAttribute("loginUser")).getUserId();
+		PageInfo pi = Pagination.getPageInfo(mateBoardService.selectMyListCount(userId), currentPage, 5, 5);
+		
+		ArrayList<Mate> list = mateBoardService.selectMyList(userId, pi);
+		
+		mv.addObject("pi", pi)
+		  .addObject("list", list)
+		  .setViewName("mypage/myMateList");
+		
+		return mv;
+		
+		
+	}
+	//동행 신청
+	@RequestMapping("insertApply.mb")
+	public String insertapplyMate(@RequestParam(value="userId")String mateMember,
+			@RequestParam(value="mno")int refMateNo, HttpSession session, Model model) {
+		MateMember mm = new MateMember();
+		System.out.println(mateMember);
+		
+		mm.setMateMember(mateMember);
+		mm.setRefMateNo(refMateNo);
+		
+		// 신청 중복체크
+		int result2 = mateBoardService.dupChk(mm);
+		System.out.println(result2);
+		if(result2 > 0 ) {
+			session.setAttribute("alertMsg","이미 동행신청을 하였습니다." );
+			return "redirect:detail.mb?mno=" + refMateNo;
+		}
+		
+		int result = mateBoardService.insertMate(mm);
+		if(result > 0) {
+			session.setAttribute("alertMsg", "신청성공");
+			return "redirect:detail.mb?mno=" + refMateNo;
+		}else {
+			model.addAttribute("errorMsg", "신청 실패");
+			return "common/errorPage";
+		}
+		
+	}
+	// 동행 수락 기능
+	@RequestMapping("accept.mb")
+	public String updateMateOk(String userId, int refNo, HttpSession session, Model model) {
+		
+		MateMember mm = new MateMember();
+		Mate m = new Mate();
+		int mateNo = refNo;
+		m.setMateNo(mateNo);
+		
+		mm.setRefMateNo(refNo);
+		mm.setMateMember(userId);
+		//System.out.println(mm);
+		
+		// 동행 현재 인원수 + 1
+		int result1 = mateBoardService.increaseMateCount(refNo);
+		
+		if(result1 != 1) {
+		
+			session.setAttribute("alertMsg", "수락 실패 (모집인원초과)");
+			// 모집 인원이 꽉 찬 상태이므로 모집 여부를 모집완료로 변경
+			mateBoardService.updateMateEnd(m);
+			return "redirect:applyList.mb";
+		}
+			
+		// 멤버 status = 'y'로 변경
+		int result = mateBoardService.updateMateOk(mm);
+			
+		if(result * result1 > 0) 
+			session.setAttribute("alertMsg", "수락성공");
+			return "redirect:applyList.mb";
+	}
+	
+	/*
+	 * 댓글
+	 */
+	// 댓글 리스트 조회
 	@ResponseBody
 	@RequestMapping(value="rlist.mb", produces="application/json; charset=UTF-8")
 	public String ajaxSelectReplyList(int bno) {
@@ -249,12 +363,22 @@ public class MateBoardController {
 		return new Gson().toJson(list);
 		
 	}
-	
+	// 댓글 입력
 	@ResponseBody
 	@RequestMapping("rinsert.mb")
 	public String ajaxInsertReply(Reply r) { // 성공했을 때는 success 실패했을때는 fail
 		System.out.println(r);
 		return mateBoardService.insertReply(r) > 0 ? "success" : "fail";
-	}	
+	}
+	/**
+     * 코스 댓글, 글 신고
+     */
+    @RequestMapping("report.mb")
+    public String reportCourseReply(Report report, int mateNo, HttpSession session) {
+        String alertMsg = mateBoardService.reportMateReply(report)>0?"신고가 접수되었습니다":"error:신고실패";
+        session.setAttribute("alertMsg", alertMsg);
+        return "redirect:detail.mb?mno=" + mateNo;
+    }
+	
 
 }

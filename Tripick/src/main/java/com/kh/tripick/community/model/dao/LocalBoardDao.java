@@ -8,6 +8,7 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Repository;
 
+import com.kh.tripick.admin.model.vo.Report;
 import com.kh.tripick.common.model.vo.PageInfo;
 import com.kh.tripick.common.model.vo.Reply;
 import com.kh.tripick.community.model.vo.ComAttachment;
@@ -97,6 +98,12 @@ public class LocalBoardDao {
 		RowBounds rowBounds = new RowBounds(offset, limit);
 		
 		return (ArrayList)sqlSession.selectList("localBoardMapper.selectSearchList", map, rowBounds);
+	}
+	public int reportLocalBoardReply(SqlSessionTemplate sqlSession, Report report) {
+		return sqlSession.insert("localBoardMapper.reportLocalBoardReply", report);
+	}
+	public int reportLocalBoardPost(SqlSessionTemplate sqlSession, Report report) {
+		return sqlSession.insert("localBoardMapper.reportLocalBoardPost", report);
 	}
 
 }
