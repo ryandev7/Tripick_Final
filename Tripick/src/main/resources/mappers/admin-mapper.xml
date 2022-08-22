@@ -3,37 +3,164 @@
 <mapper namespace="adminMapper">
 
 	<resultMap id="reportResultSet" type="report">
-		<result column="RPT_NO" property="rptNo"/>
-		<result column="WRITE_NO" property="writeNo"/>
-		<result column="BOARD_NAME" property="divCode"/>
-		<result column="USER_ID" property="userId"/>
-		<result column="RTP_DATE" property="rptDate"/>
-		<result column="RPT_CONTENT" property="rptContent"/>
+		<result column="DIVCODE" property="divCode"/>
+		<result column="LOCAL_BOARD_NO" property="boardNo"/>
+		<result column="LB_WRITER" property="lbWriter"/>
+		<result column="LOCAL_BOARD_TITLE" property="title"/>
+		<result column="LOCAL_CODE" property="code"/>
+		<result column="LOCAL_BOARD_CONTENT" property="content"/>
+		<result column="CREATE_DATE" property="createDate"/>
+		<result column="STATUS" property="status"/>
 		<result column="RPT_CNT" property="rptCnt"/>
 	</resultMap>
-
+	
+	<resultMap id="reportDetailSet" type="report">
+		<result column="RPT_NO" property="rptNo"/>
+		<result column="WRITE_NO" property="writeNo"/>
+		<result column="DIVCODE" property="divCode"/>
+		<result column="USER_ID" property="userId"/>
+		<result column="RPT_DATE" property="rptDate"/>
+		<result column="RPT_CONTENT" property="rptContent"/>
+	</resultMap>
+	
+	<resultMap id="reportReplySet" type="report">
+		<result column="REPLY_NO" property="replyNo"/>
+		<result column="REPLY_WRITER" property="reWriter"/>
+		<result column="REPLY_CONTENT" property="content"/>
+		<result column="CREATE_DATE" property="createDate"/>
+		<result column="STATUS" property="status"/>
+		<result column="REPLY_LEVEL" property="replyLevel"/>
+		<result column="REF_BOARD_NO" property="boardNo"/>
+	</resultMap>
+	
+	<!-- ======================== 신고된 게시글 총갯수 조회(페이징처리를 위함) ============================== -->
 	<select id="selectListCount" resultType="_int">
 		SELECT COUNT(*)
 		  FROM RPT
 		 WHERE DIVCODE != 'R'
 	</select>
 	
-	<select id="selectList" resultMap="reportResultSet">
-		SELECT RPT_NO,
-	    WRITE_NO,
-	    DIVCODE,
-	    CASE 
-	    	WHEN DIVCODE = 'L' THEN '지역별게시판'
-	    	WHEN DIVCODE = 'M' THEN '동행게시판'
-	    ELSE 'R'
-	    	END AS BOARD_NAME,
-	    USER_ID,
-	    RPT_DATE,
-	    RPT_CONTENT,
-	    RPT_CNT
-		FROM RPT
-		WHERE DIVCODE != 'R'
-		ORDER BY RPT_NO DESC
+	<!-- ======================== 신고된 댓글 총갯수 조회(페이징처리를 위함) ============================== -->
+	<select id="selectReplyListCount" resultType="_int">
+		SELECT COUNT(*)
+		  FROM RPT
+		 WHERE DIVCODE = 'R'
 	</select>
+	
+	<!-- ========================= 신고된 게시판 리스트 ============================ -->
+	<select id="selectList" resultMap="reportResultSet">
+		/* selectList 상세 게시글 조회 */
+		SELECT 'L' AS DIVCODE  <!--해당 셀렉트문은 디바이스코드 L(지역게시판)에 대한 목록이라고 하는 구분값  -->
+		     , LB.LOCAL_BOARD_NO <!-- 별칭을 LB로 하고 지역게시판의 컬럼들을 붙여줌 -->
+		     , LB.LB_WRITER
+		     , LB.LOCAL_BOARD_TITLE
+		     , LB.LOCAL_BOARD_CONTENT
+		     , LB.CREATE_DATE
+		     , LB.STATUS
+		     , COUNT(RPT.RPT_NO) AS RPT_CNT <!-- 해당 지역게시판의 신고건수 -->
+		  FROM LOCAL_BOARD LB <!-- 지역게시판 조회 및 별칭 -->
+		     , RPT RPT
+		 WHERE LB.LOCAL_BOARD_NO = RPT.WRITE_NO <!-- 지역게시판 번호와 신고테이블의 게시판 번호를 조회한다 -->
+		   AND RPT.DIVCODE = 'L' <!-- DIVCODE가 L인것을 -->
+		 GROUP BY LB.LOCAL_BOARD_NO, LB.LB_WRITER, LB.LOCAL_BOARD_TITLE <!-- 셀렉트하는 모든 컬럼을 다 넣어준다. / 그룹바이의 사용 / 한 게시판에 여러 신고건수를 넣기위함 -->
+		        , LB.LOCAL_BOARD_CONTENT, LB.CREATE_DATE
+		        , LB.STATUS
+		UNION ALL <!-- 구조가 같은 쿼리를 하나의 쿼리 결과로 취합하기 위함 -->
+		SELECT 'M' AS DIVCODE <!--해당 셀렉트문은 디바이스코드 M(동행게시판)에 대한 목록이라고 하는 구분값  -->
+		     , MT.MATE_NO               AS LOCAL_BOARD_NO <!-- MT와 L은 같은 구조라는 것을 시각적으로 보여주기 위함-->
+		     , MT.MATE_WRITER           AS LB_WRITER
+		     , MT.MATE_TITLE            AS LOCAL_BOARD_TITLE
+		     , MT.MATE_CONTENT          AS LOCAL_BOARD_CONTENT
+		     , MT.CREATE_DATE           AS CREATE_DATE
+		     , MT.STATUS
+		     , COUNT(RPT.RPT_NO) AS RPT_CNT
+		  FROM MATE MT
+		     , RPT RPT
+		 WHERE RPT.WRITE_NO = MT.MATE_NO
+		   AND RPT.DIVCODE = 'M'
+		 GROUP BY MT.MATE_NO
+		 		, MT.MATE_WRITER, MT.MATE_TITLE
+		        , MT.MATE_CONTENT, MT.CREATE_DATE
+		        , MT.STATUS
+	</select>
+	
+	<!-- ========================= 신고된 게시판 디테일 뷰 ============================= -->
+	<select id="selectBoard" parameterType="hashmap" resultMap="reportResultSet">
+		SELECT LOCAL_BOARD_NO
+	     , LOCAL_CODE
+	     , LB_WRITER
+	     , LOCAL_BOARD_CONTENT
+	     , DIVCODE
+	     , LOCAL_BOARD_TITLE
+	     , CREATE_DATE
+	  FROM (SELECT LOCAL_BOARD_NO
+	             , LOCAL_CODE
+	             , LB_WRITER
+	             , LOCAL_BOARD_CONTENT
+	             , 'L' AS DIVCODE
+	             , LOCAL_BOARD_TITLE
+	             , CREATE_DATE
+	          FROM LOCAL_BOARD
+	         WHERE LOCAL_BOARD_NO = #{boardNo}
+	         UNION ALL
+	        SELECT MATE_NO          AS LOCAL_BOARD_NO
+	             , LOCAL_CODE       AS LOCAL_CODE
+	             , MATE_WRITER      AS LB_WRITER
+	             , MATE_CONTENT     AS LOCAL_BOARD_CONTENT
+	             , 'M' AS DIVCODE
+	             , MATE_TITLE       AS LOCAL_BOARD_TITLE
+	             , CREATE_DATE
+	          FROM MATE
+	         WHERE MATE_NO = #{boardNo}
+	       )DETAIL
+	 		 WHERE DETAIL.DIVCODE = #{divCode}
+	</select>
+	
+	<!-- ===================== 신고된 댓글 리스트 ======================= -->
+	<select id="selectReplyList" resultMap="reportReplySet">
+		SELECT 'R' AS DIVCODE  <!--해당 셀렉트문은 디바이스코드 R(댓글)에 대한 목록이라고 하는 구분값  -->
+		     , RE.REPLY_NO <!-- 별칭을 RE로 하고 댓글테이블의 컬럼들을 붙여줌 -->
+		     , RE.REPLY_WRITER
+		     , RE.REPLY_CONTENT
+		     , RE.CREATE_DATE
+		     , RE.STATUS
+		     , RE.REPLY_LEVEL
+		     , COUNT(RPT.RPT_NO) AS RPT_CNT <!-- 해당 지역게시판의 신고건수 -->
+		  FROM REPLY RE <!-- 댓글 조회 및 별칭 -->
+		     , RPT RPT
+		 WHERE RE.REPLY_NO = RPT.WRITE_NO <!-- 댓글 번호와 댓글테이블의 댓글 번호를 조회한다 -->
+		   AND RPT.DIVCODE = 'R' <!-- DIVCODE가 R인것을 -->
+		 GROUP BY RE.REPLY_NO, RE.REPLY_WRITER, RE.REPLY_CONTENT <!-- 셀렉트하는 모든 컬럼을 다 넣어준다. / 그룹바이의 사용 / 한댓글에 여러 신고건수를 넣기위함 -->
+		        , RE.CREATE_DATE, RE.STATUS
+		        , RE.REPLY_LEVEL
+	</select>
+	
+	<!-- ===================== 신고된 게시판안에 신고 내용이 들어오는 리스트 ======================= -->
+	<select id="selectRptList" resultMap="reportDetailSet" parameterType="hashmap">
+		SELECT RPT_NO
+		     , WRITE_NO
+		     , DIVCODE
+		     , USER_ID
+		     , RPT_DATE
+		     , RPT_CONTENT 
+		  FROM RPT 
+	     WHERE RPT.DIVCODE = #{divCode}
+		   AND WRITE_NO = #{boardNo}
+	     ORDER BY RPT_NO
+	</select>
+	
+	<!-- ===================== 신고된 게시판(지역게시판)삭제 ======================= -->
+	<update id="deleteLocalBoard" parameterType="_int">
+		UPDATE LOCAL_BOARD
+		   SET STATUS = 'N'
+		 WHERE LOCAL_BOARD_NO = #{boardNo}
+	</update>
+	
+	<!-- ===================== 신고된 게시판(동행게시판)삭제  ======================= -->
+		<update id="deleteMateBoard" parameterType="_int">
+		UPDATE MATE
+		   SET STATUS = 'N'
+		 WHERE MATE_NO = #{boardNo}
+	</update>
 	
 </mapper>

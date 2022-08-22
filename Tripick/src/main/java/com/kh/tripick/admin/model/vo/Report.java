@@ -1,5 +1,7 @@
 package com.kh.tripick.admin.model.vo;
 
+import java.sql.Date;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,5 +18,16 @@ public class Report {
 	private String rptDate; //RPT_DATE DATE DEFAULT SYSDATE,
 	private String rptContent; //RPT_CONTENT VARCHAR2(1000) NOT NULL
 	private int rptCnt;
-
+	private int boardNo;
+	private String writerNo;
+	private String title;
+	private String content;
+	private String createDate;
+	private String status;
+	private String lbWriter;
+	private String code;
+	private int replyNo;
+	private String reWriter;
+	private String replyLevel;
+	
 }

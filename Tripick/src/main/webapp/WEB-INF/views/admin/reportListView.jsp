@@ -22,10 +22,11 @@
             <table id="reportList" class="table table-hover" align="center">
                 <thead>
                     <tr>
+                        <th>글번호</th>
                         <th>글유형</th>
                         <th>작성자</th>
                         <th>작성일</th>
-                        <th>신고내용</th>
+                        <th>제목</th>
                         <th>신고횟수</th>
                         <th>처리상태</th>
                     </tr>
@@ -34,17 +35,54 @@
                     
                     <c:forEach var='r' items="${list}">
                     	<tr>
-                    		<td>${r.divCode}</td>
-                    		<td>${r.userId}</td>
-                    		<td>${r.rptDate}</td>
-                    		<td>${r.rptContent}</td>
+                    		<td class="rno">${r.boardNo}</td>
+                    		<c:choose>
+                    			<c:when test="${r.divCode eq 'L' }">
+                    				<td>지역게시판</td>
+                    			</c:when>
+                    			<c:when test="${r.divCode eq 'M' }">
+                    				<td>동행게시판</td>
+                    			</c:when>
+                    			<c:otherwise>
+                    				<td>댓글</td>
+                    			</c:otherwise>                    			
+                    		</c:choose>
+                    		<td>${r.lbWriter}</td>
+                    		<td>${r.createDate}</td>
+                    		<td>${r.title}</td>
                     		<td>${r.rptCnt}</td>
-                    		<td>삭제완료</td>
+                    		<td>
+            			        <c:choose>
+	                    			<c:when test="${r.status eq 'Y' }">
+	                    				처리대기
+	                    			</c:when>
+	                    			<c:otherwise>
+	                    				삭제완료
+	                    			</c:otherwise>
+                    			</c:choose>
+                    		</td>
                     	</tr>
                     </c:forEach>
                 </tbody>
             </table>
             <br>
+            
+             <script>
+             	var divCode ="";
+            	$(function(){
+            		$('#reportList>tbody>tr').click(function(){
+            			if($(this).children(".rno").next().text() == "지역게시판"){
+            				divCode = "L";
+            			}else if($(this).children(".rno").next().text() == "동행게시판"){
+            				divCode = "M";
+            			}else{
+            				divCode = "R";
+            			}
+            			location.href = 'detail.re?boardNo=' + $(this).children(".rno").text() + '&divCode='
+            					+divCode;
+            		})
+            	})
+            </script>
 ​
             <div id="pagingArea">
                 <ul class="pagination">
