@@ -7,32 +7,45 @@
 <meta charset="UTF-8">
 <title>여행지 리스트 페이지</title>
 <style>
-    #tripBoardImg{
-        width: 100%;
-        height: 500px;
-    }
-    #tripBoardImg > img{
-        width: 100%;
-        height: 100%;
-    }
+    
     #tripBoardText{
-        position: absolute;
-        top: 80%;
-        left: 10%;
-        color: white;
-        font-size: 50px;
+        /*position: absolute;
+        top: 80%;*/
+        font-size: 50px;  
+        text-align: center;
+        margin-top: 100px;
+    }
+    #tripBoardText > p{
+        padding-left: 10px;
+        padding-right: 10px;
     }
     #content{
         width: 100%;
         height: 1800px;
     }
     #localList{
-        width: 1000px;
+        width: 1200px;
         height: 110px;
         margin: auto;
         margin-top: 100px;
-        border: 1px solid black;
     }
+    #filter-bar > li{
+        float: left;
+        font-size: 20px;
+        margin-top: 20px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        padding-left: 20px;
+        padding-right: 20px;
+        cursor: pointer;
+    }
+    
+    .filter-option.active{
+        background-color: #7AC5CD;
+        color: white;
+    }
+
+
     #tripBtnArea{
         width: 1500px;
         height: 60px;
@@ -45,7 +58,7 @@
         padding: 10px;
         color: white;
         font-size: 18px;
-        margin-right: 10px;
+        margin-right: 50px;
     }
     #tripListArea{
         width: 1500px;
@@ -83,6 +96,28 @@
         font-size: 15px;
         margin-top: 10px;
     }
+
+    /*페이징*/
+    
+    #pagingArea{
+        width: 500px;
+        height: 50px;
+        margin: auto;
+        text-align: center;
+    }
+    #pagingArea>ul{
+        padding: 0;
+        display: inline-block;
+    }
+    #pagingArea>ul>li{
+        float: left;
+        margin-left: 3px;
+        cursor: pointer;
+    }
+    #pagingArea>ul>li>a{
+        font-size: 20px;
+        color: #7AC5CD;
+    }
 </style>
 </head>
 <body>
@@ -92,79 +127,99 @@
             <jsp:include page="../common/header.jsp"/>
             <br><br><br><br>
             <div style="position: relative;">
-                <div id="tripBoardImg">
-                    <img src="resources/common-upfiles/mainImg.jpeg" alt="">
-                </div>
                 <div id="tripBoardText">
-                    <p>명동</p>
+                    <p>여행지</p>
                 </div>
             </div>
 
             <div id="content">
+
                 <div id="localList">
-                    지역 리스트 가져오는 곳
+                    <!-- 지역 필터 -->
+                    <ul id="filter-bar">
+                        <li class="filter-option active" data-local="all">전체</li>
+                        <c:forEach var="local" items="${localList }">
+                            <li class="filter-option" data-local="${local.localName }">${local.localName }</li>
+                        </c:forEach>
+                    </ul>
                 </div>
 
-                <div id="tripBtnArea">
-                    <a href="">여행지 등록</a>
-                </div>  
+                <script>
+                    // 지역 필터 클릭 시
+                    $('.filter-option').on("click", function(){
+                        let localName = $(this).attr("data-local");
+                        if(localName == 'all'){
+                            location.href="list.tb";					
+                        }else{
+                            location.href="filter.tb?localName=" + localName;
+                        }  		
+                        
+                    });
+
+                     // 클릭한 지역 필터에 클래스 추가
+                    $(function(){
+                        if(${not empty localName}){
+                            $('.filter-option.active').removeClass('active');
+                            $('.filter-option').each(function (i){
+                                if($(this).attr("data-local") == '${localName}'){
+                                    $(this).addClass("active");
+                                }
+                            });
+                        }
+                    });
+
+                </script>
+
+                <c:if test="${loginUser.authority eq 'A'}">
+                    <div id="tripBtnArea">
+                        <a href="">여행지 등록</a>
+                    </div>  
+                </c:if>
 
                 <div id="tripListArea">
 
                     <div id="tripList">
 
                         <!-- 반복문으로 리스트 가져와서 뿌리기 -->
-                        
-                        <div id="trip">
-                            <img src="resources/common-upfiles/mainImg.jpeg" alt="">
-                            <p id="tripLocal">여행지지역</p>
-                            <p id="tripTitle">여행지이름</p>
-                        </div>
-                        <div id="trip">
-
-                        </div>
-                        <div id="trip">
-
-                        </div>
-                        <div id="trip">
-
-                        </div>
-                        <div id="trip">
-
-                        </div>
-                        <div id="trip">
-
-                        </div>
-                        <div id="trip">
-
-                        </div>
-                        <div id="trip">
-
-                        </div>
-                        <div id="trip">
-
-                        </div>
-                        <div id="trip">
-
-                        </div>
-                        <div id="trip">
-
-                        </div>
-                        <div id="trip">
-
-                        </div>
-                        
+                        <c:forEach var="t" items="${list}">
+                            <div id="trip">
+                                <img src="${t.changeName}">
+                                <p id="tripLocal">${t.localName}</p>
+                                <p id="tripTitle">${t.trboardTitle}</p>
+                            </div>
+                        </c:forEach>
                     </div>
 
                 </div>
-
-                <div>
-                    <!--페이징 부분-->
-                </div>
-
+                
+                
             </div>
 
+            <div id="pagingArea">
+                <ul class="pagination">
+                    <c:choose>
+                        <c:when test="${pi.currentPage eq 1}">
+                            <li class="page-item"><a class="page-link">&lt;</a></li>
+                        </c:when>
+                        <c:otherwise>
+                            <li class="page-item"><a href="list.tb?cpage=${pi.currentPage - 1}" class="page-link">&lt;</a></li>
+                        </c:otherwise>
+                    </c:choose>
 
+                    <c:forEach var="p" begin="${pi.startPage}" end="${pi.endPage}">
+                        <li class="page-item"><a href="list.tb?cpage=${p}" class="page-link">${p}</a></li>
+                    </c:forEach>
+
+                    <c:choose>
+                        <c:when test="${pi.currentPage eq pi.maxPage}">
+                            <li class="page-item"><a class="page-link">&gt;</a></li>
+                        </c:when>
+                        <c:otherwise>
+                            <li class="page-item"><a href="list.tb?cpage=${pi.currentPage + 1}" class="page-link">&gt;</a></li>
+                        </c:otherwise>
+                    </c:choose>
+                </ul>
+            </div>
 
 
 
