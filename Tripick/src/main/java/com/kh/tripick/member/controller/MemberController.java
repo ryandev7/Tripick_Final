@@ -62,8 +62,9 @@ public class MemberController {
 				mv.setViewName("redirect:/");			
 				
 			} else {
-				mv.addObject("errorMsg", "로그인 실패! ");
-				mv.setViewName("common/errorPage");
+				
+				session.setAttribute("alertMsg", "로그인실패");
+				mv.setViewName("redirect:loginForm.me");
 			}
 			
 			return mv;		
