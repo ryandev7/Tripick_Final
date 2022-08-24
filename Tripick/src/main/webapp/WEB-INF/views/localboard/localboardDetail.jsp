@@ -26,6 +26,10 @@
 	#rpt-reply, #delete-reply{
 		cursor:pointer;
 	}
+	#contentArea{
+            width:60%;
+            margin:auto;		
+	}	
 </style>
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
@@ -40,7 +44,7 @@
     <div class="content">
         <br><br><br><br><br>
         <div class="innerOuter">
-            <h2>게시글 상세보기</h2>
+            <h2 align="center">게시글 상세보기</h2>
 			<br>
             <table id="contentArea" algin="center" class="table">
                 <tr>
@@ -79,12 +83,16 @@
                 </tr>
             </table>
                 <div id="singo" align="center">
-                	<a class="btn btn-secondary" href="list.lb">목록으로</a>
-                	<button class="btn btn-danger" data-toggle="modal" data-target='#PostReportModal'>신고하기</button>
+                	<c:if test="${loginUser eq null }">
+	                	<a class="btn btn-secondary" href="list.lb">목록으로</a>
+                	</c:if>
+                	<c:if test="${loginUser ne null && loginUser.userNickName ne b.lbWriter}">
+	                	<button class="btn btn-danger" data-toggle="modal" data-target='#PostReportModal'>신고하기</button>
+                	</c:if>
                 </div>
             <br>
 
-			 <c:if test="${ loginUser.userId eq b.lbWriter }">
+			 <c:if test="${ loginUser.userNickName eq b.lbWriter }">
             <div align="center">
                 <!-- 수정하기, 삭제하기 버튼은 이 글이 본인이 작성한 글일 경우에만 보여져야 함 -->
                 <a class="btn btn-primary" onclick="postFormSubmit(1)">수정하기</a>
@@ -294,9 +302,10 @@
 	    					  + '<td>' + list[i].replyContent + '</td>'
 	    					  + '<td>' + list[i].create_date + '</td>'
 		                       + '<td id="rpt-reply" onclick="reportReply('+ list[i].replyNo +')" data-toggle="modal" data-target="#replyReportModal">'
-		                       + '<img data-replyNo="'+list[i].replyNo+'" id="rpt-btn" title="댓글 신고" src="resources/common-upfiles/rpt-btn.png">'		                       + '<input type="hidden" name="writeNo" value="'+ list[i].replyNo +'">'			
+		                       + '<img data-replyNo="'+list[i].replyNo+'" id="rpt-btn" title="댓글 신고" src="resources/common-upfiles/rpt-btn.png">'		                       
+		                       + '<input type="hidden" name="writeNo" value="'+ list[i].replyNo +'">'			
 		                       + '</td>'
-		                       + '<td id="delete-reply" title="댓글 삭제">❌</td>'
+		                       + '<td id="delete-reply" onclick=\"deleteReply(\''+ list[i].replyNo + '\',\'' + list[i].replyWriter +'\')\"  title="댓글 삭제">❌</td>'
 		                       + '</tr>'
 	    			}
     			
@@ -320,6 +329,16 @@
  	            $('.modal-body #writeNo').val(data);
  	       }
  	    }
+		 // 댓글 삭제
+		  function deleteReply(replyNo, replyWriter){
+		  	if('${loginUser.userNickName}' == replyWriter){
+		  		if(confirm("댓글을 삭제하시겠습니까?")){
+		  			location.href='rdelete.lb?replyNo='+ replyNo + '&refBoardNo=${b.localBoardNo}'
+		  		}
+		  	}else{
+		  		alert("댓글 작성자만 삭제 가능합니다")
+		  	}
+		  }    	
     
     </script>
     

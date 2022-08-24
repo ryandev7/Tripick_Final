@@ -13,7 +13,7 @@
         height: 60px;
         margin-bottom: 30px;
     }
-    #mateForm{
+    #mateForm-div{
         width: 1300px;
         height: 1000px;
         margin: auto;
@@ -48,6 +48,14 @@
         border: 1px solid black;
         background-color: white;
     }
+    #resetBtn{
+        width: 100px;
+        height: 40px;
+        font-size: 20px;
+        cursor: pointer;
+        border: 1px solid black;
+        background-color: white;
+    }
 </style>
 </head>
 <body>
@@ -62,14 +70,14 @@
             
             <br><br><br><br><br><br><br>
 
-            <form action="insert.mb" method="post" enctype="multipart/form-data">
+              <div id="mateForm-div">
+	            <form name="mateForm"action="insert.mb" method="post" enctype="multipart/form-data">
+	
+	                <input type="hidden" name="mateWriter" value="${loginUser.userId}">
+	                <div id="noticeEnroll">
+	                    <p style="font-size: 40px;">동행</p>
+	                </div>
 
-                <input type="hidden" name="mateWriter" value="${loginUser.userId}">
-                <div id="noticeEnroll">
-                    <p style="font-size: 40px;">동행</p>
-                </div>
-
-                <div id="mateForm">
 
                     <input type="text" name="mateTitle" id="mateTitle" placeholder="동행 제목" required>
                     <br><br>
@@ -81,12 +89,11 @@
                         	</c:forEach>
                         </select>
                         <br>
-                        <span>
-                            동행인원 <input type="text" name="memberCount" id="memberCount" placeholder="(숫자)입력" required>
-                        </span>
+                        <span>동행인원 <input type="text" name="memberCount" id="memberCount" placeholder="(숫자)입력" required></span>
                         <br>
                         <span>
-                            시작날짜<input type="date" name="firstDate" required> 마지막날짜<input type="date" name="lastDate" required>
+			                            시작날짜<input type="date" name="firstDate" required> 
+			                            마지막날짜<input type="date" name="lastDate" required>
                         </span>
                         
                     </div>
@@ -98,12 +105,14 @@
                         <input type="file" id="upfile" class="form-control-file border" name="upfile">
                     </div>
                     <br><br>
+                    <button type="reset" id="resetBtn">초기화</button>
                     <button type="button" id="cancelBtn" onclick = "location.href = 'list.mb' ">작성취소</button>
-                    <button type="submit" id="mateBtn">동행등록</button>
+                    <button type="button" id="mateBtn">동행등록</button>
+                    
+		            </form>
                 </div>
 
 
-            </form>
 
             <script>
                
@@ -137,6 +146,22 @@
 
                     
                 });
+                
+            	// fDate와 lDate 비교
+            	$(function(){		
+            		$("#mateBtn").click(function(){
+            			let startDate = new Date($("input[name='firstDate']").val());
+            			let endDate = new Date($("input[name='lastDate']").val());
+            			
+            			console.log(startDate);
+            			console.log(endDate);
+            			if(startDate <= endDate){
+            				mateForm.submit();
+            			}else{
+            				alert("동행 시작 날짜와 마지막 날짜를 확인해주세요");
+            			}
+            		})
+            	});
 
             </script>
         </div>

@@ -118,24 +118,25 @@
             text-align: left;
         }
         /*페이징바*/
-        #pagingArea{
-            width: 500px;
-            height: 50px;
-            margin: auto;
-            text-align: center;
-        }
-        #pagingArea>ul{
-            padding: 0;
-            display: inline-block;
-        }
-        #pagingArea>ul>li{
-            float: left;
-            margin-left: 5px;
-            cursor: pointer;
-        }
-        #pagingArea>ul>li>a{
-            font-size: 20px;
-        }
+	    #pagingArea{
+	        width: 500px;
+	        height: 50px;
+	        margin: auto;
+	        text-align: center;
+	    }
+	    #pagingArea>ul{
+	        padding: 0;
+	        display: inline-block;
+	    }
+	    #pagingArea>ul>li{
+	        float: left;
+	        margin-left: 3px;
+	        cursor: pointer;
+	    }
+	    #pagingArea>ul>li>a{
+	        font-size: 20px;
+	        color: #7AC5CD;
+	    }
 
 
         /*지안수정*/
@@ -172,6 +173,8 @@
             <div id="content2">
             <div></div>
                 <div id="content2_1">
+                	<br>
+					<img id="mateimg" src="resources/common-upfiles/local.gif" width="100%" height="240">                            
                     <div id="wrapper-filter">
                         <ul id="filter-bar">
                             <li><a href="list.lb?cpage=1&lcode=0">전체</a></li>
@@ -194,7 +197,9 @@
                                 <!--지안수정-->
                                 <!--<div align="left"><a class="btn btn-light btn-sm"href="enrollForm.lb">글쓰기</a></div>-->
                                 <div style="float: right;">
-                                    <a class="btn btn-light btn-sm"href="enrollForm.lb">글쓰기</a>
+                                	<c:if test="${loginUser ne null }">
+	                                    <a class="btn btn-info btn-sm"href="enrollForm.lb">글쓰기</a>
+                                	</c:if>
                                 </div>
                             </div>
                         </div>
@@ -203,7 +208,7 @@
                             <tr>
                                 <th>글번호</th>
                                 <th>지역</th>
-                                <th>제목</th>
+                                <th width="50%">제목</th>
                                 <th>작성자</th>
                                 <th>작성일</th>
                                 <th>조회수</th>

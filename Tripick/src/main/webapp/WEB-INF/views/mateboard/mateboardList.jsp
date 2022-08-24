@@ -5,14 +5,14 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>동행게시판</title>
 <style>
  		.div{
             /*border: 1px solid red;*/
             box-sizing: border-box;
         }
         .wrap{
-            width : 1900px;
+            /*width : 1900px;*/
             height :1400px;
             margin: auto;
         }
@@ -25,6 +25,7 @@
         }
         #content{
             height: 80%;
+            width:100%
         }
 
         /*더 세부영역*/
@@ -35,17 +36,18 @@
         /* 각 세부영역의 가로 비율 정해주기*/
 
         #content1{
-            width : 15%;
+            width : 20%;
         }
         #content2{
-            width : 85%;
+            width : 80%;
         }
         #content2_1{
-        border: 1px solid black;
-            height : 15%;
+            height : 22%;
+            width : 100%
         }
         #content2_2{
             height : 70%;
+            width : 100%;
         }
 
 
@@ -86,19 +88,34 @@
 	    }
 	    #pagingArea>ul>li{
 	        float: left;
-	        margin-left: 5px;
+	        margin-left: 3px;
 	        cursor: pointer;
 	    }
 	    #pagingArea>ul>li>a{
 	        font-size: 20px;
+	        color: #7AC5CD;
 	    }
+		/*지안수정*/
+        .mateBoard-container--top{
+            height: 30px;
+        }
+	    /*지안수정*/
+	    #reviewL-bottom_search{
+            margin-top: 20px;
+        }
+        #reviewL-bottom_search > div > form > div{
+            float: left;
+            margin-right: 15px;
+        }
+        #reviewL-bottom_search > div{
+            width: 1300px;
+            margin: auto;
+        }
 </style>
 </head>
 <body>
 	<div class="wrap">
-		<div id="header">
 			<jsp:include page="../common/header.jsp" />
-		</div>
 		<br><br><br><br><br>
 		<div id="content">
 			<div id ="content1">
@@ -107,58 +124,62 @@
 				</nav>
 			</div>
 			<div id="content2">
-				<div>
-					   <div class="mateBoard-top">
-                            <%-- 선택창 --%>
-                            <%-- 게시판 드릴다운 --%>
-                            <span class="common-top__drilldownbox"> 커뮤니티
-                                <span> > </span> <a href="list.mb">동행게시판</a>
-                            </span>
-                            <%-- 글쓰기 버튼 --%>
-		                      <div align="left"><a class="btn btn-light btn-sm"href="enrollForm.mb">글쓰기</a></div>
-                        </div>
+				<br>
+				<div id="content2_1">
+				<img id="mateimg" src="resources/common-upfiles/mate.gif" width="1030" height="240">
 				</div>
-				<div id="mate_list">
-					<table id="mate_table">
-						<thead>
-							<tr>
-								<th></th>
-								<th>모집상태</th>
-								<th>지역</th>
-								<th>제목</th>
-								<th>작성자</th>
-								<th>작성일</th>
-								<th>조회수</th>
-							</tr>
-						</thead>
-						<tbody>
-							<c:forEach var="list" items="${list}">
+				<div id="content2_2">
+					<div class="mateBoard-container--top">
+						   <div class="mateBoard-top">
+	                            <%-- 선택창 --%>
+	                            <%-- 게시판 드릴다운 --%>
+	                            <span class="common-top__drilldownbox"> 커뮤니티
+	                                <span> > </span> <a href="list.mb">동행게시판</a>
+	                            </span>
+	                            <br>
+	                            <%-- 글쓰기 버튼 --%>
+			                      <div style="float : left;">
+			                      	<c:if test="${loginUser ne null }">
+				                      	<a class="btn btn-info btn-sm"href="enrollForm.mb">글쓰기</a>
+			                      	</c:if>
+			                      </div>
+	                        </div>
+					</div>
+					<div id="mate_list">
+						<table id="mate_table">
+							<thead>
 								<tr>
-									<input type="hidden" class="mno" name="mateNo" value="${list.mateNo}">
-									<td></td>
-									<td>
-										<c:choose>
-											<c:when test="${ list.recruitStatus eq 'Y' }">모집중</c:when>
-											<c:otherwise>모집완료</c:otherwise>
-										</c:choose>
-									</td>
-									<td>${list.localName}</td>
-									<td>${list.mateTitle}</td>
-									<td>${list.mateWriter}</td>
-									<td>${list.createDate}</td>
-									<td>${list.count}</td>
+									<th></th>
+									<th>모집상태</th>
+									<th>지역</th>
+									<th width="50%">제목</th>
+									<th>작성자</th>
+									<th>작성일</th>
+									<th>조회수</th>
 								</tr>
-							</c:forEach>
-						</tbody>
-					</table>
-					<br>
-				<script>
-			    	$(function(){
-			    		$('#mate_table>tbody>tr').click(function(){
-			            	location.href='detail.mb?mno=' + $(this).children('.mno').val();
-				    	})
-			    	})
-			    </script>
+							</thead>
+							<tbody>
+								<c:forEach var="list" items="${list}">
+									<tr>
+										<input type="hidden" class="mno" name="mateNo" value="${list.mateNo}">
+										<td></td>
+										<td>
+											<c:choose>
+												<c:when test="${ list.recruitStatus eq 'Y' }"><p class="text-danger font-weight-bold">모집중</p></c:when>
+												<c:otherwise><p class="text-primary font-weight-bold">모집완료</p></c:otherwise>
+											</c:choose>
+										</td>
+										<td>${list.localName}</td>
+										<td>${list.mateTitle}</td>
+										<td>${list.mateWriter}</td>
+										<td>${list.createDate}</td>
+										<td>${list.count}</td>
+									</tr>
+								</c:forEach>
+							</tbody>
+						</table>
+						<br>
+				     </div>
 					<div id="pagingArea">
                         <ul class="pagination">
                             <c:choose>
@@ -189,22 +210,33 @@
                             </c:choose>
                         </ul>
                     </div>
+					<div id="reviewL-bottom_search">
+						<div style=" width: 500px; height: 50px;">
+	                        <form id="searchForm" action="search.mb" method="get" align="center">
+	                            <div class="select">
+	                                <select class="custom-select" name="condition">
+	                                    <option value="writer">작성자</option>
+	                                    <option value="title">제목</option>
+	                                    <option value="content">내용</option>
+	                                </select>
+	                            </div>
+	                            <div class="text">
+	                                <input type="text" style="width: 300px;" class="form-control" name="keyword">
+	                            </div>
+	                            <button type="submit" class="searchBtn btn btn-secondary">검색</button>
+	                        </form>
+						</div>
+	                 </div>
 				</div>
-				<div id="reviewL-bottom_search">
-                        <form id="searchForm" action="search.mb" method="get" align="center">
-                            <div class="select">
-                                <select class="custom-select" name="condition">
-                                    <option value="writer">작성자</option>
-                                    <option value="title">제목</option>
-                                    <option value="content">내용</option>
-                                </select>
-                            </div>
-                            <div class="text">
-                                <input type="text" class="form-control" name="keyword">
-                            </div>
-                            <button type="submit" class="searchBtn btn btn-secondary">검색</button>
-                        </form>
-                    </div>
+				
+				<script>
+			    	$(function(){
+			    		$('#mate_table>tbody>tr').click(function(){
+			            	location.href='detail.mb?mno=' + $(this).children('.mno').val();
+				    	})
+			    	})
+			    </script>
+				
 			</div>
 		</div>
 	</div>

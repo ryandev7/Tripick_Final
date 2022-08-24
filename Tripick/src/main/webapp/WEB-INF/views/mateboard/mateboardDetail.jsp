@@ -23,6 +23,10 @@
 	#rpt-reply, #delete-reply{
 		cursor:pointer;
 	}
+	#contentArea{
+            width:60%;
+            margin:auto;		
+	}
 </style>
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
@@ -37,7 +41,7 @@
     <div class="content">
     	<br><br>
         <div class="innerOuter">
-            <h2>게시글 상세보기</h2>
+            <h2 align="center">동행게시글 상세보기</h2>
 
             <br><br>
 
@@ -84,9 +88,13 @@
                     <th>내용</th>
                     <td></td>
                     <c:choose>
-                    	<c:when test="${loginUser.userId eq m.mateWriter }">
+                    	<c:when test="${loginUser.userNickName eq m.mateWriter }">
                     		<td><b>현재인원</b>${m.memberCurCount} / ${m.memberCount}</td>
-                    		<td colspan="2"><a class="btn btn-primary">모집마감</a></td>
+                    		<td colspan="2">
+                    			<c:if test="${m.recruitStatus eq 'Y' }">
+	                    			<a class="btn btn-primary" data-toggle="modal" data-target="#endMate">모집마감</a>
+                    			</c:if>
+                    		</td>
                     	</c:when>
                     	<c:otherwise>
 	                    	<th>현재인원</th>
@@ -101,10 +109,10 @@
             <br>
 
 			<c:choose>
-			 <c:when test="${ loginUser.userId eq m.mateWriter }">
+			 <c:when test="${ loginUser.userNickName eq m.mateWriter }">
 	            <div align="center">
 	                <!-- 수정하기, 삭제하기 버튼은 이 글이 본인이 작성한 글일 경우에만 보여져야 함 -->
-	                <a class="btn btn-success" href="">신청현황</a>
+	                <a class="btn btn-success" href="applyList2.mb">신청현황</a>
 	                <a class="btn btn-primary" onclick="postFormSubmit(1)">수정하기</a>
 	                <a class="btn btn-danger" data-toggle="modal" data-target="#myModal">삭제하기</a>
 	                <a class="btn btn-secondary" href="list.mb">목록으로</a>
@@ -112,14 +120,17 @@
 			 </c:when>
 			 <c:otherwise>
 				 <div align="center">
-				 	<a class="btn btn-success" onclick="postFormSubmit(3)">신청하기</a>
+				 	<c:if test="${loginUser ne null && m.recruitStatus eq 'Y' && loginUser.userNickName ne m.mateWriter }">
+					 	<a class="btn btn-success" onclick="postFormSubmit(3)">신청하기</a>
+						<a class="btn btn-warning" data-toggle="modal" data-target='#PostReportModal'>신고하기</a>
+				 	</c:if>
+
 				 	<a class="btn btn-secondary" href="list.mb">목록으로</a>
-				 	<a class="btn btn-warning" data-toggle="modal" data-target='#PostReportModal'>신고하기</a>
 				 </div>
 			 </c:otherwise>
 			</c:choose>
 
-				  <!-- 게시글 삭제모달 -->
+			<!-- 게시글 삭제모달 -->
 		  <div class="modal fade" id="myModal">
 		    <div class="modal-dialog">
 		      <div class="modal-content">
@@ -148,17 +159,53 @@
 				<input type="hidden" value="${ at.changeName }" name="filePath">
 				<input type="hidden" value="${ loginUser.userId }" name="userId">
 			</form>
+			
+		<!-- 모집상태 변경 모달 -->
+		  <div class="modal fade" id="endMate">
+		    <div class="modal-dialog">
+		      <div class="modal-content">
+		      
+		        <!-- Modal Header -->
+		        <div class="modal-header">
+		          <h4 class="modal-title">정말 모집을 마감하시겠습니까?</h4>
+		        </div>
+		        
+		        <!-- Modal body -->
+		        <div class="modal-body">
+		          	한번 마감한 모집은 다시 열 수 없습니다.
+		        </div>
+		        
+		        <!-- Modal footer -->
+		        <div class="modal-footer">
+		          <button type="button" class="btn btn-danger" onclick="postFormSubmit(4)" >마감하기</button>
+	          	  <button type="button" class="btn btn-secondary" data-dismiss="modal">취소하기</button>
+		        </div>
+		        
+		      </div>
+		    </div>
+		  </div>	
+		  
+		  <!-- 버튼 기능들 정보 보내주는 form 1.게시글 수정 2. 게시글 삭제 3.동행 신청 4.동행 마감 -->		
+		    <form action="delete.mb" id="postForm" method="post">
+				<input type="hidden" value="${ m.mateNo }" name="mno">
+				<input type="hidden" value="${ at.changeName }" name="filePath">
+				<input type="hidden" value="${ loginUser.userId }" name="userId">
+			</form>			
+			
 			<script>
 				function postFormSubmit(num){
 					if(num == 1){ // 수정하기 클릭 시
 						$('#postForm').attr('action','updateForm.mb').submit();
 					} else if(num == 2){ // 삭제하기 클릭 시
 						$('#postForm').attr('action','delete.mb').submit();
-					} else{ // 신청하기 클릭 시
+					} else if(num == 3){ // 신청하기 클릭 시
 						$('#postForm').attr('action','insertApply.mb').submit();
+					} else{ // 모집 마감 클릭 시
+						$('#postForm').attr('action','updateEnd.mb').submit();
 					}
 				}
 			</script>
+			
             <br><br>
             <div id="reply-area">
             	<div id="reply-area-child">
@@ -240,7 +287,7 @@
                <form name="reportForm" action="report.mb" method="post">
                    <!-- Modal body -->
                    <div class="modal-body">
-                    <input type="hidden" name="bno" value="${m.mateNo}"> <!-- 게시글 번호 : redirect위함 -->
+                    <input type="hidden" name="mateNo" value="${m.mateNo}"> <!-- 게시글 번호 : redirect위함 -->
                     <input type="hidden" name="writeNo" value="${m.mateNo}"> <!-- 게시글 번호 : redirect위함 -->
                     <input type="hidden" name="userId" value="${loginUser.userId }"> <!-- 신고자 ID -->
                     <input type="hidden" name="divCode" value="M"> <!-- 구분코드 R : 댓글 -->
@@ -266,7 +313,7 @@
     		selectReplyList();
     		// 댓글조회하는 기능을 호출
     	})
-    	
+    	// 댓글 작성
     	function addReply(){ // 댓글 작성용 ajax
     		
     		if($('#content').val().trim() != ''){
@@ -298,7 +345,7 @@
     		}
     		
     	}
-    	
+    	// 댓글조회
     	function selectReplyList(){
     		console.log('${m.mateNo}')
     		$.ajax({
@@ -313,9 +360,10 @@
 	    					  + '<td>' + list[i].replyContent + '</td>'
 	    					  + '<td>' + list[i].create_date + '</td>'
 		                       + '<td id="rpt-reply" onclick="reportReply('+ list[i].replyNo +')" data-toggle="modal" data-target="#replyReportModal">'
-		                       + '<img data-replyNo="'+list[i].replyNo+'" id="rpt-btn" title="댓글 신고" src="resources/common-upfiles/rpt-btn.png">'		                       + '<input type="hidden" name="writeNo" value="'+ list[i].replyNo +'">'			
+		                       + '<img data-replyNo="'+list[i].replyNo+'" id="rpt-btn" title="댓글 신고" src="resources/common-upfiles/rpt-btn.png">'		                       
+		                       + '<input type="hidden" name="writeNo" value="'+ list[i].replyNo +'">'			
 		                       + '</td>'
-		                       + '<td id="delete-reply" title="댓글 삭제">❌</td>'
+		                       + '<td id="delete-reply" onclick=\"deleteReply(\''+ list[i].replyNo + '\',\'' + list[i].replyWriter +'\')\" title="댓글 삭제">❌</td>'
 		                       + '</tr>'
 	    			}
     			
@@ -339,6 +387,16 @@
     	            $('.modal-body #writeNo').val(data);
     	       }
     	    }
+    	// 댓글 삭제
+    	 function deleteReply(replyNo, replyWriter){
+    	if('${loginUser.userNickName}' == replyWriter){
+    		if(confirm("댓글을 삭제하시겠습니까?")){
+    			location.href='rdelete.mb?replyNo='+ replyNo + '&refBoardNo=${m.mateNo}'
+    		}
+    	}else{
+    		alert("댓글 작성자만 삭제 가능합니다")
+    	}
+    }
     
     </script>
     

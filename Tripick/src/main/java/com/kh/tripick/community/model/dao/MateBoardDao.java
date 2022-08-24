@@ -113,10 +113,11 @@ public class MateBoardDao {
 	public int updateMateEnd(SqlSessionTemplate sqlSession, Mate m) {
 		return sqlSession.update("mateMapper.updateMateEnd", m);
 	}
-	/*
-	public void memberCountChk(SqlSessionTemplate sqlSession, int mateNo) {
+	
+	public int memberCountChk(SqlSessionTemplate sqlSession, Mate m) {
+		return sqlSession.selectOne("mateMapper.memberCountChk", m);
 	}
-	*/
+	
 
 	public ArrayList<MateMember> selectApplyList(SqlSessionTemplate sqlSession, String userId, PageInfo pi) {
 		return (ArrayList)sqlSession.selectList("mateMapper.selectApplyList", userId);
@@ -144,6 +145,10 @@ public class MateBoardDao {
 
 	public int selectMyListCount(SqlSessionTemplate sqlSession, String userId) {
 		return sqlSession.selectOne("mateMapper.selectMyListCount", userId);
+	}
+
+	public int reportCheck(SqlSessionTemplate sqlSession, Report report) {
+		return sqlSession.selectOne("mateMapper.reportCheck", report);
 	}
 	
 

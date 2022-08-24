@@ -28,6 +28,7 @@ import com.kh.tripick.community.model.vo.ComAttachment;
 import com.kh.tripick.community.model.vo.LocalBoard;
 import com.kh.tripick.community.model.vo.Mate;
 import com.kh.tripick.community.model.vo.MateMember;
+import com.kh.tripick.course.model.service.CourseService;
 import com.kh.tripick.member.model.vo.Member;
 
 @Controller
@@ -35,6 +36,8 @@ public class MateBoardController {
 	
 	@Autowired
 	private MateBoardService mateBoardService;
+	@Autowired
+	private CourseService courseService;
 
 	// 게시글리스트
 	@RequestMapping("list.mb")
@@ -247,37 +250,74 @@ public class MateBoardController {
 	/*
 	 * 동행 신청 관련 기능
 	 */
-	// 동행 신청 현황 페이지
+	// 동행 신청 현황 페이지(보낸신청)
 	@RequestMapping("applyList.mb")
 	public ModelAndView ApplyList(@RequestParam(value="cpage", defaultValue="1")int currentPage, ModelAndView mv, HttpSession session) {
 		
+		// 로그인 없이 페이지 이동 시 로그인 창으로 이동시킴
+		if((Member)session.getAttribute("loginUser") == null) {
+			session.setAttribute("alertMsg", "로그인 후 이용 가능한 페이지 입니다.");
+			mv.setViewName("member/loginForm");
+			return mv;
+		}
 		String userId = ((Member)session.getAttribute("loginUser")).getUserId();
 		//System.out.println(userId);
 		// 보낸신청리스트 페이징
 		PageInfo pi = Pagination.getPageInfo(mateBoardService.selectApplyListCount(userId), currentPage, 5, 5);
-		// 받은신청리스트 페이징
-		PageInfo pi2 = Pagination.getPageInfo(mateBoardService.selectGetApplyListCount(userId), currentPage, 5, 5);
+
 		
 		
 		// 보낸신청리스트
 		ArrayList<MateMember> list = mateBoardService.selectApplyList(userId, pi);
 		//System.out.println(list);
-		// 받은신청리스트
-		ArrayList<MateMember> list2 = mateBoardService.selectGetApplyList(userId, pi);
-		//System.out.println(list2);
-		//System.out.println(list);
+
+
 		mv.addObject("pi", pi)
-		  .addObject("pi2", pi2)
 		  .addObject("list", list)
-		  .addObject("list2", list2)
 		  .setViewName("mypage/myMateInfo");
 		  
+		return mv;
+	}
+	// 동행 신청 현황 페이지(받은신청)
+	@RequestMapping("applyList2.mb")
+	public ModelAndView ApplyList2(@RequestParam(value="cpage", defaultValue="1")int currentPage, ModelAndView mv, HttpSession session) {
+		// 로그인 없이 페이지 이동 시 로그인 창으로 이동시킴
+		if((Member)session.getAttribute("loginUser") == null) {
+			session.setAttribute("alertMsg", "로그인 후 이용 가능한 페이지 입니다.");
+			mv.setViewName("member/loginForm");
+			return mv;
+		}
+		String userId = ((Member)session.getAttribute("loginUser")).getUserId();
+		//System.out.println(userId);
+		// 받은신청리스트 페이징
+		PageInfo pi2 = Pagination.getPageInfo(mateBoardService.selectGetApplyListCount(userId), currentPage, 5, 5);
+		
+		
+		// 보낸신청리스트
+		//System.out.println(list);
+		// 받은신청리스트
+		ArrayList<MateMember> list2 = mateBoardService.selectGetApplyList(userId, pi2);
+		//System.out.println(list2);
+		//System.out.println(list);
+		mv.
+		addObject("pi2", pi2)
+		.addObject("list2", list2)
+		.setViewName("mypage/myMateInfo2");
+		
 		return mv;
 	}
 	
 	// 나의 동행 리스트들을 보여주는 페이지
 	@RequestMapping("myApplyList.mb")
 	public ModelAndView myApplyList(@RequestParam(value="cpage", defaultValue="1")int currentPage, ModelAndView mv, HttpSession session) {
+		
+		// 로그인 없이 페이지 이동 시 로그인 창으로 이동시킴
+		if((Member)session.getAttribute("loginUser") == null) {
+			session.setAttribute("alertMsg", "로그인 후 이용 가능한 페이지 입니다.");
+			mv.setViewName("member/loginForm");
+			return mv;
+		}
+		
 		String userId = ((Member)session.getAttribute("loginUser")).getUserId();
 		PageInfo pi = Pagination.getPageInfo(mateBoardService.selectMyListCount(userId), currentPage, 5, 5);
 		
@@ -332,23 +372,50 @@ public class MateBoardController {
 		mm.setMateMember(userId);
 		//System.out.println(mm);
 		
-		// 동행 현재 인원수 + 1
+		// 동행 현재 인원수 + 1 추가 성공시 1을 반환
 		int result1 = mateBoardService.increaseMateCount(refNo);
+		
+		// 인원수 체크 -> 현재인원이 모집인원과 동일해질 경우 1을 반환
+		int countchk = mateBoardService.memberCountChk(m);
+		System.out.println(m);
 		
 		if(result1 != 1) {
 		
 			session.setAttribute("alertMsg", "수락 실패 (모집인원초과)");
 			// 모집 인원이 꽉 찬 상태이므로 모집 여부를 모집완료로 변경
 			mateBoardService.updateMateEnd(m);
-			return "redirect:applyList.mb";
-		}
 			
+			//System.out.println(updateResult);
+			return "redirect:applyList2.mb";
+		}
+		if(countchk == 1) { // 현재인원이 모집인원과 동일해질 경우 모집여부 변경
+			mateBoardService.updateMateEnd(m); // 모집상태 모집완료로 변경
+			mateBoardService.updateMateOk(mm); // 수락상태 'y'로 변경
+			session.setAttribute("alertMsg", "수락 완료! 모집인원이 꽉 차 동행이 자동으로 마감되었습니다.");
+			return "redirect:applyList2.mb";
+		}
 		// 멤버 status = 'y'로 변경
 		int result = mateBoardService.updateMateOk(mm);
 			
 		if(result * result1 > 0) 
 			session.setAttribute("alertMsg", "수락성공");
-			return "redirect:applyList.mb";
+			return "redirect:applyList2.mb";
+	}
+	// 모집 마감 기능
+	@RequestMapping("updateEnd.mb")
+	public String updateMateEnd(int mno, HttpSession session, Model model) {
+		Mate m = new Mate();
+		m.setMateNo(mno);
+		
+		int result = mateBoardService.updateMateEnd(m);
+		
+		if(result > 0) {
+			session.setAttribute("alertMsg", "모집마감 완료");
+			return "redirect:detail.mb?mno=" + mno;
+		}else {
+			model.addAttribute("errorMsg", "마감 실패");
+			return "common/errorPage";
+		}
 	}
 	
 	/*
@@ -370,12 +437,21 @@ public class MateBoardController {
 		System.out.println(r);
 		return mateBoardService.insertReply(r) > 0 ? "success" : "fail";
 	}
+	//댓글 삭제
+	@RequestMapping("rdelete.mb")
+	public String deleteReply(Reply r, HttpSession session) {
+		String alertMsg = courseService.deleteReply(r) > 0 ? "삭제되었습니다" : "error:삭제 실패";
+		session.setAttribute("alertMsg", alertMsg);
+		return "redirect:detail.mb?mno="+r.getRefBoardNo();
+		
+	}
 	/**
      * 코스 댓글, 글 신고
      */
     @RequestMapping("report.mb")
     public String reportCourseReply(Report report, int mateNo, HttpSession session) {
-        String alertMsg = mateBoardService.reportMateReply(report)>0?"신고가 접수되었습니다":"error:신고실패";
+        String alertMsg = mateBoardService.reportCheck(report) > 0 ? "이미 신고한 댓글입니다." :
+        		(mateBoardService.reportMateReply(report) > 0?"신고가 접수되었습니다":"error:신고실패");
         session.setAttribute("alertMsg", alertMsg);
         return "redirect:detail.mb?mno=" + mateNo;
     }

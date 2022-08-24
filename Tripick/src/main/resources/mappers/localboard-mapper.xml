@@ -13,11 +13,23 @@
 		<result column="COUNT" property="count"/>
 		
 		<result column="LOCAL_NAME" property="localName"/>
+		<result column="USER_NICKNAME" property="lbWriter"/>
 	</resultMap>
 	
 	<resultMap id="localCatResultSet" type="localCate">
 		<result column="LOCAL_CODE" property="localCode"/>
 		<result column="LOCAL_NAME" property="localName"/>
+	</resultMap>
+	
+	<resultMap type="reply" id="replyResultSet">
+		<result column="REPLY_NO" property="replyNo"/>
+		<result column="REPLY_WRITER" property="replyWriter"/>
+		<result column="USER_NICKNAME" property="replyWriter"/>
+		<result column="REPLY_CONTENT" property="replyContent"/>
+		<result column="CREATE_DATE" property="create_date"/>
+		<result column="STATUS" property="status"/>
+		<result column="REPLY_LEVEL" property="replyLevel"/>
+		<result column="REF_BOARD_NO" property="refBoardNo"/>
 	</resultMap>
 	
 	<resultMap id="attachmentResultSet" type="comAttachment">
@@ -48,16 +60,17 @@
         select
 				local_board_no,
 				local_board_title,
-				lb_writer,
+				user_nickname,
 				count,
 				to_char(create_date, 'YYYY-MM-DD') as "CREATE_DATE",
                 local_name,
                 local_code
 		 	from
-		 		local_board
+		 		local_board a
                 join local using(local_code)
+                join member on(lb_writer = user_id)
 		 	where
-                NOT status = 'N'
+                NOT a.status = 'N'
 		 	order by
 		 		local_board_no desc
 	</select>
@@ -74,16 +87,17 @@
 		select
 				local_board_no,
 				local_board_title,
-				lb_writer,
+				user_nickname,
 				count,
 				to_char(create_date, 'YYYY-MM-DD')as "create_date",
 				local_code,
 				local_name
 		 	from
-		 		local_board
+		 		local_board a
 		 		join local using(local_code)
+		 		join member on(lb_writer = user_id)
 		 	where
-                NOT status = 'N'
+                NOT a.status = 'N'
              and
              	local_code = #{lcode}
 		 	order by
@@ -95,16 +109,17 @@
 			local_board_no,
 			local_board_title,
 			local_board_content,
-			lb_writer,
+			user_nickname,
 			to_char(create_date, 'YYYY-MM-DD')as "create_date",
 			count,
 			local_name,
 			local_code
 		from
-			local_board 
+			local_board a 
             join local using(local_code)
+            join member on(lb_writer = user_id)
 		where
-			NOT status = 'N'
+			NOT a.status = 'N'
 		and 
 			local_board_no = #{localBoardNo}
 	</select>
@@ -198,18 +213,20 @@
 	
 	<!-- 댓글 관련 기능들 -->	
 	<!-- 댓글 리스트조회 -->
-	<select id="selectReplyList" parameterType="_int" resultType="reply">
+	<select id="selectReplyList"  resultMap="replyResultSet">
 		select
-			reply_no replyNo,
-			reply_writer replyWriter,
-			reply_content replyContent,
+			reply_no,
+			user_nickname,
+			reply_content,
 			to_char(create_date, 'YYYY-MM-DD') as "create_date"
 		from
-			reply
+			reply r
+		join
+			member on(reply_writer = user_id)
 		where
                 ref_board_no = #{refBoardNo}
             and
-                status = 'Y' or status = 'R'
+                NOT r.status = 'N'
             and
                 reply_level = '1'
         order
@@ -274,19 +291,20 @@
         select
 				local_board_no,
 				local_board_title,
-				lb_writer,
+				user_nickname,
 				count,
 				to_char(create_date, 'YYYY-MM-DD') as "CREATE_DATE",
                 local_name,
                 local_code
 		 	from
-		 		local_board
+		 		local_board a
                 join local using(local_code)
+                join member on(lb_writer = user_id)
 		 	where
-                NOT status = 'N'
+                NOT a.status = 'N'
             <choose>
 				<when test="condition == 'writer'">
-					and lb_writer
+					and user_nickname
 				</when>
 				<when test="condition == 'title'">
 					and local_board_title

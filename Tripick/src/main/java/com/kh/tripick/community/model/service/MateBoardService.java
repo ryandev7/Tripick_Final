@@ -57,10 +57,12 @@ public interface MateBoardService {
 	// 댓글리스트 조회 서비스
 	ArrayList<Reply> selectReplyList(int bno);
 	
-	//댓글 작성 서비스
+	// 댓글 작성 서비스
 	int insertReply(Reply r);
 	// 댓글 신고
 	int reportMateReply(Report report);
+	// 댓글 중복 체크
+	int reportCheck(Report report);
 	
 	
 	
@@ -89,7 +91,7 @@ public interface MateBoardService {
 	int updateMateEnd(Mate m);
 	
 	// 동행 현재인원 chk 현재인원이 전체인원 넘어갈 수 없음
-	//int memberCountChk(int mateNo);
+	int memberCountChk(Mate m);
 	
 	// 보낸 신청 조회
 	ArrayList<MateMember> selectApplyList(String userId, PageInfo pi);

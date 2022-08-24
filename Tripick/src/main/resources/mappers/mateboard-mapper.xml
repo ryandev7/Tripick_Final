@@ -3,7 +3,7 @@
 <mapper namespace="mateMapper">
 	<resultMap id="mateResultSet" type="mate">
 		<result column="MATE_NO" property="mateNo"/>
-		<result column="MATE_WRITER" property="mateWriter"/>
+		<result column="MATE_WRITER" property="mateWriter2"/>
 		<result column="LOCAL_CODE" property="localCode"/>
 		<result column="MATE_TITLE" property="mateTitle"/>
 		<result column="MATE_CONTENT" property="mateContent"/>
@@ -15,8 +15,8 @@
 		<result column="L_DATE" property="lastDate"/>
 		<result column="COUNT" property="count"/>
 		<result column="CREATE_DATE" property="createDate"/>
-		
 		<result column="LOCAL_NAME" property="localName"/>
+		<result column="USER_NICKNAME" property="mateWriter"/>
 	</resultMap>
 	
 	<resultMap id="attachmentResultSet" type="comAttachment">
@@ -31,13 +31,24 @@
 		<result column="LOCAL_BOARD_NO" property="localBoardNo"/> 
 	</resultMap>
 	
+	<resultMap type="reply" id="replyResultSet">
+		<result column="REPLY_NO" property="replyNo"/>
+		<result column="REPLY_WRITER" property="replyWriter"/>
+		<result column="USER_NICKNAME" property="replyWriter"/>
+		<result column="REPLY_CONTENT" property="replyContent"/>
+		<result column="CREATE_DATE" property="create_date"/>
+		<result column="STATUS" property="status"/>
+		<result column="REPLY_LEVEL" property="replyLevel"/>
+		<result column="REF_BOARD_NO" property="refBoardNo"/>
+	</resultMap>
+	
 	<resultMap id="mateMemberResultSet" type="mateMember">
 		<result column="M_MATE_NO" property="memberMateNo"/> 
 		<result column="REF_MATE_NO" property="refMateNo"/> 
-		<result column="MATE_MEMBER" property="mateMember"/> 
+		<result column="MATE_MEMBER" property="mateMember2"/> 
 		<result column="STATUS" property="status"/> 
-		
 		<result column="MATE_TITLE" property="mateTitle"/>
+		<result column="USER_NICKNAME" property="mateMember"/>
 	</resultMap>
 	
 	
@@ -52,17 +63,18 @@
 	<select id="selectList" resultMap="mateResultSet">
         select
 				mate_no,
-				mate_writer,
+				user_nickname,
 				mate_title,
                 count,
                 recruit_status,
                 to_char(create_date, 'YYYY-MM-DD') as "create_date", 
                 local_name
 		 	from
-		 		mate
+		 		mate a
 		 		join local using(local_code)
+		 		join member on(mate_writer = user_id)
 		 	where
-                NOT status = 'N'
+                NOT a.status = 'N'
 		 	order by
 		 		mate_no desc
 	</select>
@@ -86,6 +98,7 @@
 			mate_no,
 			mate_title,
 			mate_content,
+			user_nickname,
 			mate_writer,
 			to_char(create_date, 'YYYY-MM-DD')as "create_date",
 			count,
@@ -93,15 +106,16 @@
 			recruit_status,
 			member_count,
 			member_curcount,
-			status,
+			a.status,
 			local_code,
 			to_char(f_date, 'YYYY-MM-DD') as "f_date",
 			to_char(l_date, 'YYYY-MM-DD') as "l_date"
 		from
-			mate
+			mate a
             join local using(local_code)
+            join member on(mate_writer = user_id)
 		where
-			NOT status = 'N'
+			NOT a.status = 'N'
 		and 
 			mate_no = #{mateNo}
 	</select>
@@ -264,13 +278,17 @@
 	<select id="selectGetApplyList" parameterType="string" resultMap="mateMemberResultSet" >
 		select
 			  a.*,
+			  user_nickname,
 			  b.mate_member,
 			  ref_mate_no,
 			  b.status bstatus
 		from
 			  mate a, mate_member b
+			  join member on(mate_member = user_id)
 		where
 			  mate_no = ref_mate_no
+		  and
+		  	  NOT recruit_status = 'N'
 		  and
 			  mate_writer = #{userId}
 	</select>
@@ -293,30 +311,48 @@
 	</select>
 	<!-- 보낸 신청 조회 (리스트)  -->
 	<select id="selectApplyList" parameterType="string" resultMap="mateMemberResultSet">
-		select a.*, b.mate_title, b.status bstatus
-		  from 
-		  	   mate_member a, mate b
-		 where
-		 	  mate_no = ref_mate_no
-		   and 
-		 	  mate_member = #{userId}
-	  order by 
-		 	  m_mate_no desc
+            select
+            a.mate_no,
+            user_nickname,
+            a.mate_title,
+            a.member_count,
+            a.member_curcount,
+            a.recruit_status,
+            a.f_date,
+            a.l_date,
+            b.ref_mate_no,
+            b.status
+		from
+			  mate a, mate_member b
+               join member on(mate_member = user_id)
+		where
+              a.mate_no = ref_mate_no
+		  and
+			  mate_member = #{userId}
+              order by mate_no desc
 	</select>
 	<!-- 보낸 동행 신청 조회 갯수 (count) -->
 	<select id="selectApplyListCount" parameterType="string" resultType="_int">
 		select count(*)
 		  from
 		      (
-		      	select a.*, b.mate_title, b.status bstatus
-		  		from 
-		  	   		mate_member a, mate b
-		 		where
-		 	  		mate_no = ref_mate_no
-		   		and 
-		 	  		mate_member = #{userId}
-	  			order by 
-		 	  		m_mate_no desc
+            select
+            a.mate_no,
+            user_nickname,
+            a.mate_title,
+            a.member_count,
+            a.member_curcount,
+            a.recruit_status,
+            a.f_date,
+            a.l_date
+		from
+			  mate a, mate_member b
+               join member on(mate_member = user_id)
+		where
+              a.mate_no = ref_mate_no
+		  and
+			  mate_member = #{userId}
+              order by mate_no desc
 		      )
 	</select>
 	<!-- 신청 중복조회 이 결과값이 1 이하이어야 함 -> 이상이면 리턴해서 오류 반환시키기 -->
@@ -335,6 +371,19 @@
 		 	  		mate_member = #{mateMember}
 		      )
 	</select>
+	<!-- 인원수 꽉찬 동행체크 -->
+	<select id="memberCountChk" resultType="_int">
+		select count(*)
+		from
+			(select 
+			 		mate_no
+			 from
+			 	   mate
+			 where
+		            member_curcount = member_count
+				and
+       		 		mate_no = #{mateNo})
+	</select>
 	<!-- 동행 신청 인원 증가 (모집인원 이하까지만 증가)-->
 	<update id="increaseMateCount">
 		update
@@ -352,10 +401,10 @@
 
 	<!-- 나의 동행리스트 전체 (작성, 신청) -->
 	<select id="selectMyList" parameterType="string" resultMap="mateResultSet">
-	        select * from
-        (select 
+	       select * from(
+        select 
             ma.mate_no,
-            ma.mate_writer,
+            user_nickname,
             ma.mate_title,
             ma.member_count,
             ma.member_curcount,
@@ -364,16 +413,17 @@
             ma.l_date
 		  from 
 		  	   mate ma
+		  	   join member on(mate_writer = user_id)
 		 where
 		 	  mate_writer = #{userId}
 		   and
-		   	  status = 'Y'
+		   	  ma.status = 'Y'
               
               union all
               
             select
             a.mate_no,
-            a.mate_writer,
+            user_nickname,
             a.mate_title,
             a.member_count,
             a.member_curcount,
@@ -382,8 +432,9 @@
             a.l_date
 		from
 			  mate a, mate_member b
+               join member on(mate_member = user_id)
 		where
-			  a.mate_no = ref_mate_no
+              a.mate_no = ref_mate_no
 		  and
 			  mate_member = #{userId}
           and
@@ -393,10 +444,10 @@
 	<!-- 나의 동행리스트 전체 (작성, 신청) 페이징처리 -->
 	<select id="selectMyListCount" resultType="_int">
 		select count(*)
-		   from (select * from
-        (select 
+		   from (select * from(
+        select 
             ma.mate_no,
-            ma.mate_writer,
+            user_nickname,
             ma.mate_title,
             ma.member_count,
             ma.member_curcount,
@@ -405,16 +456,17 @@
             ma.l_date
 		  from 
 		  	   mate ma
+		  	   join member on(mate_writer = user_id)
 		 where
 		 	  mate_writer = #{userId}
 		   and
-		   	  status = 'Y'
+		   	  ma.status = 'Y'
               
               union all
               
             select
             a.mate_no,
-            a.mate_writer,
+            user_nickname,
             a.mate_title,
             a.member_count,
             a.member_curcount,
@@ -423,8 +475,9 @@
             a.l_date
 		from
 			  mate a, mate_member b
+               join member on(mate_member = user_id)
 		where
-			  a.mate_no = ref_mate_no
+              a.mate_no = ref_mate_no
 		  and
 			  mate_member = #{userId}
           and
@@ -459,20 +512,21 @@
 	<select id="selectSearchList" resultMap="mateResultSet" parameterType="hashmap">
         select
 				mate_no,
-				mate_writer,
+				user_nickname,
 				mate_title,
                 count,
                 recruit_status,
                 to_char(create_date, 'YYYY-MM-DD') as "create_date", 
                 local_name
 		 	from
-		 		mate
+		 		mate a
 		 		join local using(local_code)
+		 		join member on(mate_writer = user_id)
 		 	where
-		 		NOT status = 'N'
+		 		NOT a.status = 'N'
             <choose>
 				<when test="condition == 'writer'">
-					and mate_writer
+					and user_nickname
 				</when>
 				<when test="condition == 'title'">
 					and mate_title
@@ -487,18 +541,20 @@
 	</select>
 	<!-- 댓글 관련 -->
 	<!-- 댓글 리스트조회 -->
-	<select id="selectReplyList" parameterType="_int" resultType="reply">
+	<select id="selectReplyList" resultMap="replyResultSet">
 		select
-			reply_no replyNo,
-			reply_writer replyWriter,
-			reply_content replyContent,
+			reply_no,
+			user_nickname,
+			reply_content,
 			to_char(create_date, 'YYYY-MM-DD') as "create_date"
 		from
-			reply
+			reply r
+		join
+			member on(reply_writer = user_id)
 		where
                 ref_board_no = #{bno}
             and
-                NOT status = 'N'
+                NOT r.status = 'N'
             and
                 reply_level = '2'
         order
@@ -535,6 +591,19 @@
         VALUES
               (SEQ_RPNO.NEXTVAL, #{writeNo}, #{divCode}, #{userId}, #{rptContent})
     </insert>
+    <!-- 신고중복여부 확인 -->
+	<select id="reportCheck" resultType="_int">
+		SELECT
+			   COUNT(*)
+		  FROM
+		  	   RPT
+		 WHERE
+		 	   WRITE_NO = #{writeNo}
+		   AND
+		   	   DIVCODE = #{divCode}
+		   AND
+		   	   USER_ID = #{userId}	      	   	   
+	</select>
 	
 
 </mapper>

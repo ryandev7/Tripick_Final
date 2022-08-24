@@ -13,7 +13,7 @@ import lombok.ToString;
 @ToString
 public class Mate {
 	private int mateNo;//MATE_NO	NUMBER
-	private String mateWriter;//MATE_WRITER	VARCHAR2(50 BYTE)
+	private String mateWriter;//MATE_WRITER	VARCHAR2(50 BYTE) 닉네임저장
 	private String localCode;//LOCAL_CODE	NUMBER
 	private String mateTitle;//MATE_TITLE	VARCHAR2(200 BYTE)
 	private String mateContent;//MATE_CONTENT	VARCHAR2(4000 BYTE)
@@ -27,5 +27,6 @@ public class Mate {
 	private Date createDate;
 	
 	private String localName;
+	private String mateWriter2; // 아이디 저장하는거
 
 }

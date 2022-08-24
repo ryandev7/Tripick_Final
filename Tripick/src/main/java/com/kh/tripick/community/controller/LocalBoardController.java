@@ -26,12 +26,16 @@ import com.kh.tripick.common.template.Pagination;
 import com.kh.tripick.community.model.service.LocalBoardService;
 import com.kh.tripick.community.model.vo.ComAttachment;
 import com.kh.tripick.community.model.vo.LocalBoard;
+import com.kh.tripick.course.model.service.CourseService;
 
 @Controller
 public class LocalBoardController {
 	
 	@Autowired
 	private LocalBoardService localBoardService;
+	
+	@Autowired
+	private CourseService courseService;
 	
 	@RequestMapping("list.lb")
 	public ModelAndView selectList(@RequestParam(value="cpage", defaultValue="1")int currentPage,
@@ -72,8 +76,8 @@ public class LocalBoardController {
 	
 	@RequestMapping("insert.lb")
 	public String insertBoard(LocalBoard b, MultipartFile upfile, HttpSession session, Model model) {
-		System.out.println(b);
-		System.out.println(upfile);
+		//System.out.println(b);
+		//System.out.println(upfile);
 		
 		int result = localBoardService.insertBoard(b);
 		//System.out.println(result);
@@ -207,22 +211,32 @@ public class LocalBoardController {
 			}
 			
 		}
-	
-	
+	/*
+	 * 댓글
+	 */
+	// 댓글 리스트 조회
 	@ResponseBody
 	@RequestMapping(value="rlist.lb", produces="application/json; charset=UTF-8")
 	public String ajaxSelectReplyList(int bno) {
 		ArrayList<Reply> list = localBoardService.selectReplyList(bno);
-		System.out.println(list);
+		//System.out.println(list);
 		return new Gson().toJson(localBoardService.selectReplyList(bno));
 		
 	}
-	
+	// 댓글 입력
 	@ResponseBody
 	@RequestMapping("rinsert.lb")
 	public String ajaxInsertReply(Reply r) { // 성공했을 때는 success 실패했을때는 fail
-		System.out.println(r);
+		//System.out.println(r);
 		return localBoardService.insertReply(r) > 0 ? "success" : "fail";
+	}
+	//댓글 삭제
+	@RequestMapping("rdelete.lb")
+	public String deleteReply(Reply r, HttpSession session) {
+		String alertMsg = courseService.deleteReply(r) > 0 ? "삭제되었습니다" : "error:삭제 실패";
+		session.setAttribute("alertMsg", alertMsg);
+		return "redirect:detail.lb?bno="+r.getRefBoardNo();
+		
 	}
 	
 	/**
@@ -230,7 +244,8 @@ public class LocalBoardController {
      */
     @RequestMapping("report.lb")
     public String reportMateReply(Report report, int bno, HttpSession session) {
-        String alertMsg = localBoardService.reportLocalBoardReply(report)>0?"신고가 접수되었습니다":"error:신고실패";
+        String alertMsg = courseService.reportCheck(report) > 0 ? "이미 신고한 댓글입니다." : 
+        		(localBoardService.reportLocalBoardReply(report)>0?"신고가 접수되었습니다":"error:신고실패");
         session.setAttribute("alertMsg", alertMsg);
         return "redirect:detail.lb?bno=" + bno;
     }
@@ -246,12 +261,12 @@ public class LocalBoardController {
 		map.put("keyword", keyword);
 		
 		int listCount = localBoardService.selectSearchCount(map);
-		System.out.println(listCount);
+		//System.out.println(listCount);
 		PageInfo pi = Pagination.getPageInfo(listCount, currentPage, 10, 5);
 		
 		ArrayList<LocalBoard> list = localBoardService.selectSearchList(map, pi);
 		
-		System.out.println(list);
+		//System.out.println(list);
 		mv.addObject("list", list)
 		  .addObject("pi", pi)
 		  .addObject("condition", condition)

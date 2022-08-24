@@ -130,12 +130,12 @@ public class MateBoardServiceImpl implements MateBoardService{
 	public int updateMateEnd(Mate m) {
 		return mateBoardDao.updateMateEnd(sqlSession, m);
 	}
-	/*
+	
 	@Override
-	public int memberCountChk(int mateNo) {
-		mateBoardDao.memberCountChk(sqlSession, mateNo);
+	public int memberCountChk(Mate m) {
+		return mateBoardDao.memberCountChk(sqlSession, m);
 	}
-	*/
+	
 
 	@Override
 	public ArrayList<MateMember> selectApplyList(String userId, PageInfo pi) {
@@ -170,6 +170,11 @@ public class MateBoardServiceImpl implements MateBoardService{
 	@Override
 	public int reportMateReply(Report report) {
 		return mateBoardDao.reportMateReply(sqlSession, report);
+	}
+
+	@Override
+	public int reportCheck(Report report) {
+		return mateBoardDao.reportCheck(sqlSession, report);
 	}
 
 
