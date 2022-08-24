@@ -1,6 +1,7 @@
 package com.kh.tripick.member.controller;
 
 import javax.mail.MessagingException;
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -127,19 +128,30 @@ public class MemberController {
 		return memberService.NickNameCheck(checkNickName) > 0 ? "NNNNN" : "NNNNY";
 	}
 	
+	// 이메일 중복체크
+	@ResponseBody
+	@RequestMapping("emailCheck.me")
+	public String emailCheck(String checkEmail ) {
+		
+		
+		return memberService.emailCheck(checkEmail) > 0 ? "NNNNN" : "NNNNY";
+		
+	}
+	
 	// 이메일 전송
 	@ResponseBody
 	@RequestMapping("input")
 	public String input(String email, HttpServletRequest request) throws MessagingException {
 		
 		String ip = request.getRemoteAddr();
+		String me = "Tripick@trip.co.kr";
 		
 		
 		String secret = memberService.sendMail(ip);
 		MimeMessage message = sender.createMimeMessage();
 		MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 		helper.setTo(email);
-		helper.setFrom("Tripick@trip.co.kr");
+		helper.setFrom(new InternetAddress("Tripick@trip.co.kr"));
 		helper.setSubject("Tripick 인증번호 입니다!");
 		helper.setText("<h1>인증번호 : " + secret + "</h1>" , true);
 		
@@ -188,8 +200,7 @@ public class MemberController {
 		
 		Member userId = memberService.findId(m);
 		
-		System.out.println(userId);
-		
+	
 		if(userId == null) {
 			
 			return "noId";
@@ -241,9 +252,11 @@ public class MemberController {
 	@RequestMapping("changePwd.me")
 	public String changePwd(String newPwd, String userId, HttpSession session, Model model) {
 		
+		String encPwd = bcryptPasswordEncoder.encode(newPwd);
+			
 		Member m = new Member();
-		
-		m.setUserPwd(newPwd);
+			
+		m.setUserPwd(encPwd);
 		m.setUserId(userId);
 		
 		int result = memberService.changePwd(m);

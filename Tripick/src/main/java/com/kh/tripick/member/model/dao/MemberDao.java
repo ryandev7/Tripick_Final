@@ -27,6 +27,10 @@ public class MemberDao {
 		return sqlSession.selectOne("memberMapper.NickNameCheck", checkNickName);
 		
 	}
+	
+	public int emailCheck(SqlSessionTemplate sqlSession, String checkEmail) {
+		return sqlSession.selectOne("memberMapper.emailCheck", checkEmail);
+	}
 
 	public void insertSecret(SqlSessionTemplate sqlSession, CertVo certVo) {
 		
@@ -60,5 +64,7 @@ public class MemberDao {
 		
 		return sqlSession.update("memberMapper.changePwd", m);
 	}
+
+
 
 }

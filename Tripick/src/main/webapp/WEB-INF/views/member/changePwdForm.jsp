@@ -36,14 +36,15 @@ div {
       position: relative;
       z-index: 1;
       margin-top: -1px;
-      width: 100%;
+      width: 960px;
       padding: 124px 99px 125px 99px;
       border: 1px solid #666;
+      
    }
    
    /* content 영역 사이즈설정 */
    #content {
-      min-height: 960px;
+      min-height: 760px;
       position: relative;
       z-index: 1;
       margin: 200px auto 80px auto;
@@ -281,25 +282,32 @@ div {
     text-align: center;
     color: #000000;
     
-
-   
    }
    
+	fieldset {
+	
+	height : 400px;
+	margin-botton : 100px;
+	
+	}
    
+   #person_find {
    
+   height : 300px;
+   }
 
   </style>
 
 
 </head>
 <body>
-
+<jsp:include page="../common/header.jsp"/>
+<br>
 
  <div id="content" style="margin-bottom : 50px;">
-   <div class="help_find" id="person_find" >
-
-         <div class="cont_find">
-            <form action="changePwd.me" method="post" id="find_form">
+   <div class="help_find" id="person_find">
+         <div class="cont_find" style= "padding:100px;" >
+            <form action="changePwd.me" method="post" id="find_form" style="margin:0px;padding:0px;">
                <fieldset>
                   <p class="desc_find" id="pwdChangeBtn" align="center" style="margin-botton : 10px;">비밀번호 변경</p>
                   <br>
@@ -316,7 +324,7 @@ div {
                         </div>
                      </li>
                      
-                     <li id="li_cell">
+                     <li id="li_cell" >
                         <div class="wrap_lab"><label for="newPwdCheck" class="lab_find">비밀번호 확인</label></div>
                         <div class="wrap_input">
                            <span class="box_input">
@@ -325,10 +333,10 @@ div {
                         </div>
                      </li>                    
                   </ul>
-          
+          		  <br>
                   <div class="wrap_link">
-                     <button type="submit" class="btn_biggest_type01" id="btn_cert_search" onclick="checkPwd();">비밀번호 변경</button><br>
-                     <button type="button" class="btn_biggest_type01" id="btn_cert_back" style="margin-top : 10px;" onclick="location.href='loginForm.me' ">로그인 화면으로</button>
+                     <button type="submit" class="btn_biggest_type01" id="btn_cert_search" style="cursor:pointer;">비밀번호 변경</button><br>
+                     <button type="button" class="btn_biggest_type01" id="btn_cert_back" style="margin-top : 10px; cursor:pointer;" onclick="location.href='loginForm.me' ">로그인 화면으로</button>
                   </div>
                </fieldset>
             </form>
@@ -339,25 +347,26 @@ div {
    
    <script>
    
-	     
-   function checkPwd() {
-   		
-	$('#newPwdCheck').keyup(function() {
-   	var $newPwd = $('#newPwd').val();
-   	var $newPwdCheck = $('#newPwdCheck').val();
-   		
-	   
-   if($newPwd != $newPwdCheck) {
-	
-	   alert("비밀번호가 일치하지 않습니다!");
-	   
-   		  }
+   $(function() {
+       $('#find_form').submit(function(){
+         
+         var $newPwd = $('#newPwd').val();
+       	 var $newPwdCheck = $('#newPwdCheck').val();
+          if($newPwd != $newPwdCheck) {
+        	 
+        	  alert('비밀번호가 일치하지 않습니다.');
+        	  return false;
+          }else {
+        	  
+        	  return true;
+          }
+ 
+      });  
+    });
    
-	    })
-	   }
-   
+       
    </script>
    
-   
+   <jsp:include page="../common/footer.jsp"/>
  </body>
  </html>  

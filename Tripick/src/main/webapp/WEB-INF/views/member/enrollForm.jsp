@@ -222,7 +222,7 @@
                         <div class="Id-area">
                             <input class="input-id" type="text" id="userId" name="userId" required style="padding-left: 10px;" maxlength="15">
                    		</div>
-                    <div class="jeyak-area" id="checkId" style="margin-left: 130px; display: block;">5~15자의 영어, 숫자만 사용 가능합니다.</div>   
+                    <div class="jeyak-area" id="checkId" style="margin-left: 130px; margin-botton :px; display: block;">5~15자의 영어, 숫자만 사용 가능합니다.</div>   
                     <div class="jeyak-area" id="checkIddob" style="margin-left: 20px; display: none;"></div>   
                     <div class="jeyak-area" id="checkIdfal" style="margin-left: 45px; display: none;"></div>   
                     <div class="jeyak-area" id="checkIdtr" style="margin-left: 50px; display: none;"></div>   
@@ -257,15 +257,15 @@
                         <label class="label-text" for="email" style="margin-right: 265px;">이메일</label>
                         <div class="Email-area">
                             <input class="input-email" type="text" id="email" name="email" required style="padding-left: 10px;">
-                            <button class="email-number" id="emailRanNo" style="background-color: #7ad7ba;" onclick="emailNumber();" disabled type="button">인증번호 발송</button>                     
+                            <button class="email-number" id="emailRanNo" style="background-color: #7ad7ba; cursor : pointer;" onclick="emailNumber();" disabled type="button">인증번호 발송</button>                     
                         </div>
                     </div> 
                     <div class="jeyak-area" id="checkEmail"></div>
                      <div style="padding-top: 10px">
-                   		<label class="label-text" for="emailNo" id="inemail">인증번호 입력</label>
+                   		<label class="label-text" for="emailNo" id="inemail" >인증번호 입력</label>
                    		<div>
                             <input class="input-emailNo" type="text" id="emailNo" name="secret" required style="padding-left: 10px;" maxlength="6">
-		   					<button class="confirm" type="button" id="emailNoCheck" onclick="emailNumberCheck();">확인</button>	
+		   					<button class="confirm" type="button" id="emailNoCheck" onclick="emailNumberCheck();" style="cursor : pointer;">확인</button>	
                       	</div>
                         <div class="jeyak-area" id="checkEmailNo" style="margin-left: 50px;"></div>
                       	<br><br>
@@ -282,7 +282,7 @@
                     
                     
 
-                    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+                    <br><br><br><br><br><br><br>
                 </form>
                 
       </div>
@@ -588,43 +588,82 @@
 			}
 	});
 	
-	// 이메일 유효성
-	
-	$('#email').keyup(function() {
-		
-	  
-	    var $email = $('#email').val();
-		var $checkEmail = $('#checkEmail');
-		var regExpEmail = /([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
+	// 이메일 중복체크	
+	$(function() {
 			
-		 // /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/;
-		
-		
-		if(!regExpEmail.test($email)) {
+			const $emailInput/*jQuery선택자로 선택*/ = $('#email');
 			
-			$checkEmail.css('margin-left', '90px');
-			$checkEmail.css('color', 'red').text('이메일 형식에 맞게 입력해주세요.');
-			$('#emailRanNo').attr("disabled");
-			EMAIL = "N";
-					
-			if($email == "") {
+			$emailInput.keyup(function() {
+			
+				// 최소 다섯글자 이상 입력했을 때만 ajax요청해서 중복체크
 				
-				$checkEmail.text('');
-				EMAIL = "N";
-			}
+				if($emailInput.val().length >= 5) {
+					
+							var $checkEmail = $('#checkEmail');
+							
+							$.ajax({
+								
+								url :'emailCheck.me',
+								data : {checkEmail:$emailInput.val()},
+								success : function(result) {
+									
+									if(result == 'NNNNN' ) { // 사용불가
+																		
+																		
+											$('#checkEmail').css('margin-left', '25px');
+											$('#checkEmail').css('color', 'red').text('중복된 이메일입니다.');
+		 
+											EMAIL = 'N';
+															
+								    }
+									else { // 사용가능
 			
-		}
-		else {
-			
-	         $checkEmail.css('margin-left', '1px');
-	         $checkEmail.css('color', 'yellowgreen').text('사용 가능합니다!');
-	         $('#emailRanNo').removeAttr("disabled");
-	         EMAIL = "Y";
-			
-		}
+										   // 유효성 검사
+										    var $email = $('#email').val();
+											var $checkEmail = $('#checkEmail');
+											var regExpEmail = /([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
+												
+											 // /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/;
+											
+										
+												if(!regExpEmail.test($email)) { // 유효성 불일치
+													
+													$('#checkEmail').css('margin-left', '90px');
+													$('#checkEmail').css('color', 'red').text('이메일 형식에 맞게 입력해주세요.');
+													$('#emailRanNo').attr("disabled");
+													EMAIL = "N";
+															
+													if($email == "") {
+														
+														$checkEmail.text('');
+														EMAIL = "N";
+													}
+													
+												}
+												else { // 유효성 일치
+													
+													$('#checkEmail').css('margin-left', '1px');
+													$('#checkEmail').css('color', 'yellowgreen').text('사용 가능합니다!');
+											        $('#emailRanNo').removeAttr("disabled");
+											         EMAIL = "Y";
+													
+												}
+									}				
+								}, error : function() {
+									console.log("이메일 중복체크용 ajax통신 실패");
+									}
+								});
+							  }
+					else {
+											
+						$('#checkEmail').css('margin-left', '90px');
+						$('#checkEmail').css('color', 'red').text('');
+						EMAIL = "N";
+									
+					}
+				  })	
+		  })
 		
-		
-	});
 	
 	
 	// 이메일 인증번호 발송

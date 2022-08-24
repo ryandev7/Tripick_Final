@@ -275,6 +275,7 @@ div {
 <body>
 
 
+<br><br><br>
  <div id="content" style="margin-bottom : 50px;">
    <div class="help_find" id="person_find">
          <ul class="tab_find">
@@ -315,7 +316,7 @@ div {
                            <span class="box_input">
                               <input type="text" name="email" id="email" name = "email" class="inp_find" required placeholder="이메일주소를 입력해주세요">
                            </span>   
-                           <button type="button" id="btn_cert_cell1" class="btn_basic2 type03 btn_cert" onclick="emailNumber();" >인증번호 발송</button>
+                           <button type="button" id="btn_cert_cell1" class="btn_basic2 type03 btn_cert" onclick="emailNumber(); checkEmail();" style="cursor : pointer;" >인증번호 발송</button>
                         </div>
                      </li>
                      
@@ -328,7 +329,7 @@ div {
                            <span class="box_input">
                               <input type="text" name="emailNo" id="emailNo" class="inp_find" required placeholder="인증번호를 입력해주세요">
                            </span>
-                           <button type="button" id="btn_cert_cell2" class="btn_basic2 type03 btn_cert" onclick="emailNumberCheck();" >인증확인</button>
+                           <button type="button" id="btn_cert_cell2" class="btn_basic2 type03 btn_cert" onclick="emailNumberCheck();" style="cursor : pointer;">인증확인</button>
                         </div>
                      </li>
                   </ul>
@@ -340,8 +341,8 @@ div {
                   </p>
                   
                   <div class="wrap_link">
-                     <button type="button" class="btn_biggest_type01" id="btn_cert_search" onclick="findId();">아이디 찾기</button><br>
-                     <button type="button" class="btn_biggest_type01" id="btn_cert_back" style="margin-top : 10px;" onclick="location.href='loginForm.me' ">로그인 화면으로</button>
+                     <button type="button" class="btn_biggest_type01" id="btn_cert_search" onclick="findId();" style="cursor : pointer;">아이디 찾기</button><br>
+                     <button type="button" class="btn_biggest_type01" id="btn_cert_back" style="margin-top : 10px; cursor:pointer;" onclick="location.href='loginForm.me' ">로그인 화면으로</button>
    <!--                        <button type="button" class="btn_biggest_type01" id="btn_next" style="display: none">다음</button>-->
                   </div>
                </fieldset>
@@ -354,15 +355,45 @@ div {
    
    <script>
    
+   var name;
+   var email;
+   var emailno = 'N';
+   var emailCheck;
 
 
+   // 이메일 유효성 체크시
+   
+   function checkEmail() {
+	   
+	   if(emailCheck == 'NN') {
+		   
+		   alert('이메일 형식에 맞게 입력해주세요.');
+	   }
+   }
+   
    
    
    // 아이디 찾기
+   
    function findId() {
-	  $('#result_id').css('visibility', 'visible');
       
-	  
+	  if($('#inputName').val() == "") {
+		  
+		  alert('이름을 입력해주세요');
+	  }else if($('#email').val() == "") {
+		  
+		  alert('이메일을 입력해주세요');
+	  }else if($('#emailNo').val() == "") {
+		  
+		  alert('인증번호를 입력해주세요');
+	  }
+	  else if(emailno == 'N') {
+		  
+		  alert('인증을 완료해주세요');
+	  }
+	  	  
+	  else {
+		  
       var $userName = $('#inputName').val();
       var $emailAddr = $('#email').val();
       
@@ -380,7 +411,7 @@ div {
     		$('#result_1').text("조회된 아이디가 없습니다.");  
     		$('#result_ID').text("");  
     		$('#result_2').text("");  
-    		ID='N';
+    		
     		  
     	  }else {  // 조회  o
     		  
@@ -388,7 +419,7 @@ div {
 			$('#result_1').text("당신의 아이디는"); 
 			$('#result_ID').text(userId);  
 			$('#result_2').text("입니다");
-			ID='Y';
+			
     		  
     	   }
     	       
@@ -400,6 +431,7 @@ div {
          
      });
 	      
+	  }
    }
    
    // 비밀번호 변경
@@ -409,6 +441,24 @@ div {
 	      var $userId = $('#inputId').val();
 	      var $emailAddr = $('#email').val();
 	      
+	      if($('#inputId').val() =="") {
+	    	  
+	    	  alert('아이디를 입력해주세요');
+	    	  
+	      }else if($('#email').val() == "") {
+			  
+			  alert('이메일을 입력해주세요');
+		  }else if($('#emailNo').val() == "") {
+			  
+			  alert('인증번호를 입력해주세요');
+		  }else if(emailno == 'N') {
+			  
+			  alert('인증을 완료해주세요');
+		  }
+		  
+	      
+	      else{
+	    	        
 	      $.ajax({
 	         
 	      url : "findPwd",   
@@ -444,9 +494,10 @@ div {
 	      
 	      error : function() {
 	         console.log('실패');
-	        }
+	         }
 	         
-	     });     
+	       });     
+	      }
    }
    
    
@@ -464,8 +515,11 @@ div {
 	  $('#find_id').removeClass("on");
 	  $('#find_pwd').addClass("on");
 	  $('#result_id').css('visibility', 'hidden');
-	  $('#inputEmail').val('');
-	  $('#emailNo').val('');
+	  $('#find_form')[0].reset();
+	  $('#btn_cert_cell2').css('background-color',"#7AD7BA");
+	  $('#btn_cert_cell2').removeAttr('disabled');
+	  $('#emailNo').removeAttr('readonly');
+	  emailno = 'N';
 	  
 	  
       
@@ -482,8 +536,12 @@ div {
       $('#btn_cert_search').text("아이디 찾기");
 	  $('#find_pwd').removeClass("on");
 	  $('#find_id').addClass("on");
+	  $('#find_form')[0].reset();
 	  $('#result_id').css('visibility', 'hidden');
-      
+	  $('#btn_cert_cell2').css('background-color',"#7AD7BA");
+	  $('#btn_cert_cell2').removeAttr('disabled');
+	  $('#emailNo').removeAttr('readonly');
+	  emailno = 'N';
       
    }
    
@@ -546,7 +604,7 @@ div {
 		
 		if($secret == "") {
 			alert('인증번호를 입력해주세요');
-			EMAILNO = 'N';
+			emailno = 'N';
 			
 		}else{
 			
@@ -559,12 +617,15 @@ div {
 					
 					if(result == 'Y') {
 						
+						$('#emailNo').attr('readonly', true);
+						$('#btn_cert_cell2').css("background-color" , "grey");
+						$('#btn_cert_cell2').attr('disabled', true);
 						alert('인증성공!');
-						EMAILNO = 'Y';
+						emailno = 'Y';
 					}else {
 						
 						alert('인증실패!');
-						EMAILNO = 'N';
+						emailno = 'N';
 					}
 					
 				},
@@ -572,7 +633,7 @@ div {
 				error : function() {
 					
 					   console.log('실패');
-					   EMAILNO = 'N';
+					   emailno = 'N';
 				}
 								
 			});
@@ -581,7 +642,24 @@ div {
 	   
    }
    
-  
+   // 이메일 유효성
+     $('#email').keyup(function() {
+    	 
+     var $email = $('#email').val();
+	 var regExpEmail = /([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
+		
+		if(!regExpEmail.test($email)) { // 유효성 불일치
+				
+			emailCheck = 'NN';
+								
+		}
+		else { // 유효성 일치
+				
+			emailCheck = 'YY';
+			
+		}
+
+     });
    </script>
    
    

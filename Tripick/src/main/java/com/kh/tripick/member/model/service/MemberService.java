@@ -18,6 +18,9 @@ public interface MemberService {
 	// 닉네임 중복체크용 서비스(select)
 	int NickNameCheck(String checkNickName);
 	
+	// 이메일 중복체크용 서비스(select)
+	int emailCheck(String checkEmail);
+	
 	// 이메일 전송 서비스(select)
 	String sendMail(String ip);
 	
@@ -29,8 +32,10 @@ public interface MemberService {
 	
 	// 비밀번호 찾기
 	Member findPwd(Member m);
-
+	
+	// 비밀번호 변경
 	int changePwd(Member m);
+
 
 
 }

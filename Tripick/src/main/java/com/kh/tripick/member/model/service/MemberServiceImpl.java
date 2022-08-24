@@ -45,6 +45,11 @@ public int NickNameCheck(String checkNickName) {
 }
 
 @Override
+public int emailCheck(String checkEmail) {
+	return memberDao.emailCheck(sqlSession, checkEmail);
+} 
+
+@Override
 public String sendMail(String ip) {
 	
 	String secret = this.generateSecret();
@@ -89,7 +94,9 @@ public Member findPwd(Member m) {
 @Override
 public int changePwd(Member m) {
 	return memberDao.changePwd(sqlSession,m);
-} 
+}
+
+
 
 
 
