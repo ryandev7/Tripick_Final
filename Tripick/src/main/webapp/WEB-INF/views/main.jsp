@@ -56,12 +56,10 @@
     }
     #down-arrow{
         width: 50px;
-        /*margin-top: 25vh;*/
+        margin-top: 20vh;
          
     }
     #targetD{
-        margin-top: 200px;
-        
     }
 
     #main1_2{
@@ -191,11 +189,11 @@
         width: 200px;
     }
     #thumbnail>img{
-        width: 95%;
-        height: 95%;
+        width: 190px;
+        height: 190px;
         margin-left: 5px;
-        margin-top: 5px;
         border-radius : 10%;
+        object-fit:cover;
     }
 
     #course{
@@ -232,6 +230,8 @@
         font-size: 20px;
         margin-top: 10px;
     }
+
+    
 </style>
 </head>
 <body>
@@ -262,7 +262,7 @@
                         
                         <form action="search.co" method="get">
                             <div>
-                                <input id="search_I" type="text" placeholder="✈︎ 떠나고 싶은 지역을 입력하세요 ✈︎" name="keyword"> <br>
+                                <input id="search_I" type="text" placeholder="떠나고 싶은 지역을 입력하세요" name="keyword"> <br>
                                 <button id="search_btn">검색하기</button>
                             </div>
                         </form>
@@ -311,22 +311,17 @@
                             type: "GET",
                             async: "false",
                             success: function(resp) {
-
-                                //console.log(resp);
                                 $("#region").html(resp.name);
                                 $("#currentT").html(Math.floor(resp.main.temp-273.15)+"℃");
                                 $("#weather").html(resp.weather[0].main);
-
                             }
                         });
-
                         if (index == city.length){
                             index = 0;
                         }
                     } 
                     weather();       
                     setInterval(weather, 3000);
-
                 });
                 
             </script>
@@ -351,7 +346,6 @@
                     $.ajax({
                         url:'random.tb',
                         success : function(data){
-                            //console.log(data);
 
                             let value='';
                             for(let i in data){
@@ -375,21 +369,23 @@
                                     $("#modelArea > p").text(l1.localName);
                                     $("#modelTripName > p").text(l1.trboardTitle);
                                     $("#modelTripContent > p").text(l1.trboardContent);
+                                    $("#modelTripLink > a").attr("href", "detail.tb?trboardNo="+l1.trboardNo);
                                 })
                                 $("#W_trip > div:nth-child(2)").click(function(){
                                     $("#modalImg > img").attr("src", l2.changeName);
                                     $("#modelArea > p").text(l2.localName);
                                     $("#modelTripName > p").text(l2.trboardTitle);
                                     $("#modelTripContent > p").text(l2.trboardContent);
+                                    $("#modelTripLink > a").attr("href", "detail.tb?trboardNo="+l2.trboardNo);
                                 })
                                 $("#W_trip > div:nth-child(3)").click(function(){
                                     $("#modalImg > img").attr("src", l3.changeName);
                                     $("#modelArea > p").text(l3.localName);
                                     $("#modelTripName > p").text(l3.trboardTitle);
                                     $("#modelTripContent > p").text(l3.trboardContent);
+                                    $("#modelTripLink > a").attr("href", "detail.tb?trboardNo="+l3.trboardNo);
                                 })
                             })
-
                         }
                     });
                 }
@@ -417,7 +413,6 @@
                     $.ajax({
                         url:'count.pn',
                         success : function(data2){
-                            console.log(data2);
 
                             let value2='';
                             for(let i in data2){
@@ -465,7 +460,6 @@
                             $(function(){
                                 $("table[id=course]").click(function(){
                                     let plannerNo = $(this).find('input[name=plannerNo]').val();
-                                    console.log(plannerNo);
                                     location.href="detail.co?pno=" + plannerNo;
                                 })
                             })

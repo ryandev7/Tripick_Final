@@ -43,18 +43,14 @@ public class MainController {
 	}
 	
 	// 코스 검색
-	
 	@RequestMapping("search.co")
     public ModelAndView searchCourse(@RequestParam(value="cpage", defaultValue="1") int currentPage, String keyword, ModelAndView mv) {
-        PageInfo pi = Pagination.getPageInfo(mainService.searchCourseCount(keyword), currentPage, 5, 6);
-
+       
+		PageInfo pi = Pagination.getPageInfo(mainService.searchCourseCount(keyword), currentPage, 5, 6);
         ArrayList<Planner> list = mainService.searchCourseList(keyword, pi);
-
         ArrayList<LocalCategory> localList = courseService.selectLocalList(); // 지역 카테고리 list
-
         mv.addObject("pi", pi).addObject("list", list).addObject("keyword", keyword).addObject("localList", localList).setViewName("course/courseMain");
         return mv;
-
     }
 	
 	

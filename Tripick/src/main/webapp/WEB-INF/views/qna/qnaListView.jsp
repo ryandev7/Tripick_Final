@@ -83,7 +83,8 @@
         text-align: left;
     }
 
-     /*페이징*/
+    /*페이징*/
+    
     #pagingArea{
         width: 500px;
         height: 50px;
@@ -96,13 +97,13 @@
     }
     #pagingArea>ul>li{
         float: left;
-        margin-left: 5px;
+        margin-left: 3px;
         cursor: pointer;
     }
     #pagingArea>ul>li>a{
         font-size: 20px;
+        color: #7AC5CD;
     }
-
     /*스위치*/
     .switch {
         position: relative;
@@ -199,7 +200,6 @@
                     check.click(function(){
 
                         if($(check).is(":checked")){
-                            console.log('hello');
 
                             $.ajax({
                                 url: 'qna.my',
@@ -207,12 +207,9 @@
                                     qnaWriter : '${loginUser.userId}'
                                 },
                                 success:function(myList){
-                                    console.log(myList);
                                     
                                     let value='';
-
                                     for(let i in myList){
-                                        console.log(myList[i].qnaNo);
 
                                         var flag = true;
                                         if(myList[i].answer){

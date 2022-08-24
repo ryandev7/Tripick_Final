@@ -28,12 +28,9 @@ public class QnaController {
 	public String selectQnaList(@RequestParam(value="cpage", defaultValue="1") int currentPage, Model model) {
 		
 		PageInfo pi = Pagination.getPageInfo(qnaService.selectQnaListCount(), currentPage, 10, 10);
-		
 		ArrayList<Qna> list = qnaService.selectQnaList(pi);
-
 		model.addAttribute("list", list);
 		model.addAttribute("pi", pi);
-		
 		return "qna/qnaListView";
 	}
 	
@@ -41,9 +38,7 @@ public class QnaController {
 	public String selectQna(Model model, int qno) {
 		
 		Qna q = qnaService.selectQna(qno);
-		
 		model.addAttribute("q", q);
-		
 		return "qna/qnaDetailView";
 	}
 	
@@ -71,7 +66,6 @@ public class QnaController {
 	public String deleteQna(int qno, HttpSession session, Model model) {
 		
 		int result = qnaService.deleteQna(qno);
-		
 		if(result > 0) { 
 			session.setAttribute("alertMsg", "Q&A 삭제 성공");
 			return "redirect:list.qna";
@@ -91,12 +85,7 @@ public class QnaController {
 	//qna 수정하기
 	@RequestMapping("update.qna")
 	public String updateForm(Qna q, Model model, HttpSession session) {
-		System.out.println("hello");
-		
 		int result = qnaService.updateQna(q);
-		
-		System.out.println(result);
-		
 		if(result > 0) {
 			//성공
 			session.setAttribute("alertMsg", "Q&A 수정 성공");
@@ -113,7 +102,6 @@ public class QnaController {
 	@RequestMapping("answer.in")
 	public String insertQnaAnswer(Qna q) {
 		return qnaService.insertQnaAnswer(q) > 0 ? "success" : "fail";
-			
 	}
 	
 	//답변삭제
@@ -145,33 +133,4 @@ public class QnaController {
 	public String selectMyQnaList(String qnaWriter) {
 		return new Gson().toJson(qnaService.selectMyQnaList(qnaWriter));
 	}
-	
-	/*
-	@RequestMapping("qna.my")
-	public ModelAndView searchNotice(@RequestParam(value="cpage", defaultValue="1") int currentPage, String userId, ModelAndView mv) {
-		
-		PageInfo pi = Pagination.getPageInfo(qnaService.selectMyQnaListCount(userId), currentPage, 10, 10);
-		
-		ArrayList<Qna> list = qnaService.selectMyQnaList(userId, pi);
-		
-		System.out.println(list);
-		
-		mv.addObject("list", list)
-		  .addObject("pi", pi)
-		  .setViewName("qna/qnaListView");
-		
-		return mv;
-	}
-*/
-	/*
-	@ResponseBody
-	@RequestMapping(value="qna.my" , produces="application/json; charset=UTF-8")
-	public String selectMyQnaList(@RequestParam(value="cpage", defaultValue="1") int currentPage, String userId) {
-		
-		PageInfo pi = Pagination.getPageInfo(qnaService.selectMyQnaListCount(userId), currentPage, 10, 10);
-		System.out.println(qnaService.selectMyQnaList(userId, pi));
-		return new Gson().toJson(qnaService.selectMyQnaList(userId, pi));
-		
-	}
-	*/
 }

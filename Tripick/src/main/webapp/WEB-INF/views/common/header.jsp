@@ -185,15 +185,16 @@
 						<c:when test="${loginUser.authority eq 'A'}">
 							<li><a>관리자페이지</a>
 		                		<ul>
+									<li><a href="memInfoChanForm.my?">마이페이지</a></li>
 			                		<li><a href="list.re">게시판 신고리스트</a></li>
-			                		<li><a href="">댓글 신고리스트</a></li>
-			                		<li><a href="">문의사항 리스트</a></li>
+			                		<li><a href="replyList.re">댓글 신고리스트</a></li>
+			                		<li><a href="list.no">공지 & 문의 바로가기</a></li>
 		                		</ul>
 		                	</li>
 							<li><a href="logout.me">로그아웃</a></li>
 						</c:when>
 						<c:otherwise>
-							<li><a href="mypage.my"><!--<img id="mypage" src="./resources/common-upfiles/mypage.png">-->마이페이지</a></li>
+							<li><a href="memInfoChanForm.my?">마이페이지</a></li>
 							<li><a href="logout.me">로그아웃</a></li>
 						</c:otherwise>
 					</c:choose>	
@@ -211,7 +212,6 @@
 			$(window).scroll(function(){
 				var scrollTop = $(window).scrollTop();
 				if (scrollTop == 0) {
-					console.log('dd');
 					$('#header').css('background-color', 'transparent');
 					$('#header').css('box-shadow', 'none');
 				}else{

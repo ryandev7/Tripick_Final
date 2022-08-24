@@ -48,13 +48,35 @@
 
 	<select id="randomList" resultMap="mainTripdResultSet">
 	
-		SELECT TR_BOARD_NO, TR_BOARD_TITLE, TR_BOARD_CONTENT, TR_BOARD_WRITER, CREATE_DATE, STATUS, LOCAL_NAME, CHANGE_NAME
+		SELECT 
+		 	   TR_BOARD_NO, 
+			   TR_BOARD_TITLE, 
+			   TR_BOARD_CONTENT, 
+			   TR_BOARD_WRITER, 
+			   CREATE_DATE, 
+			   STATUS, 
+			   LOCAL_NAME, 
+			   CHANGE_NAME
 		  FROM
-    		  (SELECT TR_BOARD_NO, TR_BOARD_TITLE, TR_BOARD_CONTENT, TR_BOARD_WRITER, CREATE_DATE, TB.STATUS, LOCAL_NAME, CHANGE_NAME
-    		     FROM TR_BOARD TB
-                 JOIN TR_ATTACHMENT ON(TR_BOARD_NO = REF_TBNO)
-    		    ORDER BY DBMS_RANDOM.RANDOM)
-		 WHERE ROWNUM BETWEEN 1 AND 3
+    		  (SELECT 
+    		  		  TR_BOARD_NO, 
+    		  		  TR_BOARD_TITLE, 
+    		  		  TR_BOARD_CONTENT, 
+    		  		  TR_BOARD_WRITER, 
+    		  		  CREATE_DATE, 
+    		  		  TB.STATUS, 
+    		  		  LOCAL_NAME, 
+    		  		  CHANGE_NAME
+    		     FROM 
+    		     	  TR_BOARD TB
+                 JOIN 
+                 	  TR_ATTACHMENT ON(TR_BOARD_NO = REF_TBNO)
+                WHERE 
+                 	  TB.STATUS = 'Y'
+    		    ORDER BY 
+    		    		DBMS_RANDOM.RANDOM)
+		 WHERE 
+		 	   ROWNUM BETWEEN 1 AND 3
 	
 	</select>
 	
@@ -63,6 +85,7 @@
 		  FROM(
 				SELECT PLANNER_NO, PLANNER_WRITER, PLANNER_TITLE, F_DATE, L_DATE, W_DATE, AREA, TYPE, COUNT, CREATE_DATE, ORIGIN_NAME, CHANGE_NAME, STATUS 
 				  FROM PLANNER
+				  WHERE STATUS = 'Y'
 		  		 ORDER BY COUNT DESC) P
           JOIN MEMBER ON(USER_ID = PLANNER_WRITER)
 		 WHERE ROWNUM BETWEEN 1 AND 4
