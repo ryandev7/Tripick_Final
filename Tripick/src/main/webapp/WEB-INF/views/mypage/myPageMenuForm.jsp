@@ -16,8 +16,8 @@
 						<li><a href="tripPlan.my">등록한 여행코스</a>
 						<li><a href="interestTrip.my">관심 여행코스</a>
 						<li><a href="myChatMenu.my">채팅목록</a>
-						<li><a href="myApplyList.mb">동행신청/모집내역 </a>
-						<li><a href="applyList.mb">나의 동행리스트</a>
+						<li><a href="applyList.mb">동행신청/모집내역 </a>
+						<li><a href="myApplyList.mb">나의 동행리스트</a>
 					</ul>
 				</nav>
 
