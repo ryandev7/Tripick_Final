@@ -12,12 +12,11 @@ import com.kh.tripick.common.model.vo.PageInfo;
 
 @Repository
 public class AdminDao {
+	
+	// ========================== 신고 게시판 영역 =============================
+	
 	public int selectListCount(SqlSessionTemplate sqlSession) {
 		return sqlSession.selectOne("adminMapper.selectListCount");
-	}
-	
-	public int selectReplyListCount(SqlSessionTemplate sqlSession) {
-		return sqlSession.selectOne("adminMapper.selectReplyListCount");
 	}
 	
 	public ArrayList<Report> selectList(SqlSessionTemplate sqlSession, PageInfo pi){
@@ -29,6 +28,24 @@ public class AdminDao {
 		
 		return (ArrayList)sqlSession.selectList("adminMapper.selectList", null, rowBounds);
 	}
+
+	public Report selectBoard(SqlSessionTemplate sqlSession, HashMap<String, String> map) {
+		return sqlSession.selectOne("adminMapper.selectBoard", map);
+	}
+	
+	public ArrayList<Report> selectRptList(SqlSessionTemplate sqlSession, HashMap<String, String> map) {
+		return (ArrayList)sqlSession.selectList("adminMapper.selectRptList", map);
+	}
+	
+	// ============================================================================
+
+	
+	
+	// ========================== 신고 댓글 영역 =============================
+	
+	public int selectReplyListCount(SqlSessionTemplate sqlSession) {
+		return sqlSession.selectOne("adminMapper.selectReplyListCount");
+	}
 	
 	public ArrayList<Report> selectReplyList(SqlSessionTemplate sqlSession, PageInfo pi){
 		
@@ -39,16 +56,21 @@ public class AdminDao {
 		
 		return (ArrayList)sqlSession.selectList("adminMapper.selectReplyList", null, rowBounds);
 	}
-
-	public Report selectBoard(SqlSessionTemplate sqlSession, HashMap<String, String> map) {
-		return sqlSession.selectOne("adminMapper.selectBoard", map);
+	
+	public Report selectReply(SqlSessionTemplate sqlSession, HashMap<String, String> map) {
+		return sqlSession.selectOne("adminMapper.selectReply", map);
 	}
 	
-	public ArrayList<Report> selectRptList(SqlSessionTemplate sqlSession, HashMap<String, String> map) {
-		return (ArrayList)sqlSession.selectList("adminMapper.selectRptList", map);
+	public ArrayList<Report> selectReplyRptList(SqlSessionTemplate sqlSession, HashMap<String, String> map) {
+		return (ArrayList)sqlSession.selectList("adminMapper.selectReplyRptList", map);
 	}
-
-
+	
+	// ======================================================================
+	
+	
+	
+	// ============================= 신고 삭제 영역 ===================================
+	
 	public int deleteLocalBoard(SqlSessionTemplate sqlSession, int boardNo) {
 		return sqlSession.update("adminMapper.deleteLocalBoard", boardNo);
 	}
@@ -57,5 +79,9 @@ public class AdminDao {
 		return sqlSession.update("adminMapper.deleteMateBoard", boardNo);
 	}
 	
+	public int deleteReply(SqlSessionTemplate sqlSession, int replyNo) {
+		return sqlSession.update("adminMapper.deleteReply", replyNo);
+	}
+	// ===========================================================================
 	
 }

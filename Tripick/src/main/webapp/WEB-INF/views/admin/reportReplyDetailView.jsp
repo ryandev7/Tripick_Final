@@ -5,30 +5,39 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>게시판 신고 상세보기</title>
+<title>댓글 신고 상세보기</title>
 </head>
 <body>
-
 	<jsp:include page="../common/header.jsp" />
 ​	
     <div class="content">
         <br><br>
         <div class="innerOuter" style="padding:5% 10%;">
-            <h2>신고된 게시판 정보</h2>
+            <h2>신고된 댓글 정보</h2>
           
 ​
             <table id="contentArea" algin="center" class="table">
                 <tr>
-                    <th width="100">제목</th>
-                    <td colspan="5">${r.title}</td>
+                    <th width="200">댓글작성된 게시판 번호</th>
+                    <td colspan="5">${r.boardNo}</td>
                 </tr>
                 <tr>
                     <th>작성자</th>
-                    <td>${r.lbWriter}</td>
+                    <td>${r.reWriter}</td>
                     <th>작성일</th>
                     <td>${r.createDate}</td>
-                    <th>글유형</th>
-                    <td>${r.divCode}</td>
+                    <th>댓글유형</th>
+                    	<c:choose>
+                 			<c:when test="${r.replyLevel eq '1' }">
+                 				<td>지역게시판댓글</td>
+                 			</c:when>
+                 			<c:when test="${r.replyLevel eq '2' }">
+                 				<td>동행게시판댓글</td>
+                 			</c:when>
+                 			<c:otherwise>
+                 				<td>여행코스댓글</td>
+                 			</c:otherwise>                    			
+                		</c:choose>
                 </tr>
                 <tr>
                     <th>내용</th>
@@ -58,24 +67,22 @@
              	 </thead>
              </table>
             <br>
-​			<!-- 삭제처리 버튼 -->
+​			<!-- 삭제처리 버튼  -->
             <div align="center">
                 <a class="btn btn-danger" onclick="postFormSubmit()">삭제하기</a>
-                <a class="btn btn-secondary" href="list.re">목록으로</a>
+                <a class="btn btn-secondary" href="replyList.re">목록으로</a>
             </div>
             <!-- 보안을 위해 포스트 방식을 사용 -->
-            <form action="delete.re" method="post" id="postForm">
-            	<input type="hidden" value="${r.boardNo}" name="boardNo">
-            	<input type="hidden" value="${r.divCode}" name="divCode">
+            <form action="deleteReply.re" method="post" id="postForm">
+            	<input type="hidden" value="${r.replyNo}" name="replyNo">
             </form>
             
             <script>
             	function postFormSubmit(){
-            			$('#postForm').attr('action', 'delete.re').submit();
+            			$('#postForm').attr('action', 'deleteReply.re').submit();
             	}
             </script>
             
             <br><br>
-
 </body>
 </html>

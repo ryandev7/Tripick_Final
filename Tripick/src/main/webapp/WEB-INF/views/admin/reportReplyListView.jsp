@@ -5,55 +5,53 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>게시판 신고 리스트</title>
-
+<title>댓글 신고 리스트</title>
 </head>
 <body>
-
+	
 	<jsp:include page="../common/header.jsp" />
 ​
     <div class="content">
         <br><br>
         <div class="innerOuter" style="padding:5% 10%;">
-            <h2>게시판 신고 리스트</h2>
+            <h2>댓글 신고 리스트</h2>
             <br>
             <br>
             <br>
-            <table id="reportList" class="table table-hover" align="center">
+            <table id="reportReplyList" class="table table-hover" align="center">
                 <thead>
                     <tr>
-                        <th>글번호</th>
-                        <th>글유형</th>
+                        <th>댓글번호</th>
+                        <th>댓글유형</th>
                         <th>작성자</th>
                         <th>작성일</th>
-                        <th>제목</th>
                         <th>신고횟수</th>
                         <th>처리상태</th>
                     </tr>
                 </thead>
                 <tbody>
                     
-                    <c:forEach var='r' items="${list}">
-                    	<tr>
-                    		<td class="rno">${r.boardNo}</td>
+                    <c:forEach var="re" items="${list}">
+                    	
+                    	<tr>                    		                            		            
+                    		<td class="reno">${re.replyNo}</td>
 	                    		<c:choose>
-	                    			<c:when test="${r.divCode eq 'L' }">
-	                    				<td>지역게시판</td>
-	                    			</c:when>
-	                    			<c:when test="${r.divCode eq 'M' }">
-	                    				<td>동행게시판</td>
-	                    			</c:when>
-	                    			<c:otherwise>
-	                    				<td>댓글</td>
-	                    			</c:otherwise>                    			
-	                    		</c:choose>
-                    		<td>${r.lbWriter}</td>
-                    		<td>${r.createDate}</td>
-                    		<td>${r.title}</td>
-                    		<td>${r.rptCnt}</td>
+		                 			<c:when test="${re.replyLevel eq '1' }">
+		                 				<td>지역게시판댓글</td>
+		                 			</c:when>
+		                 			<c:when test="${re.replyLevel eq '2' }">
+		                 				<td>동행게시판댓글</td>
+		                 			</c:when>
+		                 			<c:otherwise>
+		                 				<td>여행코스댓글</td>
+		                 			</c:otherwise>                    			
+	                			</c:choose>
+                    		<td>${re.reWriter}</td>
+                    		<td>${re.createDate}</td>
+                    		<td>${re.rptCnt}</td>
                     		<td>
             			        <c:choose>
-	                    			<c:when test="${r.status eq 'Y' }">
+	                    			<c:when test="${re.status eq 'Y' }">
 	                    				처리대기
 	                    			</c:when>
 	                    			<c:otherwise>
@@ -67,23 +65,15 @@
             </table>
             <br>
             
-             <script>
-             	var divCode ="";
-            	$(function(){
-            		$('#reportList>tbody>tr').click(function(){
-            			if($(this).children(".rno").next().text() == "지역게시판"){
-            				divCode = "L";
-            			}else if($(this).children(".rno").next().text() == "동행게시판"){
-            				divCode = "M";
-            			}else{
-            				divCode = "R";
-            			}
-            			location.href = 'detail.re?boardNo=' + $(this).children(".rno").text() + '&divCode='
-            					+divCode;
-            		})
-            	})
+            <script>
+	            $(function(){
+	        		$('#reportReplyList>tbody>tr').click(function(){
+	        			location.href = 'replyDetail.re?replyNo=' + $(this).children(".reno").text();
+
+	        		})
+	        	})
+        		cosole.log("replyNo")
             </script>
-​
             <div id="pagingArea">
                 <ul class="pagination">
                 
@@ -92,12 +82,12 @@
                     		<li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
                     	</c:when>
                     	<c:otherwise>
-                    	 	<li class="page-item"><a class="page-link" href="list.re?cpage=${pi.currentPage -1}">Previous</a></li>
+                    	 	<li class="page-item"><a class="page-link" href="replyList.re?cpage=${pi.currentPage -1}">Previous</a></li>
                     	</c:otherwise>
                     </c:choose>
                     
                     <c:forEach var="p" begin="${pi.startPage}" end="${pi.endPage}">
-                    	<li class="page-item"><a class="page-link" href="list.re?cpage=${p}">${p}</a></li>
+                    	<li class="page-item"><a class="page-link" href="replyList.re?cpage=${p}">${p}</a></li>
                     </c:forEach>
                     
                     <c:choose>
@@ -105,7 +95,7 @@
                     		<li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
                     	</c:when>
                     	<c:otherwise>
-                    		<li class="page-item"><a class="page-link" href="list.re?cpage=${pi.currentPage + 1}">Next</a></li>
+                    		<li class="page-item"><a class="page-link" href="replyList.re?cpage=${pi.currentPage + 1}">Next</a></li>
                     	</c:otherwise>
                     </c:choose>
                    
@@ -114,9 +104,6 @@
     </div>
 ​
     <jsp:include page="../common/footer.jsp" />
-​
-</body>
-</html>
 
 </body>
 </html>

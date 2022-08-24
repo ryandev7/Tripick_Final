@@ -24,6 +24,7 @@
 	</resultMap>
 	
 	<resultMap id="reportReplySet" type="report">
+		<result column="DIVCODE" property="divCode"/>
 		<result column="REPLY_NO" property="replyNo"/>
 		<result column="REPLY_WRITER" property="reWriter"/>
 		<result column="REPLY_CONTENT" property="content"/>
@@ -31,18 +32,19 @@
 		<result column="STATUS" property="status"/>
 		<result column="REPLY_LEVEL" property="replyLevel"/>
 		<result column="REF_BOARD_NO" property="boardNo"/>
+		<result column="RPT_CNT" property="rptCnt"/>
 	</resultMap>
 	
 	<!-- ======================== 신고된 게시글 총갯수 조회(페이징처리를 위함) ============================== -->
 	<select id="selectListCount" resultType="_int">
-		SELECT COUNT(*)
+		SELECT COUNT(DISTINCT WRITE_NO)
 		  FROM RPT
 		 WHERE DIVCODE != 'R'
 	</select>
 	
 	<!-- ======================== 신고된 댓글 총갯수 조회(페이징처리를 위함) ============================== -->
 	<select id="selectReplyListCount" resultType="_int">
-		SELECT COUNT(*)
+		SELECT COUNT(DISTINCT WRITE_NO)
 		  FROM RPT
 		 WHERE DIVCODE = 'R'
 	</select>
@@ -82,57 +84,39 @@
 		 		, MT.MATE_WRITER, MT.MATE_TITLE
 		        , MT.MATE_CONTENT, MT.CREATE_DATE
 		        , MT.STATUS
+		 ORDER BY STATUS DESC <!-- ORDER BT '컬럼' DESC사용 하여 내림차순 정렬로 STATUS값이 Y(삭제 미처리)가 최상단에 표시되게 함 -->
 	</select>
 	
-	<!-- ========================= 신고된 게시판 디테일 뷰 ============================= -->
+	<!-- ========================= 신고된 게시판 상세정보  ============================= -->
 	<select id="selectBoard" parameterType="hashmap" resultMap="reportResultSet">
 		SELECT LOCAL_BOARD_NO
-	     , LOCAL_CODE
-	     , LB_WRITER
-	     , LOCAL_BOARD_CONTENT
-	     , DIVCODE
-	     , LOCAL_BOARD_TITLE
-	     , CREATE_DATE
-	  FROM (SELECT LOCAL_BOARD_NO
-	             , LOCAL_CODE
-	             , LB_WRITER
-	             , LOCAL_BOARD_CONTENT
-	             , 'L' AS DIVCODE
-	             , LOCAL_BOARD_TITLE
-	             , CREATE_DATE
-	          FROM LOCAL_BOARD
-	         WHERE LOCAL_BOARD_NO = #{boardNo}
-	         UNION ALL
-	        SELECT MATE_NO          AS LOCAL_BOARD_NO
-	             , LOCAL_CODE       AS LOCAL_CODE
-	             , MATE_WRITER      AS LB_WRITER
-	             , MATE_CONTENT     AS LOCAL_BOARD_CONTENT
-	             , 'M' AS DIVCODE
-	             , MATE_TITLE       AS LOCAL_BOARD_TITLE
-	             , CREATE_DATE
-	          FROM MATE
-	         WHERE MATE_NO = #{boardNo}
-	       )DETAIL
-	 		 WHERE DETAIL.DIVCODE = #{divCode}
-	</select>
-	
-	<!-- ===================== 신고된 댓글 리스트 ======================= -->
-	<select id="selectReplyList" resultMap="reportReplySet">
-		SELECT 'R' AS DIVCODE  <!--해당 셀렉트문은 디바이스코드 R(댓글)에 대한 목록이라고 하는 구분값  -->
-		     , RE.REPLY_NO <!-- 별칭을 RE로 하고 댓글테이블의 컬럼들을 붙여줌 -->
-		     , RE.REPLY_WRITER
-		     , RE.REPLY_CONTENT
-		     , RE.CREATE_DATE
-		     , RE.STATUS
-		     , RE.REPLY_LEVEL
-		     , COUNT(RPT.RPT_NO) AS RPT_CNT <!-- 해당 지역게시판의 신고건수 -->
-		  FROM REPLY RE <!-- 댓글 조회 및 별칭 -->
-		     , RPT RPT
-		 WHERE RE.REPLY_NO = RPT.WRITE_NO <!-- 댓글 번호와 댓글테이블의 댓글 번호를 조회한다 -->
-		   AND RPT.DIVCODE = 'R' <!-- DIVCODE가 R인것을 -->
-		 GROUP BY RE.REPLY_NO, RE.REPLY_WRITER, RE.REPLY_CONTENT <!-- 셀렉트하는 모든 컬럼을 다 넣어준다. / 그룹바이의 사용 / 한댓글에 여러 신고건수를 넣기위함 -->
-		        , RE.CREATE_DATE, RE.STATUS
-		        , RE.REPLY_LEVEL
+		     , LOCAL_CODE
+		     , LB_WRITER
+		     , LOCAL_BOARD_CONTENT
+		     , DIVCODE
+		     , LOCAL_BOARD_TITLE
+		     , CREATE_DATE
+		  FROM (SELECT LOCAL_BOARD_NO
+		             , LOCAL_CODE
+		             , LB_WRITER
+		             , LOCAL_BOARD_CONTENT
+		             , 'L' AS DIVCODE
+		             , LOCAL_BOARD_TITLE
+		             , CREATE_DATE
+		          FROM LOCAL_BOARD
+		         WHERE LOCAL_BOARD_NO = #{boardNo}
+		         UNION ALL
+		        SELECT MATE_NO          AS LOCAL_BOARD_NO
+		             , LOCAL_CODE       AS LOCAL_CODE
+		             , MATE_WRITER      AS LB_WRITER
+		             , MATE_CONTENT     AS LOCAL_BOARD_CONTENT
+		             , 'M' AS DIVCODE
+		             , MATE_TITLE       AS LOCAL_BOARD_TITLE
+		             , CREATE_DATE
+		          FROM MATE
+		         WHERE MATE_NO = #{boardNo}
+		       )DETAIL
+		 		 WHERE DETAIL.DIVCODE = #{divCode}
 	</select>
 	
 	<!-- ===================== 신고된 게시판안에 신고 내용이 들어오는 리스트 ======================= -->
@@ -149,6 +133,52 @@
 	     ORDER BY RPT_NO
 	</select>
 	
+	<!-- ===================== 신고된 댓글 리스트 ======================= -->
+	<select id="selectReplyList" resultMap="reportReplySet">
+		SELECT REPLY_NO
+		     , REPLY_WRITER
+		     , REPLY_CONTENT
+		     , CREATE_DATE
+	         , STATUS
+	         , REPLY_LEVEL
+	         , COUNT(RPT.RPT_NO) AS RPT_CNT
+	      FROM REPLY RE
+	         , RPT RPT
+	     WHERE RE.REPLY_NO = RPT.WRITE_NO
+		   AND RPT.DIVCODE = 'R'
+	     GROUP BY REPLY_NO, REPLY_WRITER, REPLY_CONTENT 
+		        , CREATE_DATE, STATUS
+	    	    , REPLY_LEVEL
+	     ORDER BY STATUS DESC <!-- ORDER BT '컬럼' DESC사용 하여 내림차순 정렬로 STATUS값이 Y(삭제 미처리)가 최상단에 표시되게 함 -->
+	</select>
+	
+	<!-- ======================== 신고된 댓글 상세정보 ============================= -->
+	<select id="selectReply" parameterType="hashmap" resultMap="reportReplySet">
+		SELECT REPLY_NO
+		     , REPLY_WRITER
+		     , REPLY_CONTENT
+		     , CREATE_DATE
+		     , STATUS
+		     , REPLY_LEVEL
+		     , REF_BOARD_NO
+		  FROM REPLY
+		 WHERE REPLY_NO = #{replyNo}
+	</select>
+	
+	<!-- ===================== 신고된 댓글안에 신고 내용이 들어오는 리스트 ======================= -->
+	<select id="selectReplyRptList" resultMap="reportDetailSet" parameterType="hashmap">
+		SELECT RPT_NO
+		     , WRITE_NO
+		     , USER_ID
+		     , RPT_DATE
+		     , RPT_CONTENT 
+		  FROM RPT
+		 WHERE RPT.DIVCODE = #{divCode}
+		   AND WRITE_NO = #{replyNo}
+	     ORDER BY RPT_NO
+	</select>
+	
+	
 	<!-- ===================== 신고된 게시판(지역게시판)삭제 ======================= -->
 	<update id="deleteLocalBoard" parameterType="_int">
 		UPDATE LOCAL_BOARD
@@ -161,6 +191,13 @@
 		UPDATE MATE
 		   SET STATUS = 'N'
 		 WHERE MATE_NO = #{boardNo}
+	</update>
+	
+	<!-- ===================== 신고된 댓글 삭제  ======================= -->
+		<update id="deleteReply" parameterType="_int">
+		UPDATE REPLY
+		   SET STATUS = 'N'
+		 WHERE REPLY_NO = #{replyNo}
 	</update>
 	
 </mapper>

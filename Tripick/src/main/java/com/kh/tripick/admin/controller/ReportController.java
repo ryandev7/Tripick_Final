@@ -23,6 +23,9 @@ public class ReportController {
 	@Autowired
 	private AdminService adminService;
 	
+	
+	// =============================== 신고 게시판 영역 ====================================
+	
 	// 리스트뷰 -> 신고된 게시판들의 리스트 페이징 처리기능 까지 함께 부여
 	@RequestMapping("list.re")
 	public ModelAndView selectList(@RequestParam(value="cpage", defaultValue="1")int currentPage, ModelAndView mv) {
@@ -30,28 +33,10 @@ public class ReportController {
 		int listCount = adminService.selectListCount();
 		
 		PageInfo pi = Pagination.getPageInfo(adminService.selectListCount(), currentPage, 10, 5);
-		
 		ArrayList<Report> list = adminService.selectList(pi);
-	
-		
 		mv.addObject("list", list)
 		  .addObject("pi", pi)
 		  .setViewName("admin/reportListView");
-		
-		return mv;
-	 }
-	
-	// 리스트뷰 -> 신고된 댓글의 리스트 페이징 처리기능 까지 함께 부여
-	@RequestMapping("ReplyList.re")
-	public ModelAndView selectReplyList(@RequestParam(value="cpage", defaultValue="1")int currentPage, ModelAndView mv) {
-		
-		int listCount = adminService.selectReplyListCount();
-		
-		PageInfo pi = Pagination.getPageInfo(adminService.selectReplyListCount(), currentPage, 10, 5);
-		ArrayList<Report> list = adminService.selectReplyList(pi);
-		mv.addObject("list", list)
-		  .addObject("pi", pi)
-		  .setViewName("admin/reportReplyListView");
 		
 		return mv;
 	 }
@@ -69,7 +54,7 @@ public class ReportController {
 		}else if(r.getDivCode().equals("M")){
 			r.setDivCode("동행게시판");
 		}else {
-			r.setDivCode("댓글");
+			mv.addObject("errorMsg", "상세조회 실패").setViewName("common/errorPage");
 		}
 				
 		ArrayList<Report> list = adminService.selectRptList(map);
@@ -78,6 +63,42 @@ public class ReportController {
 		  .setViewName("admin/reportDetailView");
 		return mv;
 	}
+	
+	// =============================================================================
+	
+	// =============================== 신고 댓글 영역 ====================================
+	
+	@RequestMapping("replyList.re")
+	public ModelAndView selectReplyList(@RequestParam(value="cpage", defaultValue="1")int currentPage, ModelAndView mv) {
+		
+		int listCount = adminService.selectReplyListCount();
+		
+		PageInfo pi = Pagination.getPageInfo(adminService.selectReplyListCount(), currentPage, 10, 5);
+		ArrayList<Report> list = adminService.selectReplyList(pi);
+		mv.addObject("list", list)
+		  .addObject("pi", pi)
+		  .setViewName("admin/reportReplyListView");
+		return mv;
+	 }
+	
+	@RequestMapping("replyDetail.re")
+	public ModelAndView selectReplyDetailAndRptList(@RequestParam String replyNo, ModelAndView mv) {
+		HashMap<String, String> map = new HashMap();
+		map.put("replyNo", replyNo);
+		map.put("divCode", "R");
+
+		Report r = adminService.selectReply(map);
+		
+		if(r == null) mv.addObject("errorMsg", "상세조회 실패").setViewName("common/errorPage");
+		
+		ArrayList<Report> list = adminService.selectReplyRptList(map);
+		mv.addObject("r", r)
+		  .addObject("rptList", list)
+		  .setViewName("admin/reportReplyDetailView");
+		return mv;
+	}
+	// ==============================================================================
+	
 	
 	// 신고된 게시글 디테일뷰에서 내용 확인 후  삭제 처리를 할 수 있도록 구현
 	@RequestMapping("delete.re")
@@ -92,7 +113,7 @@ public class ReportController {
 		} else if(divCode.equals("동행게시판")) {
 			result = adminService.deleteMateBoard(boardNo);
 		} else {
-			result = adminService.deleteReply(boardNo);
+			model.addAttribute("errorMsg", "신고 게시글 삭제에 실패하였습니다.");
 		}
 		
 		if(result > 0) {
@@ -103,6 +124,18 @@ public class ReportController {
 		return "redirect:list.re";
 	}
 	
-	
+	@RequestMapping("deleteReply.re")
+	public String deleteReplyReport(int replyNo, HttpSession session, Model model) {
+		
+		int result = adminService.deleteReply(replyNo);
+		
+		if(result > 0) {
+			session.setAttribute("alertMsg", "신고 댓글이 삭제 되었습니다.");
+			return "redirect:replyList.re";
+		} else {
+			model.addAttribute("errorMsg", "신고 댓글 삭제에 실패하였습니다.");
+			return "common/errorPage";
+		}
+	}
 	 
 }
