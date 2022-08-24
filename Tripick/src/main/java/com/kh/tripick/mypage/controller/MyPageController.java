@@ -11,11 +11,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.google.gson.Gson;
+import com.kh.tripick.chatting.model.vo.ChatMessage;
+import com.kh.tripick.chatting.model.vo.ChatRoom;
 import com.kh.tripick.common.model.vo.PageInfo;
 import com.kh.tripick.common.model.vo.Reply;
 import com.kh.tripick.common.template.Pagination;
-import com.kh.tripick.course.model.service.CourseService;
 import com.kh.tripick.course.model.vo.Planner;
+import com.kh.tripick.member.model.service.MemberService;
 import com.kh.tripick.member.model.vo.Member;
 import com.kh.tripick.mypage.model.service.MyPageService;
 import com.kh.tripick.servicecenter.model.vo.Qna;
@@ -26,9 +29,9 @@ public class MyPageController {
 	@Autowired
 	private MyPageService mypageService;
 	@Autowired
-	private BCryptPasswordEncoder bcryptPasswordEncoder;
+	private MemberService memberService;
 	@Autowired
-	private CourseService courseService;
+	private BCryptPasswordEncoder bcryptPasswordEncoder;
 	
 	
 	@RequestMapping("mypage.my")
@@ -87,7 +90,6 @@ public class MyPageController {
 			//errorpage
 			return "";
 		}
-		
 	}
 	
 	//문의내역 기능
@@ -129,20 +131,62 @@ public class MyPageController {
 	
 	//채팅방 관련 기능
 	@RequestMapping("myChatMenu.my")
-	public String myChatMenu() {
+	public String myChatMenu(HttpSession session) {
+		
+		String userId = ((Member) session.getAttribute("loginUser")).getUserId();
+		
+		ArrayList<ChatRoom> rooms = mypageService.getChatRooms(userId);
+
+		if(rooms != null) {
+			session.setAttribute("rooms", rooms);
+		}else {
+			//errorpage
+			return "";
+		}
+		
 		return "mypage/myChatMenu";
 	}
 	
+	@ResponseBody
+	@RequestMapping(value="getChat.my", produces="application/json; charset=UTF-8")
+	public String getChats(HttpSession session, String chatRoomNo) {
+		
+		ArrayList<ChatMessage> chats = mypageService.getChats(chatRoomNo);
+//		SimpleDateFormat sdf = new SimpleDateFormat ("yyyy-MM-dd kk:mm:ss");
+//		for(ChatMessage cm : chats) {
+//			cm.setCreateDt(Timestamp.valueOf(sdf.format(cm.getCreateDt())));
+//		}
+		
+		return new Gson().toJson(chats);
+	}
 	
+	
+	@ResponseBody
+	@RequestMapping("addChat.my")
+	public String addChatMember(String userId, HttpSession session) {
+		int idCheck = memberService.idCheck(userId);
+		
+		if(idCheck>0) {
+			String myUserId = ((Member) session.getAttribute("loginUser")).getUserId();
+			
+			int result = mypageService.addChatRoom(userId, myUserId);
+			
+			return result > 0 ? "NNNNN" : "NNNNY";
+		}
+		
+		return "NNNNY";
+		
+	  }
 	//내 여행코스 관련
 	@RequestMapping("tripPlan.my")
 	public String tripPlan(@RequestParam(value="cpage", defaultValue="1") int currentPage, HttpSession session) {
 		
-		PageInfo pi = Pagination.getPageInfo(courseService.selectCourseListCount(), currentPage, 5, 6);
-		ArrayList<Planner> list = courseService.selectCourseList(pi);
-		
+		String userId = ((Member) session.getAttribute("loginUser")).getUserId();
+		PageInfo pi = Pagination.getPageInfo(mypageService.selectCourseListCount(userId), currentPage, 5, 6);
+		ArrayList<Planner> plan = mypageService.selectMyCourseList(pi, userId);
+
 		session.setAttribute("pi", pi);
-		session.setAttribute("plan", list);
+		session.setAttribute("myTripPlan", plan);
 		
 		return "mypage/myTripPlan";
 	}
@@ -151,12 +195,14 @@ public class MyPageController {
 	@RequestMapping("interestTrip.my")
 	public String interestTrip(@RequestParam(value="cpage", defaultValue="1") int currentPage, HttpSession session) {
 		
-		PageInfo pi = Pagination.getPageInfo(courseService.selectCourseListCount(), currentPage, 5, 6);
-		ArrayList<Planner> list = courseService.selectCourseList(pi);
+		String userId = ((Member) session.getAttribute("loginUser")).getUserId();
+		PageInfo pi = Pagination.getPageInfo(mypageService.selectInterestCourseListCount(userId), currentPage, 5, 6);
+		ArrayList<Planner> plan = mypageService.selectInterestCourseList(pi, userId);
 		
+		System.out.println(plan);
 		session.setAttribute("pi", pi);
-		session.setAttribute("plan", list);
-
+		session.setAttribute("likePlan", plan);
+		
 		return "mypage/myInterestTrip";
 	}
 }

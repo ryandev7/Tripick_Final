@@ -88,22 +88,26 @@
 						<tbody>
 
 							<c:forEach var="cms" items="${ comments }">
-								<tr class="inquiryOne">
+								<tr class="inquiryOne" align="center">
 									<td class='rn'>${ cms.replyNo }</td>
 									<c:choose>
 										<c:when test="${ cms.replyLevel eq '1' }">
-											<td>지역게시판</td>
+											<td class='rl'>지역게시판</td>
 										</c:when>
 										<c:when test="${ cms.replyLevel eq '2' }">
-											<td>동행게시판</td>
+											<td class='rl'>동행게시판</td>
 										</c:when>
 										<c:otherwise>
-											<td>여행코스게시판</td>
+											<td class='rl'>여행코스게시판</td>
 										</c:otherwise>
 									</c:choose>
 									
 									<td>${ cms.replyContent }</td>
 									<td>${ cms.create_date }</td>
+									<td class="bn" hidden="hidden">
+										${ cms.refBoardNo }
+									</td>
+									
 								</tr>
 							</c:forEach>
 						</tbody>
@@ -111,9 +115,18 @@
 					<br> ​
 					<script type="text/javascript">
 						 $('.inquiryOne').on("click", function(){
-							var no = $(this).children('.rn').text();
-
-							location.href="detailView.bo?boardNo=" + bNo; 
+							
+							var bn = $(this).children('.bn').text();
+							var bl = $(this).children('.rl').text();
+							
+							if(bl == '지역게시판'){
+								location.href="detail.lb?bno=" + bn;
+							} else if(bl == '동행게시판'){
+								location.href="detail.mb?mno=" + bn;
+							} else{
+								location.href="detail.co?pno=" + bn;
+							}
+							 
 						}) 
 					</script>
 

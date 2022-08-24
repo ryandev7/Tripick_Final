@@ -157,52 +157,57 @@
 					<%--<label>${inquiry }</label> --%>
 					<div id="courseList-area"
 						style="width: 1200px; height: 500px; margin-left: 150px">
-						<c:forEach var="planner" items="${ plan }">
-							<table id="course">
-								<tr>
-									<td rowspan="5" id="thumbnail"><input type="hidden"
-										name="plannerNo" value="${planner.plannerNo }"> 
-										<c:choose>
-											<c:when test="${not empty planner.originName }">
-												<img src="${planner.changeName}" />
-											</c:when>
-											<c:when test="${planner.type eq '나홀로여행'}">
-												<img src="resources/common-upfiles/type1.jfif">
-											</c:when>
-											<c:when test="${planner.type eq '가족여행'}">
-												<img src="resources/common-upfiles/type2.jfif">
-											</c:when>
-											<c:when test="${planner.type eq '친구/지인'}">
-												<img src="resources/common-upfiles/type3.jfif">
-											</c:when>
-											<c:when test="${planner.type eq '연인/커플'}">
-												<img src="resources/common-upfiles/type4.jfif">
-											</c:when>
-											<c:otherwise>
-												<img src="resources/common-upfiles/type5.jfif">
-											</c:otherwise>
-										</c:choose>
-									</td>
-									<th style="width: 350px">${planner.plannerTitle }</th>
-								</tr>
-								<tr>
-									<td style="font-size: 12px;">작성자 | ${planner.plannerWriter }
-									</td>
-								</tr>
-								<tr>
-									<td style="font-size: 12px;">${planner.getWDate()-1 }박
-										${planner.getWDate() }일</td>
-								</tr>
-								<tr>
-									<td style="font-size: 12px;">${planner.createDate}| 👁
-										${planner.count }</td>
-								</tr>
-								<tr>
-									<th style="font-size: 14px;"># ${planner.area } #
-										${planner.type }</th>
-								</tr>
-							</table>
-						</c:forEach>
+						<c:choose>
+							<c:when test="${ empty likePlan }">
+								등록한 여행코스가 없습니다!
+							</c:when>
+							<c:otherwise>
+								<c:forEach var="planner" items="${ likePlan }">
+									<table id="course">
+										<tr>
+											<td rowspan="5" id="thumbnail"><input type="hidden"
+												name="plannerNo" value="${planner.plannerNo }"> <c:choose>
+													<c:when test="${not empty planner.originName }">
+														<img src="${planner.changeName}" />
+													</c:when>
+													<c:when test="${planner.type eq '나홀로여행'}">
+														<img src="resources/common-upfiles/type1.jfif">
+													</c:when>
+													<c:when test="${planner.type eq '가족여행'}">
+														<img src="resources/common-upfiles/type2.jfif">
+													</c:when>
+													<c:when test="${planner.type eq '친구/지인'}">
+														<img src="resources/common-upfiles/type3.jfif">
+													</c:when>
+													<c:when test="${planner.type eq '연인/커플'}">
+														<img src="resources/common-upfiles/type4.jfif">
+													</c:when>
+													<c:otherwise>
+														<img src="resources/common-upfiles/type5.jfif">
+													</c:otherwise>
+												</c:choose></td>
+											<th style="width: 350px">${planner.plannerTitle }</th>
+										</tr>
+										<tr>
+											<td style="font-size: 12px;">작성자 |
+												${planner.plannerWriter }</td>
+										</tr>
+										<tr>
+											<td style="font-size: 12px;">${planner.getWDate()-1 }박
+												${planner.getWDate() }일</td>
+										</tr>
+										<tr>
+											<td style="font-size: 12px;">${planner.createDate}|👁
+												${planner.count }</td>
+										</tr>
+										<tr>
+											<th style="font-size: 14px;"># ${planner.area } #
+												${planner.type }</th>
+										</tr>
+									</table>
+								</c:forEach>
+							</c:otherwise>
+						</c:choose>
 					</div>
 					<br> 
 					​
@@ -216,39 +221,42 @@
 						})
 					</script>
 					
-					<div id="pagingArea" align="center">
-						<ul class="pagination">
-							<c:choose>
-								<c:when test="${ pi.currentPage eq 1 }">
-									<li class="page-item disabled"><a class="page-link"
-										href="#">&lt;&lt;</a></li>
-								</c:when>
-								<c:otherwise>
+					<c:if test="${ not empty likePlan }">
+						<div id="pagingArea" align="center">
+							<ul class="pagination">
+								<c:choose>
+									<c:when test="${ pi.currentPage eq 1 }">
+										<li class="page-item disabled"><a class="page-link"
+											href="#">&lt;&lt;</a></li>
+									</c:when>
+									<c:otherwise>
+										<li class="page-item"><a class="page-link"
+											href="interestTrip.my?cpage=${ pi.currentPage -1 }">&lt;&lt;</a></li>
+									</c:otherwise>
+								</c:choose>
+
+
+								<c:forEach var="p" begin="${ pi.startPage }"
+									end="${ pi.endPage }">
 									<li class="page-item"><a class="page-link"
-										href="tripPlan.my?cpage=${ pi.currentPage -1 }">&lt;&lt;</a></li>
-								</c:otherwise>
-							</c:choose>
+										href="interestTrip.my?cpage=${ p }">${ p }</a></li>
+								</c:forEach>
 
+								<c:choose>
+									<c:when test="${ pi.currentPage eq pi.maxPage }">
+										<li class="page-item disabled"><a class="page-link"
+											href="#">&gt;&gt;</a></li>
+									</c:when>
+									<c:otherwise>
+										<li class="page-item"><a class="page-link"
+											href="interestTrip.my?cpage=${ pi.currentPage +1 }"> &gt;&gt;</a></li>
+									</c:otherwise>
+								</c:choose>
 
-							<c:forEach var="p" begin="${ pi.startPage }"
-								end="${ pi.endPage }">
-								<li class="page-item"><a class="page-link"
-									href="tripPlan.my?cpage=${ p }">${ p }</a></li>
-							</c:forEach>
-
-							<c:choose>
-								<c:when test="${ pi.currentPage eq pi.maxPage }">
-									<li class="page-item disabled"><a class="page-link"
-										href="#">&gt;&gt;</a></li>
-								</c:when>
-								<c:otherwise>
-									<li class="page-item"><a class="page-link"
-										href="tripPlan.my?cpage=${ pi.currentPage +1 }"> &gt;&gt;</a></li>
-								</c:otherwise>
-							</c:choose>
-
-						</ul>
-					</div> 
+							</ul>
+						</div>
+					</c:if>
+					
 				</div>
 
 			</div>

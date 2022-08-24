@@ -31,9 +31,42 @@
 		<result column="STATUS" property="status"/>
 		<result column="REPLY_LEVEL" property="replyLevel"/>
 		<result column="REF_BOARD_NO" property="refBoardNo"/>
+	</resultMap>
 	
+	<resultMap type="planner" id="plannerResultSet">
+		<result column="PLANNER_NO" property="plannerNo" />
+		<result column="PLANNER_WRITER" property="plannerWriter" />
+		<result column="USER_NICKNAME" property="plannerWriter" />
+		<result column="PLANNER_TITLE" property="plannerTitle" />
+		<result column="F_DATE" property="fDate" />
+		<result column="L_DATE" property="lDate" />
+		<result column="W_DATE" property="wDate" />
+		<result column="AREA" property="area" />
+		<result column="TYPE" property="type" />
+		<result column="COUNT" property="count" />
+		<result column="CREATE_DATE" property="createDate" />
+		<result column="ORIGIN_NAME" property="originName" />
+		<result column="CHANGE_NAME" property="changeName" />
+		<result column="STATUS" property="status" />
+	</resultMap>
+	
+	<resultMap type="chatRoom" id="chatRoomResultSet">
+		<result column="CHAT_ROOM_NO" property="chatRoomNo"/>
+		<result column="STATUS" property="status"/>
+		<result column="USER_ID" property="userId"/>
+		<result column="MATE_NO" property="mateNo"/>
+		<result column="CHAT_LEVEL" property="chatLevel"/>
+		<result column="USER_NICKNAME" property="userNickName"/>
 	</resultMap>
 
+	<resultMap type="chatMessage" id="chatMessageResultSet">
+		<result column="CM_NO" property="cmNo"/>
+		<result column="MESSAGE" property="message"/>
+		<result column="CREATE_DT" property="createDt"/>
+		<result column="CHAT_ROOM_NO" property="chatRoomNo"/>
+		<result column="USER_ID" property="userId"/>
+	</resultMap>
+	
 	<select id="login" parameterType="string" resultMap="memberResultSet">
 		select 
 			USER_ID ,
@@ -121,7 +154,8 @@
 		    reply_no,
 		    reply_level,
 		    reply_content,
-		    create_date
+		    create_date,
+		    ref_board_no
 		from
 		    reply
 		where
@@ -129,4 +163,128 @@
 		and
 		    reply_writer = #{userId}
 	</select>
+	
+	<select id="selectCourseListCount" parameterType="string" resultType="_int">
+		SELECT 
+			   COUNT(*)
+		  FROM
+		  	   PLANNER
+		 WHERE
+		 	   STATUS='Y' 	
+	 	   AND
+	 	   	   PLANNER_WRITER = #{userId}
+	</select>
+	
+	<select id="selectMyCourseList" parameterType="string" resultMap="plannerResultSet">
+		SELECT
+			   PLANNER_NO, USER_NICKNAME, PLANNER_TITLE, W_DATE, AREA, TYPE, COUNT, CREATE_DATE, ORIGIN_NAME, CHANGE_NAME
+		  FROM
+			   PLANNER P
+		  JOIN
+			   MEMBER ON(PLANNER_WRITER = USER_ID)
+		 WHERE
+			   P.STATUS ='Y'
+		   AND
+		   	   PLANNER_WRITER = #{userId}
+		 ORDER
+			BY PLANNER_NO DESC 
+	</select>
+	
+	<select id="selectInterestCourseListCount" parameterType="string" resultType="_int">
+		SELECT 
+			   count(*)
+		  FROM
+		  	   PLANNER p
+          join
+               likeplanner l on(p.planner_no = L.like_no)
+		 WHERE
+		 	   STATUS='Y' 	
+	 	   AND
+	 	   	   user_id = #{userId}
+	</select>
+	
+	<select id="selectInterestCourseList" parameterType="string" resultMap="plannerResultSet">
+		SELECT
+		   P.PLANNER_NO, USER_NICKNAME, PLANNER_TITLE, W_DATE, AREA, TYPE, COUNT, CREATE_DATE, ORIGIN_NAME, CHANGE_NAME
+		FROM
+		   PLANNER P
+		 JOIN
+		   LIKEPLANNER L on(p.planner_no = L.like_no)
+        JOIN
+		   MEMBER M ON(P.PLANNER_WRITER = M.USER_ID)
+		WHERE
+		   P.STATUS ='Y'
+		AND
+		   L.user_id = #{userId}
+		ORDER
+			BY PLANNER_NO DESC 
+	</select>
+	
+	<select id="getChatRooms" parameterType="string" resultMap="chatRoomResultSet">
+		select 
+			chat_room_no, user_id, m.user_nickname
+		from 
+			chat_room_join 
+		join 
+			member m using(user_id)
+		where 
+			user_id != #{userId}
+		and 
+			chat_room_no in (select 
+								chat_room_no
+	                         from 
+	                         	chat_room cr
+	                         join 
+	                         	chat_room_join crj using(chat_room_no)
+	                         where  
+	                         	crj.user_id = #{userId}
+                         	 and
+                         	 	status = 'Y'
+                         	 	)
+	</select>
+	
+	<select id="getChats" parameterType="string" resultMap="chatMessageResultSet">
+		select 
+			message, create_dt, user_id
+		from 
+			chat_message
+		where 
+			chat_room_no = #{chatRoomNo}
+	</select>
+	
+	<insert id="insertMsg">
+		insert into 
+			chat_message
+		values(
+				seq_cm_no.nextval, 
+				#{message}, 
+				SYSDATE, 
+				#{chatRoomNo}, 
+				#{userId},
+				null,null)
+	</insert>
+	
+	<insert id="addChatRoom">
+		insert into 
+			chat_room
+		values
+			(SEQ_CR_NO.nextval, #{myUserId}, 'Y', #{myUserId}, null,1)
+	</insert>
+	
+	<insert id="addChatRoomJoin">
+		insert into 
+			chat_room_join
+		values
+			(SEQ_CR_NO.CURRVAL, #{userId})
+	</insert>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 </mapper>

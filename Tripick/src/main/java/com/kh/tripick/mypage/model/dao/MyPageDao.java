@@ -6,8 +6,11 @@ import org.apache.ibatis.session.RowBounds;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.kh.tripick.chatting.model.vo.ChatMessage;
+import com.kh.tripick.chatting.model.vo.ChatRoom;
 import com.kh.tripick.common.model.vo.PageInfo;
 import com.kh.tripick.common.model.vo.Reply;
+import com.kh.tripick.course.model.vo.Planner;
 import com.kh.tripick.member.model.vo.Member;
 import com.kh.tripick.servicecenter.model.vo.Qna;
 
@@ -56,6 +59,53 @@ public class MyPageDao {
 		RowBounds rowBounds = new RowBounds(offset, limit);
 		
 		return (ArrayList)sqlSession.selectList("myPageMapper.getMyComments", userId, rowBounds);
+	}
+
+	public int selectCourseListCount(SqlSessionTemplate sqlSession, String userId) {
+		return sqlSession.selectOne("myPageMapper.selectCourseListCount", userId);
+	}
+
+	public ArrayList<Planner> selectMyCourseList(SqlSessionTemplate sqlSession, String userId, PageInfo pi) {
+		
+		int offset = (pi.getCurrentPage() -1) * pi.getBoardLimit();
+		int limit = pi.getBoardLimit();
+		
+		RowBounds rowBounds = new RowBounds(offset, limit);
+		
+		return (ArrayList)sqlSession.selectList("myPageMapper.selectMyCourseList", userId, rowBounds);
+	}
+
+	public int selectInterestCourseListCount(SqlSessionTemplate sqlSession, String userId) {
+		return sqlSession.selectOne("myPageMapper.selectInterestCourseListCount", userId);
+	}
+
+	public ArrayList<Planner> selectInterestCourseList(SqlSessionTemplate sqlSession, String userId, PageInfo pi) {
+		int offset = (pi.getCurrentPage() -1) * pi.getBoardLimit();
+		int limit = pi.getBoardLimit();
+		
+		RowBounds rowBounds = new RowBounds(offset, limit);
+		
+		return (ArrayList)sqlSession.selectList("myPageMapper.selectInterestCourseList", userId, rowBounds);
+	}
+
+	public ArrayList<ChatRoom> getChatRooms(SqlSessionTemplate sqlSession, String userId) {
+		return (ArrayList)sqlSession.selectList("myPageMapper.getChatRooms", userId);
+	}
+
+	public ArrayList<ChatMessage> getChats(SqlSessionTemplate sqlSession, String chatRoomNo) {
+		return (ArrayList)sqlSession.selectList("myPageMapper.getChats", chatRoomNo);
+	}
+
+	public int insertMsg(SqlSessionTemplate sqlSession, ChatMessage cm) {
+		return sqlSession.insert("myPageMapper.insertMsg", cm);
+	}
+
+	public int addChatRoom(SqlSessionTemplate sqlSession, String myUserId) {
+		return sqlSession.insert("myPageMapper.addChatRoom", myUserId);
+	}
+
+	public int addChatRoomJoin(SqlSessionTemplate sqlSession, String userId) {
+		return sqlSession.insert("myPageMapper.addChatRoomJoin", userId);
 	}
 
 	
