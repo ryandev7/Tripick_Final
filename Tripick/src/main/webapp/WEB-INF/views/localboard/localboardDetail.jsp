@@ -88,6 +88,7 @@
                 	</c:if>
                 	<c:if test="${loginUser ne null && loginUser.userNickName ne b.lbWriter}">
 	                	<button class="btn btn-danger" data-toggle="modal" data-target='#PostReportModal'>신고하기</button>
+	                	<a class="btn btn-secondary" href="list.lb">목록으로</a>
                 	</c:if>
                 </div>
             <br>
