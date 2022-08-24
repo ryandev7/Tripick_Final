@@ -526,6 +526,7 @@
 	               if($(this).children().length <= 1){
 	                   alert("각 여행일에는 최소 1개의 일정을 추가해주세요.");
 	                   isValid = false;
+	                   return false;
 	               }
 	           });
 	           

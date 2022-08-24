@@ -37,12 +37,7 @@
 		color: rgb(142, 229, 238);
 	}
 	
-	.option-1.active, .option-2.active, .option-3.active, .option-4.active, .option-5.active, .option-6.active, .option-7.active,
-	.option-8.avtive, .option-9.active, .option-10.active, option-11.active, option-12.active, option-13.active, option-14.active,
-	.option-15.active {
-	    color: rgb(142, 229, 238);
-	}
-	
+
 	.filter-option.active{
 	    color: rgb(142, 229, 238);	
 	}

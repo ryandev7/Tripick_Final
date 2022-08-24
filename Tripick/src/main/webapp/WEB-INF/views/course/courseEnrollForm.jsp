@@ -275,7 +275,7 @@
 
 
     #AR_plan-searchbox::-webkit-scrollbar, .AR_plan-plansbox::-webkit-scrollbar, .AR_plan-daysbox::-webkit-scrollbar {
-        display: none; /* Chrome, Safari, Opera*/
+        display: none;
     }
 
     .AR_plan-search {
@@ -487,121 +487,125 @@
 
 </style>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script>
-	    $(function() {
-	    	
-	    	// 상세일정 날짜 클릭했을 경우
-	        $('.AR_plan-daybox').click(function(e) {
-	            e.preventDefault(); 
-	            $('.AR_plan-daybox').css("background-color","rgb(122,197,205)");
-	            $(this).css("background-color","rgb(83, 134, 139)");
-	        });
-	         
-	       // submit 버튼 클릭했을 경우 
-	       $(".AR_button-area_button-sumbit").click(function () {
-	    	   // Planner
-	           var plannerTitle = $("#plannerTitle").val();
-	           var plannerWriter = $("#plannerWriter").val();
-	           var f_date = $("#f_date").val();
-	           var l_date = $("#l_date").val();
-	           var w_date = $("#w_date").val(); 
-	           var area = $("#area").val();
-	           var type = $("#type").val();
-	           var originName = $("#originName").val();
-	           var changeName = $("#changeName").val();
-	           
-	           // Plan
-	           var tripDate = [];
-	           var placeName = [];
-	           var placeAddress = [];
-	           var xCoordinate = [];
-	           var yCoordinate = [];
-	           var planOrder = [];
-	           var memo = [];
-	           var isValid = true;
-	           
-	           // 각 여행일에 일정이 있는지 확인
-	           $('.AR_plan-plansbox').each(function (i){
-	               if($(this).children().length <= 1){
-	                   alert("각 여행일에는 최소 1개의 일정을 추가해주세요.");
-	                   isValid = false;
-	               }
-	           });
-	           
-	           // 각 여행일에 일정이 있을 경우
-	           if(isValid == true){
-	        	   // 여행일
-	               $('.AR_plan-planbox').each(function (i){
-	                   tripDate.push($(this).attr("data-date"));
-	               });
-	        	   // 여행장소(이름)
-	               $('.AR_plan-planbox').each(function (i){
-	                   placeName.push($(this).attr("data-placeName"));
-	               });
-	        	   // 여행장소(주소)
-	               $('.AR_plan-planbox').each(function (i){
-	            	   if($(this).attr("data-placeRoadAddress")==""){	// 도로명주소 없으면 일반주소            		   
-		                   placeAddress.push($(this).attr("data-placeAddress"));
-	            	   } else {
-	          	           placeAddress.push($(this).attr("data-placeRoadAddress"));
-	            	   }	            	   
-	               });
-	        	   
-	        	   // 메모
-	               $('.AR_plan-plandetail_input-memo').each(function (i){
-	                   if($(this).val() == null){
-	                       memo.push(" ");
-	                   }else{
-	                       memo.push($(this).val());
-	                   }
-	               });
-	        	   
-	        	   // x좌표
-	               $('.AR_plan-planbox').each(function (i){
-	                   xCoordinate.push($(this).attr("data-x"));
-	               });
-	        	   
-	        	   // y좌표
-	               $('.AR_plan-planbox').each(function (i){
-	                   yCoordinate.push($(this).attr("data-y"));
-	               });
-	        	   
-	        	   // 일정 순서
-	               $('.AR_plan-planbox').each(function (i){
-	                   planOrder.push($(this).attr("data-planOrder"));
-	               });
 
-	               $.ajax({
-	                   url:"insert.co",
-	                   data:{
-	                	   plannerTitle : plannerTitle,
-	                       plannerWriter : plannerWriter,
-	                       fDate : f_date,
-	                       lDate : l_date,
-	                       wDate : w_date,
-	                       area : area,
-	                       type : type,
-	                       originName : originName,
-	                       changeName : changeName,
-	                       
-	                       tripDate : tripDate,
-	                       placeName : placeName,
-	                       placeAddress : placeAddress,
-	                       xCoordinate : xCoordinate,
-	                       yCoordinate : yCoordinate,
-	                       planOrder : planOrder,
-	                       memo : memo
-	                   },
-	                   type:"post",
-	                   success: function (result) {
-	                       alert(result);
-	                       location.href="main.co";
-	                   }
-	               });
+	    <!----------------------------------------------------코스 등록 관련 script---------------------------------------------------------->
+<script>
+    $(function() {
+    	
+    	// 상세일정 날짜 클릭했을 경우
+        $('.AR_plan-daybox').click(function(e) {
+            e.preventDefault(); 
+            $('.AR_plan-daybox').css("background-color","rgb(122,197,205)");
+            $(this).css("background-color","rgb(83, 134, 139)");
+        });
+         
+       // submit 버튼 클릭했을 경우 
+       $(".AR_button-area_button-sumbit").click(function () {
+    	   // Planner
+           var plannerTitle = $("#plannerTitle").val();
+           var plannerWriter = $("#plannerWriter").val();
+           var f_date = $("#f_date").val();
+           var l_date = $("#l_date").val();
+           var w_date = $("#w_date").val(); 
+           var area = $("#area").val();
+           var type = $("#type").val();
+           var originName = $("#originName").val();
+           var changeName = $("#changeName").val();
+           
+           // Plan
+           var tripDate = [];
+           var placeName = [];
+           var placeAddress = [];
+           var xCoordinate = [];
+           var yCoordinate = [];
+           var planOrder = [];
+           var memo = [];
+           var isValid = true;
+           
+           // 각 여행일에 일정이 있는지 확인
+           $('.AR_plan-plansbox').each(function (i){
+               if($(this).children().length <= 1){
+                   alert("각 여행일에는 최소 1개의 일정을 추가해주세요.");
+                   isValid = false;
+                   return false;
+               }
+           });
+           
+           // 각 여행일에 일정이 있을 경우
+           if(isValid == true){
+        	   // 여행일
+               $('.AR_plan-planbox').each(function (i){
+                   tripDate.push($(this).attr("data-date"));
+               });
+        	   // 여행장소(이름)
+               $('.AR_plan-planbox').each(function (i){
+                   placeName.push($(this).attr("data-placeName"));
+               });
+        	   // 여행장소(주소)
+               $('.AR_plan-planbox').each(function (i){
+            	   if($(this).attr("data-placeRoadAddress")==""){	// 도로명주소 없으면 일반주소            		   
+	                   placeAddress.push($(this).attr("data-placeAddress"));
+            	   } else {
+          	           placeAddress.push($(this).attr("data-placeRoadAddress"));
+            	   }	            	   
+               });
+        	   
+        	   // 메모
+               $('.AR_plan-plandetail_input-memo').each(function (i){
+                   if($(this).val() == null){
+                       memo.push(" ");
+                   }else{
+                       memo.push($(this).val());
+                   }
+               });
+        	   
+        	   // x좌표
+               $('.AR_plan-planbox').each(function (i){
+                   xCoordinate.push($(this).attr("data-x"));
+               });
+        	   
+        	   // y좌표
+               $('.AR_plan-planbox').each(function (i){
+                   yCoordinate.push($(this).attr("data-y"));
+               });
+        	   
+        	   // 일정 순서
+               $('.AR_plan-planbox').each(function (i){
+                   planOrder.push($(this).attr("data-planOrder"));
+               });
+
+               $.ajax({
+                   url:"insert.co",
+                   data:{
+                	   plannerTitle : plannerTitle,
+                       plannerWriter : plannerWriter,
+                       fDate : f_date,
+                       lDate : l_date,
+                       wDate : w_date,
+                       area : area,
+                       type : type,
+                       originName : originName,
+                       changeName : changeName,
+                       
+                       tripDate : tripDate,
+                       placeName : placeName,
+                       placeAddress : placeAddress,
+                       xCoordinate : xCoordinate,
+                       yCoordinate : yCoordinate,
+                       planOrder : planOrder,
+                       memo : memo
+                   },
+                   type:"post",
+                   success: function (result) {
+                       alert(result);
+                       location.href="main.co";
+                   }
+               });
             }
         });
     });
 </script>
+	    <!------------------------------------------------------------------------------------------------------------------------->
 </head>
 <body>
 
@@ -628,9 +632,9 @@
 
 	<!-- 플래너 작성 -->
 	<div class="AR_plan-container">
-	    <!-- DAYS 나타내는 div -->
-	    <div class="AR_plan-daysbox">
-	
+
+	    <!------------------------------------------------------ days 영역------------------------------------------------------------->
+	    <div class="AR_plan-daysbox">	
 	        <div class="AR_plan-daysboxtitle">일정</div>
 	
 	        <c:forEach items="${days}" var="day" varStatus="status">
@@ -641,9 +645,9 @@
 	        </c:forEach>
 	
 	    </div>
-	    <!-- // DAYS 나타내는 div -->
+	    <!---------------------------------------------------------------------------------------------------------------------------->
 	
-	    <!-- 해당 날짜에 대한 일정들 나타나는 div -->
+	    <!---------------------------------------------------- 해당 날짜에 대한 일정 ---------------------------------------------------------->
 	    <div class="AR_plan-planscontainer">
 	        <c:forEach items="${days}" var="day" varStatus="status">
 	            <div class="AR_plan-plansbox" data-date="<fmt:formatDate value="${day}" pattern="YYYY-MM-dd" />">
@@ -651,9 +655,9 @@
 	            </div>
 	        </c:forEach>
 	    </div>
-	    <!-- // 해당 날짜에 대한 일정들 나타나는 div -->
-	
-	    <!-- 키워드로 장소 검색하는 div -->
+	    <!------------------------------------------------------------------------------------------------------------------------->
+
+	    <!-------------------------------------------------- 키워드로 장소 검색 ---------------------------------------------------------->
 	    <div id="AR_plan-searchbox">
 	
 	        <div class="AR_plan-search">
@@ -661,22 +665,21 @@
 	               <input type="text" value="${planner.area }" id="keyword" size="15">
 	                <button type="submit">검색</button>
 	            </form>
-	        </div>
-	
+	        </div>	
 	        <ul id="AR_plan-searchbox_ul--gray"></ul>
-	
 	        <div id="AR_plan-pagination"></div>
 	    </div>
-	    <!-- // 키워드로 장소 검색하는 div -->
+	    <!------------------------------------------------------------------------------------------------------------------------->
 	
-	    <!-- 지도 div -->
+	    <!----------------------------------------------------- 지도 영역 ------------------------------------------------------------->
 	    <div class="AR_plan-mapbox" style="z-index: 0">
 	        <div class="AR_plan-map" id="AR_plan-map"></div>
 	    </div>
+	    <!------------------------------------------------------------------------------------------------------------------------->
 	</div>
 
 	<jsp:include page="../common/footer.jsp"/>
-
+		<!------------------------------------------------- 지도 관련 script ---------------------------------------------------------->
     <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=f07946d5b7142dd1712d5cd8986d3f7e&libraries=services"></script>
     <script>
         // 지도 생성 코드
@@ -820,12 +823,12 @@
             }
         }
     </script>
-    <!-- // 지도 div -->
+	    <!------------------------------------------------------------------------------------------------------------------------->
 
-<!-- // 플래너 작성  -->
+	    <!-------------------------------------------------플래너 작성 관련 script-------------------------------------------------------->
 	<script>
 
-	// DAY 버튼 클릭시 해당 날짜의 일정만 보여줌
+	// DAY 버튼 클릭시 해당 날짜의 일정 보여줌
 	var planslide =  document.querySelectorAll(".AR_plan-plansbox");
 
 	var plans_current = 1;
@@ -889,8 +892,8 @@
 	        ++ num;
 	    });
 	}
-	
 	</script>
+    <!------------------------------------------------------------------------------------------------------------------------->
 
 </body>
 </html>

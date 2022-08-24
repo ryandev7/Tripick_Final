@@ -151,10 +151,8 @@ public class CourseController {
 				p.setMemo(memo.get(i));
 				planList.add(p);
 			}
-			map.put("planList", planList);
-			
-			return courseService.insertPlanList(map) > 0 ? "나만의 코스가 등록되었습니다.":"실패(plan)";	
-			
+			map.put("planList", planList);			
+			return courseService.insertPlanList(map) > 0 ? "나만의 코스가 등록되었습니다.":"실패(plan)";			
 		} else {
 			return "실패(planner)";
 		}
