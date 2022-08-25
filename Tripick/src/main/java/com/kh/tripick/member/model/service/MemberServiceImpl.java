@@ -25,7 +25,7 @@ private SqlSessionTemplate sqlSession;
 @Override
 public Member loginMember(Member m) {
 	Member loginUser = memberDao.loginMember(sqlSession, m);
-	System.out.println(loginUser);
+
 	return memberDao.loginMember(sqlSession, m);
 }
 

@@ -157,8 +157,6 @@ public class MemberController {
 		
 		sender.send(message);
 		
-		System.out.println(message);
-		
 		if(secret != null ) {
 			
 			return "Y";

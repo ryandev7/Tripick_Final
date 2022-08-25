@@ -613,7 +613,7 @@
 											$('#checkEmail').css('margin-left', '25px');
 											$('#checkEmail').css('color', 'red').text('중복된 이메일입니다.');
 		 
-											EMAIL = 'N';
+											EMAIL = 'No';
 															
 								    }
 									else { // 사용가능
@@ -623,9 +623,7 @@
 											var $checkEmail = $('#checkEmail');
 											var regExpEmail = /([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
 												
-											 // /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/;
-											
-										
+									
 												if(!regExpEmail.test($email)) { // 유효성 불일치
 													
 													$('#checkEmail').css('margin-left', '90px');
@@ -671,6 +669,12 @@
 	function emailNumber() {
 		var $email = $('#email').val();
 			
+		if(EMAIL == 'No') {
+			
+			alert('이미 사용중인 이메일입니다!');
+		}else {
+			
+		
 			$.ajax({
 				
 				url : "input",
@@ -691,6 +695,7 @@
 				}
 			
 			});
+		}
 				
 	}
 	

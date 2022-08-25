@@ -476,8 +476,9 @@ div {
 	    		  
 	    		  
 	    	  }else {  // 조회 결과 o
-	    		  
-				alert('비밀번호 변경화면으로 이동합니다');
+	    		  if(confirm('비밀번호 변경 화면으로 이동하시겠습니까?') == true) {
+	    			  
+				
 				
 				pageGoPost({
 					url: "changePwdForm",	//이동할 페이지
@@ -488,6 +489,9 @@ div {
 					]
 				});
 					  
+	    		  }else {
+	    			  return;
+	    		  }
 	    	  }
 	    	       
 	       },
@@ -518,6 +522,7 @@ div {
 	  $('#find_form')[0].reset();
 	  $('#btn_cert_cell2').css('background-color',"#7AD7BA");
 	  $('#btn_cert_cell2').removeAttr('disabled');
+	  $('#emailNo').css('background-color', 'white');
 	  $('#emailNo').removeAttr('readonly');
 	  emailno = 'N';
 	  
@@ -540,6 +545,7 @@ div {
 	  $('#result_id').css('visibility', 'hidden');
 	  $('#btn_cert_cell2').css('background-color',"#7AD7BA");
 	  $('#btn_cert_cell2').removeAttr('disabled');
+	  $('#emailNo').css('background-color', 'white');
 	  $('#emailNo').removeAttr('readonly');
 	  emailno = 'N';
       
@@ -618,13 +624,14 @@ div {
 					if(result == 'Y') {
 						
 						$('#emailNo').attr('readonly', true);
-						$('#btn_cert_cell2').css("background-color" , "grey");
+						$('#emailNo').css('background-color','#909090');
+						$('#btn_cert_cell2').css("background-color" , "#909090");
 						$('#btn_cert_cell2').attr('disabled', true);
 						alert('인증성공!');
 						emailno = 'Y';
 					}else {
 						
-						alert('인증실패!');
+						alert('인증실패! 인증번호를 다시 확인해주세요!');
 						emailno = 'N';
 					}
 					
