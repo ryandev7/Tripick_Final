@@ -367,7 +367,7 @@
 									<button type="button" onclick="history.go(-1)">
 										<span>취소</span>
 									</button>
-									<button type="submit" id="btn" disabled="disabled">
+									<button type="button" id="btn" disabled="disabled">
 										<span>확인</span>
 									</button>
 								</div>
@@ -379,6 +379,11 @@
 						    var emailno = 'N';
 						    var emailCheck;
 						    
+						    $('#btn').click(function name() {
+								alert('회원탈퇴가 완료되었습니다!');
+								$('#frm').submit();
+							})
+							
 							$('#mailChk').click(function () {
 								var $secret = $('#emailchk').val();
 								
