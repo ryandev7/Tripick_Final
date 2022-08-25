@@ -478,8 +478,7 @@ div {
 	    	  }else {  // 조회 결과 o
 	    		  if(confirm('비밀번호 변경 화면으로 이동하시겠습니까?') == true) {
 	    			  
-				
-				
+			
 				pageGoPost({
 					url: "changePwdForm",	//이동할 페이지
 				    target: "_self",
@@ -631,7 +630,7 @@ div {
 						emailno = 'Y';
 					}else {
 						
-						alert('인증실패! 인증번호를 다시 확인해주세요!');
+						alert('인증실패!');
 						emailno = 'N';
 					}
 					
