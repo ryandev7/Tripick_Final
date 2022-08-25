@@ -621,7 +621,8 @@
 	<input type="hidden" name="originName" id="originName" value="${planner.originName}" />
 	<input type="hidden" name="changeName" id="changeName" value="${planner.changeName}" />
 
-	<br><br><br><br>
+
+	<br><br>
 	<!-- button -->
 	<div class="AR_button-area">
 	    <button class="AR_button-area_button-sumbit">등록</button>
