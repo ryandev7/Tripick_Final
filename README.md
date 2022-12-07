@@ -94,7 +94,7 @@
   + 비밀번호 변경
   + 여행지게시판(등록, 수정, 삭제)
 
-
+Document
 ## :computer:프로젝트 pdf
 [트립픽.pdf](https://github.com/ryandev7/Tripick_Final/files/10163657/pdf.pdf)
 
